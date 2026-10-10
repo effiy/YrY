@@ -7,6 +7,82 @@
   background: var(--el-bg-color);
 }
 
+// ── Transport / LLM health banner (degradation indicator) ──
+.kcp-transport-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  line-height: 1.4;
+
+  &.is-success {
+    background: color-mix(in srgb, var(--el-color-success) 8%, transparent);
+    color: var(--el-color-success);
+    border-bottom-color: color-mix(in srgb, var(--el-color-success) 25%, var(--el-border-color-lighter));
+  }
+  &.is-warning {
+    background: color-mix(in srgb, var(--el-color-warning) 10%, transparent);
+    color: var(--el-color-warning-dark-2);
+    border-bottom-color: color-mix(in srgb, var(--el-color-warning) 30%, var(--el-border-color-lighter));
+  }
+  &.is-danger {
+    background: color-mix(in srgb, var(--el-color-danger) 10%, transparent);
+    color: var(--el-color-danger-dark-2);
+    border-bottom-color: color-mix(in srgb, var(--el-color-danger) 30%, var(--el-border-color-lighter));
+  }
+  &.is-info {
+    background: color-mix(in srgb, var(--el-color-info) 6%, transparent);
+    color: var(--el-text-color-secondary);
+  }
+}
+.kcp-transport-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.kcp-transport-details {
+  padding: 0 4px !important;
+  min-height: auto !important;
+}
+.kcp-fallback-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+}
+.kcp-fallback-item {
+  padding: 6px 8px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--el-fill-color-light);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 8px;
+  align-items: baseline;
+}
+.kcp-fallback-kind {
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+}
+.kcp-fallback-time {
+  justify-self: end;
+  color: var(--el-text-color-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+.kcp-fallback-error {
+  grid-column: 1 / -1;
+  color: var(--el-color-danger-dark-2);
+  font-family: Menlo, Consolas, monospace;
+  font-size: 11px;
+  word-break: break-word;
+}
+
 // ── File input (hidden) ──
 .kcp-file-input {
   display: none;

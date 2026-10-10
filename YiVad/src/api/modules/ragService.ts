@@ -146,7 +146,26 @@ function runStream(url: string, body: Record<string, unknown>, handlers: RagStre
     .then(async response => {
       clearTimeout(timeoutId);
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        let detail = response.statusText;
+        try {
+          const contentType = response.headers.get("content-type") || "";
+          if (contentType.includes("application/json")) {
+            const errData = await response.json();
+            if (typeof errData === "string") {
+              detail = errData;
+            } else if (errData) {
+              const msg = errData.message ?? errData.error ?? errData.detail ?? errData.msg;
+              const extra = errData.data ? ` (${JSON.stringify(errData.data)})` : "";
+              detail = msg ? `${msg}${extra}` : JSON.stringify(errData);
+            }
+          } else {
+            const text = await response.text();
+            if (text && text.trim()) detail = text.slice(0, 800);
+          }
+        } catch {
+          /* fall back to statusText */
+        }
+        throw new Error(`HTTP ${response.status}: ${detail}`);
       }
       const reader = response.body?.getReader();
       if (!reader) {

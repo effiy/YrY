@@ -321,7 +321,7 @@ async function buildQuickActions(): Promise<Array<QuickAction & { _idx: number }
     const HELP_COMMAND_ALIASES = (mod as any).HELP_COMMAND_ALIASES as Record<string, string> | undefined;
     const helpAPI = (mod as any).helpAPI as { open(tab: string, source: string): void };
     const iconMap: Record<string, any> = { shortcuts: MagicStick, faq: QuestionFilled, changelog: CollectionTag, feedback: ChatDotRound, help: Reading };
-    const i18nKey: Record<string, string> = { shortcuts: "help.tabs.shortcuts", faq: "help.tabs.faq", changelog: "help.tabs.changelog", feedback: "help.tabs.feedback", help: "help.tabs.page_help" };
+    const i18nKey: Record<string, string> = { shortcuts: "help.tabs.shortcuts", faq: "help.tabs.faq", changelog: "help.tabs.changelog", feedback: "help.tabs.feedback", help: "help.tabs.page_help", "page-help": "help.tabs.page_help" };
     for (const [tab, alias] of Object.entries(HELP_COMMAND_ALIASES || {})) {
       const id = `help-${tab}`;
       helpAliases.push({

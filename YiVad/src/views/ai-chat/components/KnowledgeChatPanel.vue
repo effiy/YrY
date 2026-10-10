@@ -1,14 +1,14 @@
 <script setup lang="ts" name="knowledgeChatPanel">
-import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount, defineComponent } from "vue";
 import { useI18n } from "vue-i18n";
 import { Promotion, CircleClose, CopyDocument, Edit, Delete, RefreshRight, Search } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { confirm } from "@/hooks/useConfirmAction";
 import { useMarkdown } from "@/hooks/useMarkdown";
 import { useMermaidRender } from "@/hooks/useMermaidRender";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { useAiChatStore } from "@/stores/modules/aiChat";
-import { streamChat } from "@/api/modules/chatService";
+import { streamChat, probeChatService, getChatTransportStatus, type ChatTransportStatus } from "@/api/modules/chatService";
 import { streamRagChat } from "@/api/modules/ragService";
 import { webSearch, formatSearchResults } from "@/api/modules/searchService";
 import { getFaqs } from "@/api/modules/faqService";
@@ -41,6 +41,8 @@ const STORAGE_SETTINGS_PREFIX = "kchat:cfg:";
 const STORAGE_MODEL_PREFIX = "kchat:model:";
 const DEFAULT_MODEL = "qwen3.5:4b";
 const MAX_IMAGES = 4;
+/** Max total characters (messages + system) before trimming to avoid oversized requests. */
+const MAX_CONTEXT_CHARS = 24_000;
 
 interface LocalMessage {
   type: "user" | "pet";
@@ -92,20 +94,62 @@ function onCompositionEnd() {
 const ragEnabled = ref(false);
 const webSearchEnabled = ref(false);
 const webSearching = ref(false);
-const ragAvailable = ref(true);
+
+// ── RAG availability (best-effort check against real index status) ────────
+interface RagIndexStatus {
+  built: boolean;
+  num_docs: number;
+  last_built_at?: string;
+  error?: string;
+}
+const ragIndexStatus = ref<RagIndexStatus | null>(null);
+const ragAvailable = computed<boolean>(() => {
+  const s = ragIndexStatus.value;
+  if (!s) return false;
+  if (s.error) return false;
+  return s.built && s.num_docs > 0;
+});
 
 // ── Model selection ─────────────────────────────────────────────────────────
+//
+// Sync with the shared aiChat store's model list when available. This has
+// three benefits:
+//   1. Model popover shows real models (fetched from the backend), not just
+//      a hardcoded default.
+//   2. Model changes made in the preview dialog propagate to the main chat.
+//   3. If the saved model is no longer in the list (e.g. old Ollama not
+//      started), we fall back to the first available or DEFAULT_MODEL.
 
-const selectedModel = ref(DEFAULT_MODEL);
+const availableModels = computed(() => store.availableModels);
+const modelsLoading = computed(() => store.modelsLoading);
+const selectedModel = ref<string>(DEFAULT_MODEL);
 const modelKey = computed(() => `${STORAGE_MODEL_PREFIX}${props.filePath}`);
 
 function loadModel() {
+  let chosen: string | null = null;
   try {
     const raw = localStorage.getItem(modelKey.value);
-    if (raw) selectedModel.value = raw;
+    if (raw) chosen = raw;
   } catch {
     /* ignore */
   }
+  if (!chosen) {
+    try {
+      const g = localStorage.getItem("aiChat.selectedModel");
+      if (g) chosen = g;
+    } catch {
+      /* ignore */
+    }
+  }
+  // Validate the chosen candidate against the currently available list.
+  // If the list isn't loaded yet, accept it as-is and a later watcher will
+  // correct it once `fetchModels()` resolves.
+  if (chosen) {
+    if (availableModels.value.length === 0 || availableModels.value.includes(chosen)) {
+      selectedModel.value = chosen;
+    }
+  }
+  saveModel();
 }
 function saveModel() {
   try {
@@ -114,7 +158,24 @@ function saveModel() {
     /* ignore */
   }
 }
-watch(selectedModel, () => saveModel());
+watch(selectedModel, v => {
+  saveModel();
+  // Also update the global storage so newly-opened main chat sessions pick
+  // up the last-selected preview model.
+  try { localStorage.setItem("aiChat.selectedModel", v); } catch { /* ignore */ }
+});
+// When the store's available list is populated for the first time, make sure
+// our selected model is valid — otherwise the server will return 400.
+watch(
+  availableModels,
+  list => {
+    if (!list.length) return;
+    if (!list.includes(selectedModel.value)) {
+      selectedModel.value = list.includes(DEFAULT_MODEL) ? DEFAULT_MODEL : list[0];
+    }
+  },
+  { immediate: true }
+);
 
 interface PanelSettings {
   ragEnabled: boolean;
@@ -357,12 +418,80 @@ watch(
   }
 );
 
-onMounted(() => {
+// ── Transport health (3-tier failover indicator) ──────────────────────────
+
+const transportStatus = ref<ChatTransportStatus>(getChatTransportStatus());
+let transportRefreshTimer: ReturnType<typeof setInterval> | null = null;
+function refreshTransportStatus() {
+  transportStatus.value = getChatTransportStatus();
+}
+const transportLabel = computed(() => {
+  const s = transportStatus.value;
+  if (s.forcedFallback && s.selected) {
+    const map: Record<string, string> = {
+      yiAiRpc: "YiAi RPC",
+      yiAiOpenAi: "YiAi · OpenAI",
+      ollama: "Ollama (direct)"
+    };
+    return `Fallback · ${map[s.selected] ?? s.selected}`;
+  }
+  return "";
+});
+const transportSeverity = computed<"info" | "warning" | "success" | "danger">(() => {
+  const s = transportStatus.value;
+  const up = (s.yiAiRpc ? 1 : 0) + (s.yiAiOpenAi ? 1 : 0) + (s.ollama ? 1 : 0);
+  if (up === 0) return "danger";
+  if (s.forcedFallback) return "warning";
+  if (up >= 2) return "success";
+  return "info";
+});
+
+onMounted(async () => {
   loadMessages();
   loadTags();
   loadSettings();
   loadModel();
+  // Probe chat transport availability *before* the user can send — this is
+  // what makes RPC-outage transparent: if YiAi RPC module import is broken,
+  // we silently mark it down and route requests via /v1/chat/completions or
+  // raw Ollama instead.
+  try {
+    await probeChatService();
+    refreshTransportStatus();
+  } catch {
+    /* best-effort */
+  }
+  transportRefreshTimer = setInterval(refreshTransportStatus, 4000);
+
+  // Fetch real models and RAG index status so the UI makes informed choices
+  // (avoids sending requests for models that don't exist, or enabling RAG on
+  // an unbuilt index — both of which result in HTTP 400).
+  try {
+    if (!store.availableModels.length || store.modelsLoading) {
+      await store.fetchModels();
+    }
+  } catch {
+    /* best-effort */
+  }
+  try {
+    const { ragStatus } = await import("@/api/modules/ragService");
+    const data = await ragStatus();
+    ragIndexStatus.value = {
+      built: !!data.built,
+      num_docs: Number(data.num_docs) || 0,
+      last_built_at: data.last_built_at ?? "",
+      error: (data as any).error
+    };
+  } catch {
+    ragIndexStatus.value = { built: false, num_docs: 0, error: "unreachable" };
+  }
   // Mermaid rendering handled by useMermaidRender composable (immediate watcher)
+});
+onBeforeUnmount(() => {
+  if (transportRefreshTimer) {
+    clearInterval(transportRefreshTimer);
+    transportRefreshTimer = null;
+  }
 });
 
 // ── Streaming type ────────────────────────────────────────────────────────
@@ -433,18 +562,37 @@ async function send() {
   const petIdx = messages.value.length - 1;
   scrollTick.value++;
 
-  // Build system prompt with search context if available
-  const system = searchContext ? `${props.systemPrompt}\n\n[Web search results]:\n${searchContext}` : props.systemPrompt;
+  // Build system prompt — pass undefined when empty so services skip the field
+  const baseSystem = (props.systemPrompt || "").trim();
+  const systemRaw = searchContext
+    ? `${baseSystem}\n\n[Web search results]:\n${searchContext}`.trim()
+    : baseSystem;
+  const system = systemRaw ? systemRaw : undefined;
+
+  // ── Context trimming (match useStreaming.ts) to avoid oversized payloads ──
+  const rawHistory = messages.value.slice(0, -1).filter(m =>
+    (m.type === "user" || m.type === "pet") && (m.message ?? "").trim().length > 0
+  );
+  let totalChars = system?.length ?? 0;
+  const trimmed: typeof rawHistory = [];
+  for (let i = rawHistory.length - 1; i >= 0; i--) {
+    const msgChars = (rawHistory[i].message ?? "").length;
+    if (totalChars + msgChars > MAX_CONTEXT_CHARS && trimmed.length >= 2) break;
+    totalChars += msgChars;
+    trimmed.unshift(rawHistory[i]);
+  }
 
   if (ragEnabled.value && ragAvailable.value) {
-    // ── RAG streaming ──
+    // ── RAG streaming ── pass model + context_notes (system prompt) explicitly
     const ragPayload = {
-      messages: messages.value.slice(0, -1).map(m => ({
+      messages: trimmed.map(m => ({
         role: m.type === "user" ? ("user" as const) : ("assistant" as const),
         content: m.message
       })),
       stream: true as const,
-      scope: props.ragScope || undefined
+      model: selectedModel.value,
+      scope: props.ragScope || undefined,
+      ...(system ? { context_notes: system } : {})
     };
 
     const handlers: RagStreamHandlers = {
@@ -461,15 +609,20 @@ async function send() {
     };
     abortRef.value = streamRagChat(ragPayload as any, handlers);
   } else {
-    // ── Standard LLM streaming ──
-    const history: ChatMessage[] = messages.value.slice(0, -1).map(m => ({
+    // ── Standard LLM streaming ── pass system only when non-empty
+    const history: ChatMessage[] = trimmed.map(m => ({
       type: m.type,
       message: m.message,
       timestamp: m.timestamp
     }));
 
     const { abort } = streamChat(
-      { model: selectedModel.value, messages: history, system, ...(images.length ? { images } : {}) },
+      {
+        model: selectedModel.value,
+        messages: history,
+        ...(system ? { system } : {}),
+        ...(images.length ? { images } : {})
+      },
       (chunk: string) => {
         streamingText.value += chunk;
         messages.value[petIdx] = { ...messages.value[petIdx], message: streamingText.value };
@@ -530,6 +683,15 @@ const copyFeedback = ref<Record<string, string>>({});
 
 function timeLabel(ts: number) {
   return new Date(ts).toLocaleString();
+}
+
+/** Compact relative-time label (e.g. "12s", "2m", "5h") for fallback timeline. */
+function formatRelativeTime(ts: number): string {
+  const diff = Math.max(0, Date.now() - ts);
+  if (diff < 60_000) return `${Math.max(1, Math.round(diff / 1000))}s`;
+  if (diff < 3_600_000) return `${Math.round(diff / 60_000)}m`;
+  if (diff < 86_400_000) return `${Math.round(diff / 3_600_000)}h`;
+  return `${Math.round(diff / 86_400_000)}d`;
 }
 
 /** Deduplicate sources by file_path, keeping the highest score. */
@@ -709,8 +871,55 @@ function ragSummary(msg: LocalMessage) {
 }
 </script>
 
+<script lang="ts">
+/**
+ * Explicit named export for TypeScript consumers that use
+ * `import { KnowledgeChatPanel } from "..."` instead of the default export
+ * that `<script setup>` provides at runtime via the SFC compiler. This keeps
+ * vue-tsc strict mode happy when the component is referenced from other TS
+ * modules.
+ */
+export const KnowledgeChatPanel = defineComponent({ name: "KnowledgeChatPanel" });
+</script>
+
 <template>
   <div class="kcp-root">
+    <!-- ── Transport / health banner ── -->
+    <div
+      v-if="transportLabel || transportSeverity === 'danger'"
+      class="kcp-transport-banner"
+      :class="`is-${transportSeverity}"
+    >
+      <el-icon :size="14">
+        <component
+          :is="transportSeverity === 'danger' ? CircleClose : transportSeverity === 'warning' ? Promotion : RefreshRight"
+        />
+      </el-icon>
+      <span class="kcp-transport-label">
+        {{ transportSeverity === 'danger'
+          ? 'All LLM transports offline — responses disabled'
+          : transportLabel }}
+      </span>
+      <el-popover
+        v-if="transportStatus.lastFallbacks?.length"
+        placement="bottom-end"
+        :width="360"
+        trigger="click"
+      >
+        <template #reference>
+          <el-button size="small" text class="kcp-transport-details">Details</el-button>
+        </template>
+        <div class="kcp-fallback-list">
+          <div v-for="(f, i) in transportStatus.lastFallbacks" :key="i" class="kcp-fallback-item">
+            <span class="kcp-fallback-kind">
+              {{ { yiAiRpc: 'YiAi RPC', yiAiOpenAi: 'YiAi · OpenAI', ollama: 'Ollama (direct)' }[f.kind] ?? f.kind }}
+            </span>
+            <span class="kcp-fallback-time">{{ formatRelativeTime(f.at) }}</span>
+            <div class="kcp-fallback-error">{{ f.error }}</div>
+          </div>
+        </div>
+      </el-popover>
+    </div>
     <!-- ── Messages ── -->
     <div ref="containerRef" class="kcp-messages">
       <div v-if="!hasMessages" class="kcp-center">

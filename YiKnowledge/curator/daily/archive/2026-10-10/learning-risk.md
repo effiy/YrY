@@ -1,8 +1,9 @@
 ---
-title: 今日学习与风险摘要 - 2026-10-10
-aliases: [daily-learning-risk, 学习风险摘要, learnings-brief]
+title: 今日学习与风险摘要
+aliases: [daily-learning-risk, 学习风险摘要, learnings-brief, learning-risk, 006-今日焦点-学习与风险摘要]
 tags: [focus, learning, risk, daily, retrospective]
 category: curator
+date: 2026-10-10
 created: 2026-10-10
 updated: 2026-10-10
 last_verified: 2026-10-10
@@ -18,7 +19,8 @@ acceptance_criteria:
   - 每条 learning 含 trigger / insight / reuse_scene 三字段
   - 每条 risk 含 scenario / probability / impact / mitigator 四字段
 related:
-  - ./001-今日焦点-焦点总控.md
+  - ../focus-board.md
+  - ./INDEX.md
   - ../../leader/risk/002-风险-事后复盘.md
   - ../../curator/governance/006-治理-隐性知识待办.md
 ---
@@ -61,12 +63,12 @@ related:
 
 | 字段 | 内容 |
 |------|------|
-| **Scenario（情景）**：Curator 连续两天未更新 curator/daily/001 → 首页 hero / SRE / OKR / action 展示的内容完全过时，但用户无法一眼判断 → CEO 基于过时 at_risk 判定拍板 |
+| **Scenario（情景）**：Curator 连续两天未更新 curator/daily/focus-board.md → 首页 hero / SRE / OKR / action 展示的内容完全过时，但用户无法一眼判断 → CEO 基于过时 at_risk 判定拍板 |
 | **Probability（概率）**：Medium · 历史数据：上月一次 36h 过期事件 |
 | **Impact（影响）**：高 · 错误决策 → OKR 偏差 → 下游执行漂移 3~5 天 |
 | **Mitigator（缓解）**：① Curator EOD 审查清单四字段强制更新 ② `useDailyFocusBoard` 读取 `updated` 字段，若 lastUpdated 超过 48h 自动在 hero 区显示红色告警 ③ `?focus=issue` query 一键回退到纯 issue 面板 |
 
-参考：[治理-就绪检查清单](../governance/004-治理-就绪检查清单.md)
+参考：[治理-就绪检查清单](../../curator/governance/004-治理-就绪检查清单.md)
 
 ### R2 · 正则修复补丁引入新的边界回归
 
@@ -77,7 +79,7 @@ related:
 | **Impact（影响）**：中 · 阅读清单仪表盘的 OKR 追踪列再次被系统性误导 |
 | **Mitigator（缓解）**：① 单测 18 条（12 正 + 4 反 + 2 边界）必须 100% 通过 ② PR 走 loop-001 的 code-review 模板 ③ 合入后首小时人工抽查阅读清单页面 20 行数据 |
 
-参考：[loop-001 code review](../okr/2026-Q3/loop/loop-001-okr-self-closed-loop/003-闭环-code-review.md)
+参考：[loop-001 code review](../../executive/okr/2026-Q3/loop/loop-001-okr-self-closed-loop/003-闭环-code-review.md)
 
 ### R3 · 节流 3000ms 导致 Recall 骤降的假 CLEAR
 
@@ -88,7 +90,7 @@ related:
 | **Impact（影响）**：中-高 · 阅读清单 §6 的跨书整合质量下降 → 专业阅读笔记的"决策价值"降低 → CEO 依赖阅读清单做决策的信心降低 |
 | **Mitigator（缓解）**：① AI Eng 15:00 前输出两组对照数据 ② SRE 设定阈值：Recall@5 下降 > 5% → 自动触发 L2 回滚（throttle → 2000ms + batch_size 128）③ 结论写入 aier/INDEX 的 Recap 段 |
 
-参考：[aier INDEX](../../aier/INDEX.md) · [SRE 详情 003](./003-今日焦点-SRE详情-2026-10-10.md)
+参考：[aier INDEX](../../aier/INDEX.md) · [SRE 详情 003](./sre-runbook.md)
 
 ---
 

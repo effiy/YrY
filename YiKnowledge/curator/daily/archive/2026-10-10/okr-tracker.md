@@ -1,8 +1,9 @@
 ---
-title: OKR 今日追蹤卡 - 2026-10-10
-aliases: [okr-today-focus, OKR追踪卡, okr-brief]
+title: OKR 今日追踪卡
+aliases: [okr-today-focus, OKR追踪卡, okr-brief, okr-tracker, 004-今日焦点-OKR追踪卡, 004-今日焦点-OKR追蹤卡]
 tags: [okr, daily, executive, tracker]
 category: executive
+date: 2026-10-10
 created: 2026-10-10
 updated: 2026-10-10
 last_verified: 2026-10-10
@@ -14,15 +15,16 @@ review_cycle: daily
 roles: [executive, leader, curator]
 benefit: 把 5 个活跃 OKR 的"今天推进什么、卡点在哪里、下一个锚点是什么"压缩到一页卡片，供首页 OKR 追踪区的点击弹框引用。
 acceptance_criteria:
-  - 与 001-今日焦点-焦点总控.md 的 okr_trackers 一一对应（5 条）
+  - 与 focus-board.md 的 okr_trackers 一一对应（5 条）
   - 每条卡片含 today / blockers / next_anchor / expected_outcome 四个结构化字段
   - progress、coverage 数字与 goal.md 中实际 KR 完成数严格一致
 related:
-  - ./001-今日焦点-焦点总控.md
+  - ../focus-board.md
+  - ./INDEX.md
   - ../../executive/roadmap/003-路线图-组织OKR追踪.md
 ---
 
-# OKR 今日追蹤卡（OKR Today Tracker · 2026-10-10）
+# OKR 今日追踪卡（OKR Today Tracker · 2026-10-10）
 
 > 首页 OKR 锚点追踪区的 5 张卡片对应以下 5 条详情。点击 OKR 卡片 → 预览弹框 → 锚点跳转到本文件对应章节。
 
@@ -61,7 +63,7 @@ related:
 | 字段 | 内容 |
 |------|------|
 | **today（今日推进）** | 阅读清单 v3.2 × 首页今日焦点数据打通（即本文件）：确保 ① hero/must_do_one/narrative 三段一致 ② 锚点点击 ≥ 90% 可打开 ③ SRE 级别与 QUICKREF 对照无偏差 |
-| **blockers（卡点）** | `curator/daily/` 目录原先只有 2 个文件，无法做深入锚点 → 本 PR 补充 002 决策简报、003 SRE 详情、004 行动项详情、005 学习与风险摘要 4 个文件，形成 6 文件小闭环 |
+| **blockers（卡点）** | `curator/daily/` 目录原先只有 2 个文件，无法做深入锚点 → 本 PR 补充 decision-brief、sre-runbook、okr-tracker、role-actions、learning-risk、INDEX 6 个新文件，形成目录小闭环 |
 | **next_anchor（下一个锚点）** | 18:00 前在 [exec-003 goal](../../executive/okr/2026-Q3/exec-003-经营学习与阅读/goal.md) 补签 KR3「阅读蒸馏率 ≥ 75%」的今日快照 |
 | **expected_outcome（今日预期产出）** | KR3 蒸馏率 68% → 72%；整体 progress 68% → 71% |
 

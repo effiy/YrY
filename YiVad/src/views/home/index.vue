@@ -1,36 +1,25 @@
 <template>
   <div class="ho-root page">
-    <!-- Unified Header: works for loading / error / normal states -->
+    <!-- Header -->
     <div class="ho-head">
       <div class="ho-head__left">
-        <span class="ho-head__icon"><el-icon :size="18"><DataBoard /></el-icon></span>
+        <span class="ho-head__icon"><el-icon :size="22"><DataBoard /></el-icon></span>
         <div>
           <h1 class="ho-head__title">{{ t("home.title") }}</h1>
           <p class="ho-head__desc">{{ t("home.heroDesc") }}</p>
         </div>
       </div>
       <div class="ho-head__right">
-        <span v-if="!loading && !error && live.data.value" class="ho-head__live">
-          <span class="ho-head__dot" />YiAi {{ live.data.value.server_uptime }}h
-        </span>
         <template v-if="!loading && !error">
-          <span class="ho-head__stat">Chats <b>{{ stats.chatSessionCount }}</b></span>
           <span class="ho-head__stat">Docs <b>{{ stats.knowledgeFileCount }}</b></span>
-          <span v-if="daily.yesterdayActivityCount.value" class="ho-head__stat">
-            Y-day <b>{{ daily.yesterdayActivityCount.value }}</b>
-          </span>
+          <span v-if="daily.yesterdayActivityCount.value" class="ho-head__stat">Y-day <b>{{ daily.yesterdayActivityCount.value }}</b></span>
         </template>
         <span class="ho-head__date">{{ todayLabel }}</span>
-        <!-- Navigating feedback pill (三闸门契约可视化) -->
-        <transition name="ho-fade">
-          <span v-if="navigating" class="ho-head__nav" :class="navState">
-            <span v-if="navState === 'gate-a'" class="ho-head__nav-dot is-gate-a"></span>
-            <span v-else-if="navState === 'gate-b'" class="ho-head__nav-dot is-gate-b"></span>
-            <span v-else class="ho-head__nav-dot is-gate-c"></span>
-            <span class="ho-head__nav-label">{{ navLabel }}</span>
-            <el-icon v-if="navState === 'gate-c'" class="is-loading"><Loading /></el-icon>
-          </span>
-        </transition>
+        <span v-if="navigating" class="ho-head__nav" :class="navState">
+          <span class="ho-head__nav-dot" :class="'is-' + navState"></span>
+          <span class="ho-head__nav-label">{{ navLabel }}</span>
+          <el-icon v-if="navState === 'gate-c'" class="is-loading" :size="12"><Loading /></el-icon>
+        </span>
         <el-tooltip content="刷新全量数据" placement="top" :show-after="400">
           <el-button :icon="Refresh" link size="small" @click="retryAll" />
         </el-tooltip>
@@ -38,7 +27,6 @@
     </div>
 
     <HomeSkeleton v-if="loading" />
-
     <template v-else-if="error">
       <div class="ho__error">
         <el-result icon="error" :title="t('home.error.loadFailed')" :sub-title="error">
@@ -50,486 +38,207 @@
     </template>
 
     <template v-else>
-      <!-- Body: Daily Focus + Activity | Sidebar -->
       <div class="ho__body">
         <div class="ho__main">
-          <!-- Today's Focus (curator-driven Focus Board + Issue dynamic list) -->
-          <section class="ho-card">
+          <section class="ho-card ho-surface-card">
             <div class="ho-card__head ho-card__head--focus">
               <span class="ho-card__title">{{ t("home.today.title") }}</span>
               <span class="ho-card__sub">{{ todayLabel }}</span>
-              <span v-if="daily.loading.value" class="ho-card__badge"><el-icon class="is-loading"><Loading /></el-icon></span>
+              <span v-if="daily.loading.value" class="ho-card__badge"><el-icon class="is-loading" :size="12"><Loading /></el-icon></span>
             </div>
 
             <div v-if="focus.loading.value && !focusBoardHasContent" class="ho-card__loading">
-              <el-icon class="is-loading"><Loading /></el-icon>
+              <el-icon class="is-loading" :size="14"><Loading /></el-icon>
             </div>
 
             <template v-else-if="focusBoardHasContent">
-              <!-- Hero Banner (compact Activity-style) -->
-              <div
-                v-if="focus.hero.value.hero"
-                class="ho-actlist"
-                :class="'is-hero-' + (focus.sre.value.level || 'clear')"
-                @click="openAnchor(BOARD_ANCHORS.focusMain)"
-              >
+              <!-- Hero Banner -->
+              <div v-if="focus.hero.value.hero" class="ho-actlist" :class="'is-hero-' + (focus.sre.value.level || 'clear')" @click="openAnchor(BOARD_ANCHORS.focusMain)">
                 <div class="ho-activity__head">
                   <span>FOCUS · {{ focus.hero.value.date || todayLabel }}</span>
-                  <span v-if="focus.sre.value.level" class="ho-actlist__tag" :style="{ color: sreMeta(focus.sre.value.level).color, background: sreMeta(focus.sre.value.level).bg }">
-                    SRE · {{ sreMeta(focus.sre.value.level).text }}
-                  </span>
-                  <el-tooltip content="打开今日焦点总控（完整 8 段式看板）" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron">总控 →</el-button>
-                  </el-tooltip>
+                  <span v-if="focus.sre.value.level" class="ho-pill" :style="pillStyle(sreMeta(focus.sre.value.level))">SRE · {{ sreMeta(focus.sre.value.level).text }}</span>
+                  <HeadChevron text="总控" @click.stop="openAnchor(BOARD_ANCHORS.focusMain)" />
                 </div>
-                <div class="ho-actlist__hero-item">
+                <div class="ho-hero-row">
                   <span class="ho-activity__icon"><el-icon><DataBoard /></el-icon></span>
-                  <span class="ho-actlist__verb">hero</span>
-                  <span class="ho-actlist__hero-title">{{ focus.hero.value.hero }}</span>
+                  <span class="ho-verb">hero</span>
+                  <span class="ho-hero-title">{{ focus.hero.value.hero }}</span>
                   <span class="ho-activity__spacer" />
-                  <span v-if="focus.hero.value.must_do_one" class="ho-actlist__must-pill">MUST {{ truncate(focus.hero.value.must_do_one, 48) }}</span>
+                  <span v-if="focus.hero.value.must_do_one" class="ho-pill ho-pill--must">MUST {{ truncate(focus.hero.value.must_do_one, 48) }}</span>
                 </div>
-                <div v-if="focus.hero.value.narrative" class="ho-actlist__narr">
-                  {{ focus.hero.value.narrative }}
-                </div>
+                <div v-if="focus.hero.value.narrative" class="ho-narr">{{ focus.hero.value.narrative }}</div>
               </div>
 
-              <!-- SRE Status Matrix (full-width) -->
-              <div v-if="focus.sre.value.items.length" class="ho-fb-sre">
-                <div class="ho-fb-sre__head">
-                  <div class="ho-fb-sre__head-left">
-                    <span class="ho-fb-sre__label">SRE 运行红黄灯</span>
-                    <el-tooltip content="点击标签快速过滤级别（可多选）" :show-after="400">
-                      <div class="ho-fb-sre__legend" role="toolbar" aria-label="SRE 级别过滤">
-                        <span
-                          v-for="(lvl, idx) in sreLevelLegend"
-                          :key="lvl.key"
-                          class="ho-fb-sre-legend"
-                          :class="['is-' + lvl.key, { 'is-active': activeSreFilters.includes(lvl.key), 'is-empty': lvl.count === 0 }]"
-                          :title="`${sreLevelLabel(lvl.key)} × ${lvl.count}`"
-                          :data-level-filter="lvl.key"
-                          @click="toggleSreLevelFilter(lvl.key, idx)"
-                        >
-                          <span class="ho-fb-sre-legend__dot" :style="{ background: lvl.color }" />
-                          <span class="ho-fb-sre-legend__text">{{ sreLevelLabel(lvl.key) }}</span>
-                          <span class="ho-fb-sre-legend__count">{{ lvl.count }}</span>
-                        </span>
-                      </div>
-                    </el-tooltip>
-                  </div>
-                  <span class="ho-fb-sre__count">
-                    {{ focus.sre.value.items.length }} 条 · SLO {{ sreSloPct }}%
-                  </span>
-                  <el-tooltip content="SRE 运行手册：Impact / Root Hypothesis / Mitigation / ETA" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BOARD_ANCHORS.sreDetail)">详情 →</el-button>
-                  </el-tooltip>
-                </div>
-
-                <!-- Full-width severity heat strip (spans the container edge-to-edge) -->
-                <div class="ho-fb-sre__strip" :aria-label="`级别分布：Critical ${sreLevelCounts.critical || 0}, Major ${sreLevelCounts.major || 0}, Warn ${sreLevelCounts.warn || 0}, Clear ${sreLevelCounts.clear || 0}`">
-                  <el-tooltip v-for="seg in sreHeatSegments" :key="seg.key" :content="`${sreLevelLabel(seg.key)}: ${seg.count} 条 · ${seg.pct}%`" :show-after="300">
-                    <span
-                      class="ho-fb-sre-strip__seg"
-                      :class="['is-' + seg.key, { 'is-clickable': seg.count > 0 }]"
-                      :style="{ flex: seg.count || 0.35, background: seg.color }"
-                      @click="seg.count > 0 && toggleSreLevelFilter(seg.key, seg.index)"
-                    >
-                      <span v-if="seg.count >= 1" class="ho-fb-sre-strip__label">
-                        {{ sreLevelLabel(seg.key).slice(0, 1) }} {{ seg.count }}
-                      </span>
+              <!-- SRE Matrix -->
+              <div v-if="focus.sre.value.items.length" class="ho-sre ho-surface-card">
+                <div class="ho-sre__head">
+                  <span class="ho-sre__title">SRE 运行红黄灯</span>
+                  <div class="ho-sre__legend">
+                    <span v-for="lv in sreStats.legend" :key="lv.key" class="ho-sre-chip" :class="['is-' + lv.key, { 'is-active': activeSreFilters.includes(lv.key), 'is-empty': lv.count === 0 }]" :title="`${sreLevelLabel(lv.key)} × ${lv.count}`" @click="toggleSreLevelFilter(lv.key)">
+                      <span class="ho-sre-chip__dot" :style="{ background: lv.color }" />
+                      <span>{{ sreLevelLabel(lv.key) }}</span>
+                      <b>{{ lv.count }}</b>
                     </span>
-                  </el-tooltip>
+                  </div>
+                  <span class="ho-sre__count">{{ sreStats.total }} 条 · SLO {{ sreStats.sloPct }}%</span>
+                  <HeadChevron text="详情" @click="openAnchor(BOARD_ANCHORS.sreDetail)" />
                 </div>
-
-                <!-- Items grid: full-width responsive columns, auto-fill width -->
-                <div class="ho-fb-sre__grid" :data-filter-mode="activeSreFilters.length ? 'filtered' : 'all'">
-                  <el-tooltip
-                    v-for="(item, i) in filteredSreItems"
-                    :key="(item.id || item.title) + '-' + i"
-                    placement="top"
-                    :show-after="350"
-                  >
-                    <template #content>
-                      <div class="ho-fb-sre-tip">
-                        <div class="ho-fb-sre-tip__title" :style="{ color: sreMeta(item.level).color }">
-                          {{ sreMeta(item.level).text }} · {{ item.title }}
-                        </div>
-                        <div v-if="item.detail" class="ho-fb-sre-tip__body">{{ item.detail }}</div>
-                        <div v-if="item.owner" class="ho-fb-sre-tip__foot">Owner: {{ item.owner }}</div>
-                        <div v-else class="ho-fb-sre-tip__foot">点击查看完整 SRE 手册</div>
-                      </div>
-                    </template>
-                    <div
-                      class="ho-fb-sre-item"
-                      :class="['is-' + item.level, { 'is-flash': i === 0 && (item.level === 'critical' || item.level === 'major') }]"
-                      :tabindex="0"
-                      @click="openSreDetails(item)"
-                      @keydown.enter.prevent="openSreDetails(item)"
-                      @keydown.space.prevent="openSreDetails(item)"
-                    >
-                      <div class="ho-fb-sre-item__top">
-                        <span class="ho-fb-sre-item__led" :class="{ 'is-pulse': item.level === 'critical' }" :style="{ background: sreMeta(item.level).color }" />
-                        <span class="ho-fb-sre-item__tag" :style="{ color: sreMeta(item.level).color, background: sreMeta(item.level).bg }">
-                          {{ sreMeta(item.level).label }}
-                        </span>
-                        <span class="ho-fb-sre-item__title">{{ item.title }}</span>
-                        <span class="ho-fb-sre-item__spacer" />
-                        <span v-if="item.owner" class="ho-fb-sre-item__owner">
-                          <el-icon :size="9"><UserFilled /></el-icon>
-                          <span>{{ item.owner }}</span>
-                        </span>
-                        <span class="ho-fb-sre-item__chev"><el-icon :size="12"><ArrowRight /></el-icon></span>
-                      </div>
-                      <div v-if="item.detail" class="ho-fb-sre-item__mid">
-                        <span class="ho-fb-sre-item__detail">{{ item.detail }}</span>
-                      </div>
-                      <div class="ho-fb-sre-item__bot">
-                        <span class="ho-fb-sre-item__imp" :style="{ background: sreMeta(item.level).bg, color: sreMeta(item.level).color }">
-                          Impact · {{ impactLabel(item.level) }}
-                        </span>
-                        <span class="ho-fb-sre-item__hint">↵ 查看运行手册</span>
-                      </div>
+                <div class="ho-sre__grid">
+                  <div v-for="(item, i) in sreStats.filtered" :key="(item.id || item.title) + '-' + i" class="ho-sre-card" :class="['is-' + item.level, { 'is-flash': i === 0 && (item.level === 'critical' || item.level === 'major') }]" tabindex="0" @click="openSreDetails(item)" @keydown.enter.prevent="openSreDetails(item)">
+                    <div class="ho-sre-card__top">
+                      <span class="ho-sre-card__led" :class="{ 'is-pulse': item.level === 'critical' }" :style="{ background: sreMeta(item.level).color }" />
+                      <span class="ho-pill" :style="pillStyle(sreMeta(item.level))">{{ sreMeta(item.level).label }}</span>
+                      <span class="ho-sre-card__title">{{ item.title }}</span>
+                      <span class="ho-activity__spacer" />
+                      <span v-if="item.owner" class="ho-sre-card__owner"><el-icon :size="11"><UserFilled /></el-icon>{{ item.owner }}</span>
+                      <el-icon :size="12"><ArrowRight /></el-icon>
                     </div>
-                  </el-tooltip>
-                </div>
-
-                <div v-if="activeSreFilters.length" class="ho-fb-sre__foot">
-                  <span class="ho-fb-sre__foot-tip">
-                    当前过滤：{{ activeSreFilters.map(sreLevelLabel).join(' · ') }}（共 {{ filteredSreItems.length }} / {{ focus.sre.value.items.length }} 条）
-                  </span>
-                  <el-button link size="small" class="ho-fb-sre__foot-clear" @click="clearSreFilters()">× 清除过滤</el-button>
-                </div>
-              </div>
-
-              <!-- OKR Trackers (Activity list style) -->
-              <div v-if="focus.okrs.value.length" class="ho-actlist">
-                <div class="ho-activity__head">
-                  <span>OKR 锚点追踪</span>
-                  <span class="ho-actlist__count">{{ focus.okrs.value.length }} goals</span>
-                  <el-tooltip content="OKR 推进追踪卡（推进 / 卡点 / 下一锚点 / 预期产出）" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BOARD_ANCHORS.okrTracker)">追踪卡 →</el-button>
-                  </el-tooltip>
-                </div>
-                <div class="ho-actlist__items">
-                  <div
-                    v-for="o in focus.okrs.value"
-                    :key="o.id"
-                    class="ho-activity__item ho-actlist__item ho-actlist__item--okr"
-                    @click="openOkrDetails(o)"
-                  >
-                    <span class="ho-activity__icon is-col-okr"><el-icon><DataBoard /></el-icon></span>
-                    <span class="ho-actlist__sev-okr" :style="{ color: okrStatusMeta(o.status).color, background: okrStatusMeta(o.status).bg }">{{ okrStatusMeta(o.status).text }}</span>
-                    <span class="ho-actlist__verb">{{ o.id }}</span>
-                    <span class="ho-activity__title">{{ o.title }}</span>
-                    <span class="ho-activity__spacer" />
-                    <span v-if="typeof o.coverage === 'number' && typeof o.total === 'number'" class="ho-actlist__cov">KR {{ o.coverage }}/{{ o.total }}</span>
-                    <span v-if="o.owner" class="ho-actlist__owner">{{ o.owner }}</span>
-                    <span class="ho-actlist__progbar">
-                      <span class="ho-actlist__progfill" :style="{ width: o.progress + '%', background: progressColor(o.progress) }" />
-                    </span>
-                    <span class="ho-actlist__pct" :style="{ color: progressColor(o.progress) }">{{ o.progress }}%</span>
+                    <div v-if="item.detail" class="ho-sre-card__detail">{{ item.detail }}</div>
+                    <div class="ho-sre-card__bot">
+                      <span class="ho-pill" :style="pillStyle(sreMeta(item.level))">Impact · {{ impactLabel(item.level) }}</span>
+                      <span class="ho-hint">↵ 运行手册</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <!-- Role Actions (Activity list style) -->
-              <div v-if="focus.actions.value.length" class="ho-actlist">
-                <div class="ho-activity__head">
-                  <span>角色化今日行动项</span>
-                  <span class="ho-actlist__count">
-                    {{ focus.actions.value.filter(a => a.status === 'done').length }}/{{ focus.actions.value.length }} done
-                  </span>
-                  <el-tooltip content="6 大角色 × 5W1H 行动项（What / Why / How / Who / When / Where）" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BOARD_ANCHORS.roleActions)">5W1H →</el-button>
-                  </el-tooltip>
-                </div>
-                <div class="ho-actlist__items">
-                  <div
-                    v-for="(a, i) in focus.actions.value"
-                    :key="(a.role) + a.title + i"
-                    class="ho-activity__item ho-actlist__item"
-                    @click="openActionDetails(a)"
-                  >
-                    <span class="ho-activity__icon" :style="{ color: priorityColor(a.priority) }"><el-icon><Top /></el-icon></span>
-                    <span class="ho-actlist__role-pill">{{ a.role }}</span>
-                    <span class="ho-actlist__pri-pill" :style="{ background: priorityColor(a.priority) }">{{ priorityLabel(a.priority) }}</span>
-                    <span class="ho-actlist__verb">{{ actionStatusMeta(a.status).text }}</span>
-                    <span class="ho-activity__title">{{ a.title }}</span>
-                  </div>
+                <div v-if="activeSreFilters.length" class="ho-sre__foot">
+                  <span>过滤：{{ activeSreFilters.map(sreLevelLabel).join(' · ') }}（{{ sreStats.filtered.length }} / {{ sreStats.total }}）</span>
+                  <el-button link size="small" type="danger" @click="activeSreFilters = []">× 清除</el-button>
                 </div>
               </div>
 
-              <!-- 3-2-1 Daily Digest (Activity list style) -->
+              <!-- OKR -->
+              <ActivitySection v-if="focus.okrs.value.length" label="OKR 锚点追踪" :count-text="`${focus.okrs.value.length} goals`" chevron-text="追踪卡" @chevron="openAnchor(BOARD_ANCHORS.okrTracker)">
+                <ActivityRow v-for="o in focus.okrs.value" :key="o.id" :icon="DataBoard" icon-class="is-col-okr" @click="openOkrDetails(o)">
+                  <template #pill><span class="ho-pill" :style="pillStyle(okrStatusMeta(o.status))">{{ okrStatusMeta(o.status).text }}</span></template>
+                  <template #verb>{{ o.id }}</template>
+                  <template #title>{{ o.title }}</template>
+                  <template #meta>
+                    <span v-if="typeof o.coverage === 'number'" class="ho-meta">KR {{ o.coverage }}/{{ o.total }}</span>
+                    <span v-if="o.owner" class="ho-meta ho-meta--dim">{{ o.owner }}</span>
+                    <span class="ho-progbar"><span class="ho-progfill" :style="{ width: o.progress + '%', background: progressColor(o.progress) }" /></span>
+                    <span class="ho-pct" :style="{ color: progressColor(o.progress) }">{{ o.progress }}%</span>
+                  </template>
+                </ActivityRow>
+              </ActivitySection>
+
+              <!-- Actions -->
+              <ActivitySection v-if="focus.actions.value.length" label="角色化今日行动项" :count-text="`${focus.actions.value.filter(a => a.status === 'done').length}/${focus.actions.value.length} done`" chevron-text="5W1H" @chevron="openAnchor(BOARD_ANCHORS.roleActions)">
+                <ActivityRow v-for="(a, i) in focus.actions.value" :key="a.role + a.title + i" :icon="Top" :icon-color="priorityColor(a.priority)" @click="openActionDetails(a)">
+                  <template #pill>
+                    <span class="ho-pill ho-pill--role">{{ a.role }}</span>
+                    <span class="ho-pill ho-pill--pri" :style="{ background: priorityColor(a.priority) }">{{ priorityLabel(a.priority) }}</span>
+                  </template>
+                  <template #verb>{{ actionStatusMeta(a.status).text }}</template>
+                  <template #title>{{ a.title }}</template>
+                </ActivityRow>
+              </ActivitySection>
+
+              <!-- 3-2-1 Digest -->
               <div v-if="digestHasContent" class="ho-actlist" :class="{ 'is-digest-degraded': !digestCompliant }">
                 <div class="ho-activity__head">
                   <span>3-2-1 决策摘要</span>
-                  <span v-if="!digestCompliant" class="ho-actlist__degraded">⚠ 已降级</span>
-                  <span v-else class="ho-actlist__count">3 sig / 2 dec / 1 red</span>
-                  <el-tooltip content="完整 60 秒决策简报（信号×3 / 决策×2 / 红线×1）" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BOARD_ANCHORS.digest)">简报 →</el-button>
-                  </el-tooltip>
+                  <span v-if="!digestCompliant" class="ho-pill ho-pill--warn">⚠ 已降级</span>
+                  <span v-else class="ho-count">3 sig / 2 dec / 1 red</span>
+                  <HeadChevron text="简报" @click="openAnchor(BOARD_ANCHORS.digest)" />
                 </div>
-                <div class="ho-actlist__items">
-                  <!-- Signals -->
-                  <div v-if="focus.digest.value.signals.length" class="ho-actlist__sub">
-                    <div class="ho-actlist__sub-label ho-actlist__sub-label--sig">SIGNAL × 3</div>
-                    <div
-                      v-for="s in focus.digest.value.signals"
-                      :key="s.id"
-                      class="ho-activity__item ho-actlist__item"
-                      @click="openSignalDetails(s)"
-                    >
-                      <span class="ho-activity__icon is-col-sig"><el-icon><Document /></el-icon></span>
-                      <span class="ho-actlist__sig-level" :class="'is-' + digestLevel(s.level)">{{ digestLevel(s.level) }}</span>
-                      <span class="ho-actlist__verb">{{ s.id }}</span>
-                      <span class="ho-activity__title">{{ s.title }}</span>
-                      <span v-if="typeof s.confidence === 'number'" class="ho-actlist__conf">{{ s.confidence }}%</span>
-                    </div>
-                  </div>
-
-                  <!-- Decisions -->
-                  <div v-if="focus.digest.value.decisions.length" class="ho-actlist__sub">
-                    <div class="ho-actlist__sub-label ho-actlist__sub-label--dec">DECISION × 2</div>
-                    <div
-                      v-for="d in focus.digest.value.decisions"
-                      :key="d.id"
-                      class="ho-activity__item ho-actlist__item"
-                      @click="openDecisionDetails(d)"
-                    >
-                      <span class="ho-activity__icon is-col-dec"><el-icon><DataBoard /></el-icon></span>
-                      <span class="ho-actlist__dec-pill">{{ d.recommend || 'PENDING' }}</span>
-                      <span class="ho-actlist__verb">{{ d.id }}</span>
-                      <span class="ho-activity__title">{{ d.title }}</span>
-                      <el-tooltip v-if="d.deadline" :content="d.deadline" placement="top" :show-after="300">
-                        <span class="ho-actlist__dead">⏰ {{ d.deadline.split(' ')[0] }}</span>
-                      </el-tooltip>
-                    </div>
-                  </div>
-
-                  <!-- Redlines -->
-                  <div v-if="focus.digest.value.redlines.length" class="ho-actlist__sub ho-actlist__sub--red">
-                    <div class="ho-actlist__sub-label ho-actlist__sub-label--redline">REDLINE × 1</div>
-                    <div
-                      v-for="r in focus.digest.value.redlines"
-                      :key="r.id"
-                      class="ho-activity__item ho-actlist__item"
-                      @click="openRedlineDetails(r)"
-                    >
-                      <span class="ho-activity__icon is-col-red"><el-icon><Warning /></el-icon></span>
-                      <span class="ho-actlist__red-pill">{{ r.id }}</span>
-                      <span class="ho-activity__title">{{ r.title }}<span v-if="r.detail" class="ho-actlist__subtext"> · {{ r.detail }}</span></span>
-                    </div>
-                  </div>
-                </div>
+                <DigestSub v-if="focus.digest.value.signals.length" label="SIGNAL × 3" label-class="is-sig">
+                  <ActivityRow v-for="s in focus.digest.value.signals" :key="s.id" :icon="Document" icon-class="is-col-sig" @click="openSignalDetails(s)">
+                    <template #pill><span class="ho-pill ho-pill--sev" :class="'is-' + digestLevel(s.level)">{{ digestLevel(s.level) }}</span></template>
+                    <template #verb>{{ s.id }}</template>
+                    <template #title>{{ s.title }}</template>
+                    <template #meta><span v-if="typeof s.confidence === 'number'" class="ho-pill ho-pill--conf">{{ s.confidence }}%</span></template>
+                  </ActivityRow>
+                </DigestSub>
+                <DigestSub v-if="focus.digest.value.decisions.length" label="DECISION × 2" label-class="is-dec">
+                  <ActivityRow v-for="d in focus.digest.value.decisions" :key="d.id" :icon="DataBoard" icon-class="is-col-dec" @click="openDecisionDetails(d)">
+                    <template #pill><span class="ho-pill ho-pill--dec">{{ d.recommend || 'PENDING' }}</span></template>
+                    <template #verb>{{ d.id }}</template>
+                    <template #title>{{ d.title }}</template>
+                    <template #meta><span v-if="d.deadline" class="ho-meta ho-meta--deadline" :title="d.deadline">⏰ {{ d.deadline.split(' ')[0] }}</span></template>
+                  </ActivityRow>
+                </DigestSub>
+                <DigestSub v-if="focus.digest.value.redlines.length" label="REDLINE × 1" label-class="is-red" wrapper-class="is-red">
+                  <ActivityRow v-for="r in focus.digest.value.redlines" :key="r.id" :icon="Warning" icon-class="is-col-red" @click="openRedlineDetails(r)">
+                    <template #pill><span class="ho-pill ho-pill--red">{{ r.id }}</span></template>
+                    <template #title>{{ r.title }}<span v-if="r.detail" class="ho-subtext"> · {{ r.detail }}</span></template>
+                  </ActivityRow>
+                </DigestSub>
               </div>
 
-              <!-- Issue 动态分隔线：以 KB Bug Feed 4 组内容是否存在为触发 -->
-              <div v-if="hasIssueFeed" class="ho-fb-divider"><span>Issue 动态</span>
-                <el-tooltip content="跳转所有项目缺陷索引（YiKnowledge · 5 个项目）" :show-after="400">
-                  <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BUG_ANCHORS.yivadIndex)">Bugs →</el-button>
-                </el-tooltip>
+              <div v-if="hasIssueFeed" class="ho-divider">
+                <span>Issue 动态</span>
+                <HeadChevron text="Bugs" @click="openAnchor(BUG_ANCHORS.yivadIndex)" />
               </div>
             </template>
 
-            <div v-if="(daily.loading.value || knowledge.loading.value) && !hasIssueFeed" class="ho-card__loading">
-              <el-icon class="is-loading"><Loading /></el-icon>
-            </div>
-
+            <div v-if="(daily.loading.value || knowledge.loading.value) && !hasIssueFeed" class="ho-card__loading"><el-icon class="is-loading" :size="14"><Loading /></el-icon></div>
             <div v-else-if="!hasIssueFeed" class="ho-card__empty">
-              <span class="ho-focus__empty-icon"><el-icon :size="20"><CircleCheck /></el-icon></span>
+              <span class="ho-empty-icon"><el-icon :size="24"><CircleCheck /></el-icon></span>
               <span>{{ t("home.today.allClear") }}</span>
             </div>
 
+            <!-- 4 Issue Groups -->
             <div v-else class="ho-actlist">
-              <!-- Group 1: P0/P1 Critical — severity critical/major (SRE 红黄灯) -->
-              <div v-if="kbBugCritical.length" class="ho-actlist__sub ho-issue-group ho-issue-group--critical">
-                <div class="ho-activity__head">
-                  <span class="ho-issue-group__label ho-issue-group__label--danger">
-                    <el-icon :size="10"><Warning /></el-icon> 高危缺陷
-                  </span>
-                  <span class="ho-actlist__count ho-actlist__count--warn">{{ kbBugCritical.length }}</span>
-                  <el-tooltip content="STRIDE 威胁模型对照：影响 CIA 三要素的条目" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BUG_ANCHORS.sreRunbook)">Runbook →</el-button>
-                  </el-tooltip>
-                </div>
-                <div class="ho-actlist__items">
-                  <div
-                    v-for="bug in kbBugCritical"
-                    :key="bug.id"
-                    class="ho-activity__item ho-actlist__item ho-actlist__item--issue ho-issue-row"
-                    :class="'is-sev-' + bug.severitySre"
-                    @click="openKbBugRow(bug)"
-                  >
-                    <span class="ho-activity__icon" :class="SRE_SEV_ICON_CLS[bug.severitySre]">
-                      <el-icon><component :is="bug.severitySre === 'critical' ? Warning : Top" /></el-icon>
-                    </span>
-                    <span class="ho-issue-sev" :class="'is-' + bug.severitySre">
-                      {{ sreMeta(bug.severitySre).label }}
-                    </span>
-                    <span class="ho-actlist__verb">{{ bug.id }}</span>
-                    <span class="ho-issue-cat" :class="bug.categoryColorClass">{{ bug.categoryLabel }}</span>
-                    <span class="ho-activity__title">{{ truncate(bug.title, 56) }}</span>
-                    <span v-if="bug.assignee" class="ho-actlist__issue-who">{{ bug.assignee }}</span>
-                    <span class="ho-issue-status" :style="{ color: bug.statusColor }">{{ bug.statusLabel }}</span>
-                    <span class="ho-actlist__issue-time">{{ timeAgo(bug.updatedAt) }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Group 2: 最近变更（resolved/closed）— 质量治理进展 -->
-              <div v-if="kbBugRecent.length" class="ho-actlist__sub ho-issue-group ho-issue-group--recent">
-                <div class="ho-activity__head">
-                  <span class="ho-issue-group__label ho-issue-group__label--clear">
-                    <el-icon :size="10"><CircleCheck /></el-icon> 最近变更
-                  </span>
-                  <span class="ho-actlist__count">{{ kbBugRecent.length }}</span>
-                  <el-tooltip content="2026-09 代码质量专项行动（vue-tsc 清零 / 竞态修复 / 类型安全）" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor(BUG_ANCHORS.yivadIndex)">YiVad →</el-button>
-                  </el-tooltip>
-                </div>
-                <div class="ho-actlist__items">
-                  <div
-                    v-for="bug in kbBugRecent"
-                    :key="bug.id"
-                    class="ho-activity__item ho-actlist__item ho-actlist__item--issue ho-issue-row"
-                    @click="openKbBugRow(bug)"
-                  >
-                    <span class="ho-activity__icon" :class="bug.categoryColorClass">
-                      <el-icon><component :is="bug.categoryLabel === '性能' ? Top : Document" /></el-icon>
-                    </span>
-                    <span class="ho-issue-status-pill is-resolved">{{ bug.statusLabel }}</span>
-                    <span class="ho-actlist__verb">{{ bug.id }}</span>
-                    <span class="ho-issue-cat" :class="bug.categoryColorClass">{{ bug.categoryLabel }}</span>
-                    <span class="ho-activity__title">{{ truncate(bug.title, 56) }}</span>
-                    <span v-if="bug.projectKey !== 'yivad'" class="ho-actlist__issue-proj">{{ bug.project }}</span>
-                    <span class="ho-actlist__issue-time">{{ timeAgo(bug.updatedAt) }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Group 3: 跨项目 / 接口类风险（RPC 契约 / 数据一致性） -->
-              <div v-if="kbBugCross.length" class="ho-actlist__sub ho-issue-group ho-issue-group--cross">
-                <div class="ho-activity__head">
-                  <span class="ho-issue-group__label ho-issue-group__label--cross">
-                    <el-icon :size="10"><Link /></el-icon> 跨项目 / 接口类
-                  </span>
-                  <span class="ho-actlist__count">{{ kbBugCross.length }}</span>
-                  <el-tooltip content="RPC 契约对齐、跨项目数据一致性、API 参数命名规范" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor('engineer/build/007-构建-实现跨项目RPC调用.md')">RPC 规范 →</el-button>
-                  </el-tooltip>
-                </div>
-                <div class="ho-actlist__items">
-                  <div
-                    v-for="bug in kbBugCross"
-                    :key="bug.id"
-                    class="ho-activity__item ho-actlist__item ho-actlist__item--issue ho-issue-row"
-                    @click="openKbBugRow(bug)"
-                  >
-                    <span class="ho-activity__icon" :class="bug.categoryColorClass">
-                      <el-icon><Link /></el-icon>
-                    </span>
-                    <span class="ho-issue-cat" :class="bug.categoryColorClass">{{ bug.categoryLabel }}</span>
-                    <span class="ho-actlist__verb">{{ bug.id }}</span>
-                    <span class="ho-actlist__issue-proj">{{ bug.project }}</span>
-                    <span class="ho-activity__title">{{ truncate(bug.title, 54) }}</span>
-                    <span class="ho-issue-status" :style="{ color: bug.statusColor }">{{ bug.statusLabel }}</span>
-                    <span class="ho-actlist__issue-time">{{ timeAgo(bug.updatedAt) }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Group 4: 代码质量专项（类型安全 / 死代码 / Vue-tsc / 竞态） -->
-              <div v-if="kbBugQuality.length" class="ho-actlist__sub ho-issue-group ho-issue-group--quality">
-                <div class="ho-activity__head">
-                  <span class="ho-issue-group__label ho-issue-group__label--quality">
-                    <el-icon :size="10"><DataBoard /></el-icon> 代码质量专项
-                  </span>
-                  <span class="ho-actlist__count">{{ kbBugQuality.length }}</span>
-                  <el-tooltip content="vue-tsc 零错误 / ProTable 竞态修复 / MutationObserver 生命周期 / 任何类型滥用治理" :show-after="400">
-                    <el-button link size="small" class="ho-fb-btn-chevron" @click="openAnchor('leader/architecture/001-架构-架构决策设计.md')">ADR →</el-button>
-                  </el-tooltip>
-                </div>
-                <div class="ho-actlist__items">
-                  <div
-                    v-for="bug in kbBugQuality"
-                    :key="bug.id"
-                    class="ho-activity__item ho-actlist__item ho-actlist__item--issue ho-issue-row"
-                    @click="openKbBugRow(bug)"
-                  >
-                    <span class="ho-activity__icon" :class="bug.categoryColorClass">
-                      <el-icon><component :is="bug.categoryLabel === '性能' ? Top : DataBoard" /></el-icon>
-                    </span>
-                    <span class="ho-issue-cat" :class="bug.categoryColorClass">{{ bug.categoryLabel }}</span>
-                    <span class="ho-actlist__verb">{{ bug.id }}</span>
-                    <span class="ho-activity__title">{{ truncate(bug.title, 56) }}</span>
-                    <span v-if="bug.assignee" class="ho-actlist__issue-who">{{ bug.assignee }}</span>
-                    <span class="ho-issue-status" :style="{ color: bug.statusColor }">{{ bug.statusLabel }}</span>
-                    <span class="ho-actlist__issue-time">{{ timeAgo(bug.updatedAt) }}</span>
-                  </div>
-                </div>
-              </div>
+              <IssueGroup v-for="g in issueGroups" :key="g.label" :config="g" @chevron="openAnchor(g.chevronAnchor || '')" @row-click="openKbBugRow" />
             </div>
-          </section>
 
-          <!-- Activity -->
-          <section class="ho-card">
-            <div class="ho-card__head ho-card__head--activity">
-              <span class="ho-card__title">{{ t("home.stats.recentActivity") }}</span>
-              <el-button link size="small" @click="knowledge.retry()"><el-icon><Refresh /></el-icon></el-button>
-            </div>
-            <div v-if="knowledge.loading.value" class="ho-card__loading"><el-icon class="is-loading"><Loading /></el-icon></div>
-            <div v-else class="ho-activity">
-              <div v-if="!activityItems.length" class="ho-card__empty">{{ t("home.activity.empty") }}</div>
-              <template v-for="group in activityGroups" :key="group.label">
-                <div class="ho-activity__head">{{ group.label }}</div>
-                <div v-for="item in group.items.slice(0, 5)" :key="(item.type) + '-' + item.updatedAt + '-' + (item.path || item.title)" class="ho-activity__item" @click="item.type === 'file' ? openAnchor(item.path!) : openAnchor('projects/yivad/bugs/README.md')">
-                  <span class="ho-activity__icon">
-                    <el-icon v-if="item.type === 'file'"><Document /></el-icon>
-                    <el-icon v-else><Warning /></el-icon>
-                  </span>
-                  <span v-if="item.type === 'bug' && item.severity" class="ho-activity__sev" :class="'is-' + item.severity">{{ item.severity }}</span>
-                  <span v-else-if="item.type === 'file'" class="ho-activity__cat" :class="'is-' + (item.category || 'other')">{{ catLabel(item.category) }}</span>
-                  <span class="ho-activity__verb">{{ item.type === 'file' ? (item.isNew ? 'created' : 'updated') : 'reported' }}</span>
-                  <span class="ho-activity__title">{{ item.title }}</span>
-                  <el-tooltip :content="new Date(item.updatedAt).toLocaleString()" placement="top" :show-after="400">
-                    <span class="ho-activity__time">{{ timeAgo(item.updatedAt) }}</span>
-                  </el-tooltip>
-                </div>
-              </template>
+            <!-- Recent Activity · 扁平 5 条 -->
+            <div class="ho-actlist ho-actlist--activity">
+              <div class="ho-activity__head">
+                <span>{{ t("home.stats.recentActivity") }}</span>
+                <span v-if="knowledge.loading.value" class="ho-count"><el-icon class="is-loading" :size="11"><Loading /></el-icon> loading</span>
+                <span v-else-if="knowledge.activityItems.value.length" class="ho-count">{{ knowledge.activityItems.value.length }} items</span>
+                <span v-else class="ho-count">{{ t("home.activity.empty") }}</span>
+                <el-button link size="small" @click="knowledge.retry()"><el-icon :size="12"><Refresh /></el-icon></el-button>
+              </div>
+              <div v-if="!knowledge.loading.value" class="ho-actlist__items">
+                <ActivityRow
+                  v-for="item in knowledge.activityItems.value.slice(0, 5)"
+                  :key="item.type + '-' + item.updatedAt + '-' + (item.path || item.title)"
+                  :icon="item.type === 'file' ? Document : Warning"
+                  @click="item.type === 'file' ? openAnchor(item.path!) : openAnchor('projects/yivad/bugs/README.md')"
+                >
+                  <template #pill>
+                    <span v-if="item.type === 'bug' && item.severity" class="ho-pill ho-pill--sev" :class="'is-' + item.severity">{{ item.severity }}</span>
+                    <span v-else-if="item.type === 'file'" class="ho-pill ho-pill--cat" :class="'is-' + (item.category || 'other')">{{ catLabel(item.category) }}</span>
+                  </template>
+                  <template #verb>{{ item.type === 'file' ? (item.isNew ? 'created' : 'updated') : 'reported' }}</template>
+                  <template #title>{{ item.title }}</template>
+                  <template #meta><span class="ho-meta" :title="new Date(item.updatedAt).toLocaleString()">{{ timeAgo(item.updatedAt) }}</span></template>
+                </ActivityRow>
+              </div>
             </div>
           </section>
         </div>
 
         <!-- Sidebar -->
         <aside class="ho__side">
-          <div v-if="knowledge.available.value" class="ho-sb">
-            <div class="ho-sb__head" @click="openAnchor(SB_ANCHORS.health)"><span>Knowledge Health</span><el-icon class="ho-sb__head-link"><Link /></el-icon></div>
+          <div v-if="knowledge.available.value" class="ho-sb ho-sb--health ho-surface-card">
+            <div class="ho-sb__head" @click="openAnchor(SB_ANCHORS.health)"><span>Knowledge Health</span><el-icon class="ho-sb__link" :size="12"><Link /></el-icon></div>
             <div class="ho-kh" @click="openAnchor(SB_ANCHORS.health)">
               <span class="ho-kh__pct" :style="{ color: progressColor(knowledge.avgFreshness.value) }">{{ knowledge.avgFreshness.value }}%</span>
               <span class="ho-kh__label">fresh · {{ knowledge.totalFiles.value }} files</span>
             </div>
-            <div v-if="knowledge.categoryInfo.value.length" class="ho-kh__cats">
-              <div v-for="c in knowledge.categoryInfo.value.slice(0, 6)" :key="c.category" class="ho-kh__cat" @click="openCategory(c.category, c.freshness)">
-                <span class="ho-kh__cat-name">{{ c.category }}</span>
-                <span class="ho-kh__cat-bar"><span class="ho-kh__cat-fill" :style="{ width: c.freshness + '%', background: progressColor(c.freshness) }" /></span>
-                <span class="ho-kh__cat-n">{{ c.count }}</span>
+            <div v-if="knowledge.categoryInfo.value.length" class="ho-row-grid">
+              <div v-for="c in knowledge.categoryInfo.value.slice(0, 6)" :key="c.category" class="ho-row" @click="openCategory(c.category, c.freshness)">
+                <span class="ho-row__name">{{ c.category }}</span>
+                <span class="ho-row__bar"><span class="ho-row__fill" :style="{ width: c.freshness + '%', background: progressColor(c.freshness) }" /></span>
+                <span class="ho-row__n">{{ c.count }}</span>
               </div>
             </div>
           </div>
-
-          <div v-if="stats.assigneeGroups.length" class="ho-sb">
-            <div class="ho-sb__head" @click="openAnchor(SB_ANCHORS.workload)"><span>{{ t("home.stats.workload") }}</span><el-icon class="ho-sb__head-link"><Link /></el-icon></div>
-            <div class="ho-wl">
-              <div v-for="g in stats.assigneeGroups.slice(0, 6)" :key="g.value" class="ho-wl__row" @click="openWorkloadAssignee(g.value)">
-                <span class="ho-wl__name">{{ g.value || "—" }}</span>
-                <span class="ho-wl__bar"><span class="ho-wl__fill" :class="{ 'is-over': g.count > 5 }" :style="{ width: Math.min(100, (g.count / 6) * 100) + '%' }" /></span>
-                <span class="ho-wl__n">{{ g.count }}</span>
+          <div v-if="stats.assigneeGroups.length" class="ho-sb ho-sb--workload ho-surface-card">
+            <div class="ho-sb__head" @click="openAnchor(SB_ANCHORS.workload)"><span>{{ t("home.stats.workload") }}</span><el-icon class="ho-sb__link" :size="12"><Link /></el-icon></div>
+            <div class="ho-row-grid">
+              <div v-for="g in stats.assigneeGroups.slice(0, 6)" :key="g.value || 'empty'" class="ho-row" @click="openWorkloadAssignee(g.value)">
+                <span class="ho-row__name">{{ g.value || "—" }}</span>
+                <span class="ho-row__bar"><span class="ho-row__fill" :class="{ 'is-over': g.count > 5 }" :style="{ width: Math.min(100, (g.count / 6) * 100) + '%' }" /></span>
+                <span class="ho-row__n">{{ g.count }}</span>
               </div>
             </div>
           </div>
         </aside>
       </div>
-
       <KnowledgePreviewDialog ref="previewDlg" />
       <div class="ho__spacer" />
     </template>
@@ -537,2005 +246,1346 @@
 </template>
 
 <script setup lang="ts" name="home">
-import { computed, nextTick, ref, shallowRef, type ComputedRef } from "vue";
+// YiVad Home Index: 私有组件 + META SSOT + 锚点查表 + openPreview schema 驱动
+import { h, computed, nextTick, ref, shallowRef, type Component, type ComputedRef } from "vue";
 import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
-import { ElMessage } from "element-plus";
-import { DataBoard, Refresh, Loading, Top, Bottom, Document, Warning, CircleCheck, Link, UserFilled, ArrowRight } from "@element-plus/icons-vue";
+import { ElMessage, ElIcon } from "element-plus";
+import { DataBoard, Refresh, Loading, Top, Document, Warning, CircleCheck, Link, UserFilled, ArrowRight } from "@element-plus/icons-vue";
 import HomeSkeleton from "./components/HomeSkeleton.vue";
 import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
-import {
-  resolveLink,
-  gateBEntityExists,
-  gateCPostNavigate,
-  type ResolveLinkInput,
-} from "@/utils/linkFactory";
+import { resolveLink, gateBEntityExists, gateCPostNavigate, type ResolveLinkInput } from "@/utils/linkFactory";
 import { useHomeData } from "@/hooks/useHomeData";
 import { useDailyInsight } from "@/hooks/useDailyInsight";
-import { useDailyFocusBoard, type OkrTracker, type FocusAction, type SreStatusItem, type DigestSignal, type DigestDecision, type DigestRedline } from "@/hooks/useDailyFocusBoard";
+import { useDailyFocusBoard, FOCUS_FILE_PATH, DAILY_SLUG_TO_FILE, type OkrTracker, type FocusAction, type SreStatusItem, type DigestSignal, type DigestDecision, type DigestRedline } from "@/hooks/useDailyFocusBoard";
 import { useKnowledgeInsight } from "@/hooks/useKnowledgeInsight";
-import { useAnimatedNumber } from "@/hooks/useAnimatedNumber";
-import { getIssue, type Issue } from "@/api/modules/issueService";
-import type { KnowledgeBugEntry } from "@/api/interface/yiAi";
+import type { KnowledgeBugEntry, KnowledgeFileEntry } from "@/api/interface/yiAi/knowledge";
+import type { Issue } from "@/api/modules/issueService";
 import { useLiveMetrics } from "@/hooks/useLiveMetrics";
 
 const { t } = useI18n();
 const router = useRouter();
-const { stats, deltas, loading, error, retry } = useHomeData();
+const { stats, loading, error, retry } = useHomeData();
 const daily = useDailyInsight();
 const knowledge = useKnowledgeInsight();
-const live = useLiveMetrics();
+useLiveMetrics();
 const focus = useDailyFocusBoard();
-
 const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
-function openFilePreview(path: string) { previewDlg.value?.open(path); }
+const openFilePreview = (path: string) => previewDlg.value?.open(path);
 
-/* ──────────────────────────────────────────────────────────
- *  SSOT: 精确到 YiKnowledge 真实文件的锚点表
- *  每行均经过 Glob + LS 实查，确保 file:// 下文件存在
- * ──────────────────────────────────────────────────────── */
-const BOARD_ANCHORS: Readonly<Record<string, string>> = {
-  focusMain:   "curator/daily/001-今日焦点-焦点总控.md",
-  sreDetail:   "curator/daily/003-今日焦点-SRE详情-2026-10-10.md",
-  okrTracker:  "curator/daily/004-今日焦点-OKR追蹤卡-2026-10-10.md",
-  roleActions: "curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md",
-  digest:      "curator/daily/002-今日焦点-决策简报-2026-10-10.md",
-  learnRisk:   "curator/daily/006-今日焦点-学习与风险摘要-2026-10-10.md",
-  execOkr001:  "executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/goal.md",
-  execOkr002:  "executive/okr/2026-Q3/exec-002-经营战略与组织路线/goal.md",
-  execOkr003:  "executive/okr/2026-Q3/exec-003-经营学习与阅读/goal.md",
-  leadOkr001:  "leader/okr/2026-Q3/lead-001-technical-review-loop/goal.md",
-  leadOkr002:  "leader/okr/2026-Q4/lead-002-testing-safety-net/goal.md",
-  sreQuickRef: "sre/QUICKREF.md",
-  execFrame:   "executive/strategy/018-战略-高管决策框架.md",
-  dataModel:   "leader/architecture/012-架构-数据模型设计原则.md",
-  vitest:      "leader/decisions/yivad-003-决策-Vitest引入.md",
-  aierIndex:   "aier/INDEX.md",
-  governance:  "curator/governance/007-治理-分类处理.md",
-  readingList: "executive/reading-list/001-阅读-阅读清单.md",
+// SSOT META：单一对象聚合 SRE/OKR/Action/Priority/Bug 查表
+type MetaItem = { text: string; color: string; bg: string; label?: string };
+const FALLBACK_META: MetaItem = { text: "", color: "var(--ho-muted-fg)", bg: "var(--ho-muted-bg)" };
+const META = {
+  sre: {
+    critical: { text: "严重", label: "CRITICAL", color: "var(--ho-status-danger)", bg: "var(--ho-bg-danger)" },
+    major:    { text: "重要", label: "MAJOR",    color: "var(--ho-status-major)",  bg: "var(--ho-bg-major)" },
+    warn:     { text: "警告", label: "WARN",     color: "var(--ho-status-warn)",   bg: "var(--ho-bg-warn)" },
+    clear:    { text: "正常", label: "CLEAR",    color: "var(--ho-status-clear)",  bg: "var(--ho-bg-clear)" },
+  } as Record<string, MetaItem>,
+  okr: {
+    active:    { text: "进行中", color: "var(--ho-okr-active)",    bg: "var(--ho-okr-active-bg)" },
+    at_risk:   { text: "有风险", color: "var(--ho-status-major)",  bg: "var(--ho-bg-major)" },
+    off_track: { text: "偏离",   color: "var(--ho-status-danger)", bg: "var(--ho-bg-danger)" },
+    done:      { text: "完成",   color: "var(--ho-status-clear)",  bg: "var(--ho-bg-clear)" },
+  } as Record<string, MetaItem>,
+  action: {
+    todo:        { text: "待办",   color: "var(--ho-muted-fg)",       bg: "var(--ho-muted-bg)" },
+    in_progress: { text: "进行中", color: "var(--ho-okr-active)",     bg: "var(--ho-okr-active-bg)" },
+    in_review:   { text: "评审中", color: "var(--ho-status-warn)",    bg: "var(--ho-bg-warn)" },
+    done:        { text: "完成",   color: "var(--ho-status-clear)",   bg: "var(--ho-bg-clear)" },
+    blocked:     { text: "阻塞",   color: "var(--ho-status-danger)",  bg: "var(--ho-bg-danger)" },
+  } as Record<string, MetaItem>,
+  priority: { p0: "var(--ho-pri-p0)", p1: "var(--ho-pri-p1)", p2: "var(--ho-pri-p2)", p3: "var(--ho-pri-p3)", p4: "var(--ho-pri-p4)" } as Record<string, string>,
+  bugSev: {
+    critical: "critical", P0: "critical", p0: "critical",
+    major: "major", P1: "major", p1: "major", high: "major",
+    medium: "warn", P2: "warn", p2: "warn", minor: "warn",
+    trivial: "clear", P3: "clear", p3: "clear", low: "clear", p4: "clear",
+  } as Record<string, KbBugFeedItem["severitySre"]>,
+  bugStatusLabel: {
+    open: "待处理", in_progress: "修复中", resolved: "已修复", closed: "已关闭", rejected: "不处理",
+    reopened: "重新开启", done: "已完成", cancelled: "已取消", "已修复": "已修复", "已解决": "已解决",
+    todo: "待办", in_review: "评审中",
+  } as Record<string, string>,
+  bugStatusColor: {
+    open: "var(--ho-status-danger)", in_progress: "var(--ho-status-warn)",
+    resolved: "var(--ho-status-clear)", closed: "var(--ho-st-backlog)",
+    rejected: "var(--el-text-color-placeholder)", reopened: "var(--ho-status-major)",
+    done: "var(--ho-status-clear)", cancelled: "var(--ho-st-cancel)",
+    "已修复": "var(--ho-status-clear)", "已解决": "var(--ho-status-clear)",
+    todo: "var(--ho-st-todo)", in_review: "var(--ho-st-review)",
+  } as Record<string, string>,
 };
-const SB_ANCHORS: Readonly<Record<string, string>> = {
-  health:   "curator/governance/001-治理-知识健康看板.md",
-  workload: "executive/roadmap/003-路线图-组织OKR追踪.md",
+const getMeta = (tbl: "sre" | "okr" | "action", k: string): MetaItem =>
+  (META[tbl][k] as MetaItem) || (k ? { ...FALLBACK_META, text: k } : FALLBACK_META);
+/** Unified SSOT lookup for priority / bugSev / bugStatus* tables. */
+const resolveFromSSOT = <T,>(table: Record<string, T> | undefined, key: unknown, fallback: T): T => {
+  if (!table) return fallback;
+  const k = typeof key === "string" ? key : String(key ?? "");
+  const v = (table as Record<string, T | undefined>)[k];
+  return typeof v === "undefined" ? fallback : v;
 };
-/* ──────────────────────────────────────────────────────────
- *  Issue 动态 SSOT 锚点：每一条点击都能落地到 YiKnowledge
- *  projects/{project}/bugs 目录下的真实 Markdown 文件
- * ──────────────────────────────────────────────────────── */
-const BUG_ANCHORS: Readonly<Record<string, string>> = {
-  yivadIndex: "projects/yivad/bugs/README.md",
-  yipotIndex: "projects/yipot/bugs/README.md",
-  yipetIndex: "projects/yipet/bugs/README.md",
-  yiaiIndex:  "projects/yiai/bugs/README.md",
-  yikbIndex:  "projects/yiknowledge/bugs/README.md",
-  sreRunbook: "sre/QUICKREF.md",
+/* SRE / OKR / Priority 枚举全部派生自单一常量数组，扩展时只需在此加一项（类型自动派生） */
+const SRE_LEVELS = ["critical", "major", "warn", "clear"] as const;
+type SreLevel = (typeof SRE_LEVELS)[number];
+const SRE_LEVEL_ORDER: readonly SreLevel[] = SRE_LEVELS;
+const sreImpactLabels: Readonly<Record<SreLevel, string>> = {
+  critical: "P0 · 全站受影响", major: "P1 · 核心链路受损", warn: "P2 · 局部劣化", clear: "P5 · 正常运行",
 };
-/** 侧栏 Knowledge Category 目录 → 真实存在的 YiKnowledge 分类首页 */
-const CATEGORY_INDEX: Readonly<Record<string, string>> = {
-  executive: "executive/INDEX.md",
-  leader:    "leader/INDEX.md",
-  engineer:  "engineer/INDEX.md",
-  sre:       "sre/INDEX.md",
-  aier:      "aier/INDEX.md",
-  product:   "product/INDEX.md",
-  curator:   "curator/INDEX.md",
+const impactLabel   = (l: string) => sreImpactLabels[(l as SreLevel) ?? "warn"];
+const sreMeta       = (k: string) => getMeta("sre", k);
+const okrStatusMeta = (s: string) => getMeta("okr", s);
+const actionStatusMeta = (s: string) => getMeta("action", s);
+const progressColor = (v: number) => (v >= 80 ? "var(--ho-status-clear)" : v >= 50 ? "var(--ho-status-warn)" : "var(--ho-status-danger)");
+const priorityColor = (p: string) => resolveFromSSOT<string>(META.priority, p, "var(--ho-pri-p4)");
+const priorityLabel = (p: string) => (p || "").toUpperCase();
+const pillStyle     = (m: MetaItem) => ({ color: m.color, background: m.bg });
+const sreLevelLabel = (k: string) => sreMeta(k).text;
+/* OKR 配置驱动：新 seq 加 OKR_SEQS，新 root 加 OKR_ROOTS（类型自动推导） */
+const OKR_SEQS = ["001", "002", "003"] as const;
+const OKR_ROOTS = ["executive", "leader"] as const;
+type OkrSeq = (typeof OKR_SEQS)[number];
+type OkrRoot = (typeof OKR_ROOTS)[number];
+// Bug category → icon 配置表（新增类别只改 resolveBugIcon 的 switch）
+interface BugIconHints { categoryLabel: string; severitySre: KbBugFeedItem["severitySre"]; isDanger: boolean; }
+const resolveBugIcon = ({ categoryLabel, severitySre, isDanger }: BugIconHints): Component => {
+  if (isDanger && severitySre === "critical") return Warning;
+  switch (categoryLabel) {
+    case "性能": return Top;
+    case "跨项目": return Link;
+    case "质量": return DataBoard;
+    case "安全": return Warning;
+    case "数据": return DataBoard;
+    case "接口": return Link;
+    default:     return Document;
+  }
 };
-function categoryAnchor(category: string): string {
-  return CATEGORY_INDEX[category.toLowerCase()] || `${category.toLowerCase()}/INDEX.md`;
+
+/** curator/daily 子路径三级回退：archive/<当日>/ → archive/<昨日>/ → 稳定路径 */
+const DAILY_DIR = "curator/daily";
+function dateStamp(offsetDays = 0): string {
+  const d = focus.hero.value.date ? new Date(focus.hero.value.date) : new Date();
+  d.setDate(d.getDate() + offsetDays);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+function resolveDailyFileName(slug: string, extraPatterns?: RegExp[]): string {
+  const base = resolveFromSSOT<string>(DAILY_SLUG_TO_FILE, slug, slug);
+  const today = `${DAILY_DIR}/archive/${dateStamp(0)}/${base}.md`;
+  const yesterday = `${DAILY_DIR}/archive/${dateStamp(-1)}/${base}.md`;
+  const pools = [knowledge.recentFiles.value, knowledge.importantFiles.value];
+  if (extraPatterns?.length) {
+    const allLinks = [...(focus.links.value ?? []), ...(focus.anchors.value ?? [])] as any[];
+    for (const pat of extraPatterns) {
+      const hit = allLinks.find(
+        (it) => it && isKbPath(it.anchor) && [it.title, it.anchor, it.group].filter(Boolean).join(" ").match(pat),
+      );
+      if (hit) return hit.anchor;
+    }
+  }
+  for (const pool of pools) {
+    const h = (pool || []).find((f) => pathsMatch(f.path, today) || pathsMatch(f.path, yesterday));
+    if (h) return h.path;
+  }
+  return today;
 }
 
-/* ──────────────────────────────────────────────────────────
- *  三闸门契约导航状态机（Gate A → Gate B → Gate C）
- *  用户可见 → Header Pill 可视化反馈
- * ──────────────────────────────────────────────────────── */
+
+// ── 私有子组件（同文件 render 函数，零拆文件）────
+// Vue3 函数式组件签名 (props, { emit, slots })；顶层变量自动注册到 Template
+
+interface ActivityRowProps {
+  icon?: Component;
+  iconClass?: string;
+  iconColor?: string;
+}
+const ActivityRow = (props: ActivityRowProps, { slots, emit }: any) =>
+  h("div", { class: "ho-activity__item", onClick: () => emit("click") }, [
+    props.icon
+      ? h("span", {
+          class: ["ho-activity__icon", props.iconClass].filter(Boolean),
+          style: props.iconColor ? { color: props.iconColor } : undefined,
+        }, [h(props.icon as Component)])
+      : null,
+    slots.pill?.(),
+    slots.verb ? h("span", { class: "ho-verb" }, slots.verb()) : null,
+    slots.title ? h("span", { class: "ho-act-title" }, slots.title()) : null,
+    h("span", { class: "ho-activity__spacer" }),
+    slots.meta?.(),
+  ]);
+
+interface ActivitySectionProps { label: string; countText?: string; chevronText?: string; }
+const ActivitySection = (props: ActivitySectionProps, { slots, emit }: any) =>
+  h("div", { class: "ho-actlist" }, [
+    h("div", { class: "ho-activity__head" }, [
+      h("span", props.label),
+      props.countText ? h("span", { class: "ho-count" }, props.countText) : null,
+      props.chevronText ? h(HeadChevron, { text: props.chevronText, onClick: () => emit("chevron") }) : null,
+    ]),
+    h("div", { class: "ho-actlist__items" }, slots.default?.()),
+  ]);
+
+interface DigestSubProps {
+  wrapperClass?: string;   // 语义化 suffix，自动附加 is- 前缀（如 "sig" → "is-sig"）
+  labelClass?: string;     // 同上
+  label?: string;
+}
+const DigestSub = (props: DigestSubProps, { slots }: any) =>
+  h(
+    "div",
+    { class: ["ho-digest-sub", props.wrapperClass ? `is-${props.wrapperClass}` : ""].filter(Boolean) },
+    [
+      props.label
+        ? h("div", { class: ["ho-digest-sub__label", props.labelClass ? `is-${props.labelClass}` : ""].filter(Boolean) }, props.label)
+        : null,
+      slots.default?.(),
+    ],
+  );
+
+interface HeadChevronProps { text: string; tooltip?: string; }
+const HeadChevron = (props: HeadChevronProps, { emit }: any) =>
+  h(ElTooltip as any, { content: props.tooltip || "展开详情", showAfter: 400 }, () =>
+    h(
+      ElButton as any,
+      {
+        link: true,
+        size: "small",
+        class: "ho-chevron-btn",
+        onClick: (ev: Event) => { ev.stopPropagation(); emit("click", ev); },
+      },
+      () => (props.text ?? "") + " →",
+    ),
+  );
+
+interface IssueGroupConfig {
+  label: string;
+  labelClass?: string;
+  icon: Component;
+  items: KbBugFeedItem[];
+  chevronText?: string;
+  chevronAnchor?: string;
+  resolved?: boolean;
+  danger?: boolean;
+}
+interface IssueGroupProps { config: IssueGroupConfig; }
+const IssueGroup = (props: IssueGroupProps, { emit }: any) => {
+  const g: IssueGroupConfig = props.config;
+  if (!g?.items?.length) return null;
+  const isResolved = !!g.resolved;
+  const isDanger = !!g.danger;
+  return h("div", { class: "ho-digest-sub ho-issue-group" }, [
+    h("div", { class: "ho-activity__head" }, [
+      h("span", { class: ["ho-issue-group__label", g.labelClass].filter(Boolean) }, [
+        // 用 ElIcon 包装做 size 归一化，避免 SVG 按 viewBox 物理像素渲染
+        h(ElIcon as any, { size: 12 }, () => h(g.icon as any)),
+        " " + g.label,
+      ]),
+      h("span", { class: "ho-count" }, g.items.length),
+      g.chevronText ? h(HeadChevron, { text: g.chevronText, onClick: () => emit("chevron") }) : null,
+    ]),
+    h(
+      "div",
+      { class: "ho-actlist__items" },
+      g.items.map((bug) =>
+        h(
+          ActivityRow,
+          {
+            iconClass: bug.categoryColorClass,
+            icon: resolveBugIcon({ categoryLabel: bug.categoryLabel, severitySre: bug.severitySre, isDanger }),
+            onClick: () => emit("rowClick", bug),
+          },
+          {
+            pill: () => {
+              if (isResolved) {
+                return [h("span", { class: "ho-pill ho-pill--status is-resolved" }, bug.statusLabel)];
+              }
+              return [
+                isDanger ? h("span", { class: ["ho-pill ho-pill--sev", "is-" + bug.severitySre] }, sreMeta(bug.severitySre).label) : null,
+                h("span", { class: ["ho-pill ho-pill--cat", bug.categoryColorClass] }, bug.categoryLabel),
+              ];
+            },
+            verb: () => bug.id,
+            title: () => truncate(bug.title, 56),
+            meta: () => [
+              bug.assignee ? h("span", { class: "ho-meta ho-meta--dim" }, bug.assignee) : null,
+              bug.projectKey !== "yivad" ? h("span", { class: "ho-meta ho-meta--proj" }, bug.project) : null,
+              !isResolved ? h("span", { class: "ho-meta", style: { color: bug.statusColor } }, bug.statusLabel) : null,
+              h("span", { class: "ho-meta ho-meta--dim" }, timeAgo(bug.updatedAt)),
+            ],
+          },
+        ),
+      ),
+    ),
+  ]);
+};
+
+// ── 锚点派生：Family-based + 单一 buildAnchors（零样板） ──
+// Kind: static / focus / okr / kb / index / bugs / alias
+const isKbPath = (v: unknown): v is string =>
+  typeof v === "string" && !!v.trim() && !/^(https?:|mailto:)/i.test(v);
+// FOCUS_RESOLVERS：声明式 slug → { patterns, summaryFirst }
+// 新增 focus 子内容：① DAILY_SLUG_TO_FILE +一行 ② 此处 +一条 ③ BOARD_ANCHORS +一条
+const FOCUS_RESOLVERS: Readonly<Record<string, { patterns: Readonly<RegExp[]>; summaryFirst?: boolean }>> = {
+  sreDetail:   { patterns: [/sre/i, /运行/i] },
+  okrTracker:  { patterns: [/okr/i, /目标/i, /追/i] },
+  roleActions: { patterns: [/角色/, /5w1h/i, /行动/i] },
+  digest:      { patterns: [/决策/i, /3.?2.?1/, /简报/i], summaryFirst: true },
+  learnRisk:   { patterns: [/学习/, /风险/i, /复盘/i] },
+};
+function resolveFocus(key: string): string {
+  const cfg = FOCUS_RESOLVERS[key];
+  if (!cfg) return categoryAnchor(key);
+  if (cfg.summaryFirst) { const s = focus.digest.value.summary_file; if (isKbPath(s)) return s; }
+  return resolveDailyFileName(key, cfg.patterns as RegExp[]);
+}
+function findKbFile(o: {
+  name?: string | RegExp; dirFallback?: string; categoryHint?: string;
+  suffix?: string; final?: string; preferRecent?: boolean;
+}): string {
+  const { name, dirFallback, categoryHint, suffix = "INDEX.md", preferRecent = true } = o;
+  const primary = preferRecent ? knowledge.recentFiles.value : knowledge.importantFiles.value;
+  const backup  = preferRecent ? knowledge.importantFiles.value : knowledge.recentFiles.value;
+  const matchName = (f: KnowledgeFileEntry) => !name ? false
+    : typeof name === "string" ? f.name.toLowerCase().includes(name.toLowerCase()) : name.test(f.name);
+  const matchDir  = (f: KnowledgeFileEntry) => !!dirFallback && f.path.toLowerCase().startsWith(dirFallback.toLowerCase());
+  const matchCat  = (f: KnowledgeFileEntry) => !categoryHint || f.category.toLowerCase() === categoryHint.toLowerCase();
+  for (const pool of [primary, backup]) for (const f of pool || []) if (matchCat(f) && matchName(f)) return f.path;
+  if (dirFallback) {
+    for (const pool of [backup, primary]) for (const f of pool || []) if (matchCat(f) && matchDir(f)) return f.path;
+    return `${dirFallback.replace(/\/$/, "")}/${suffix}`;
+  }
+  return o.final ?? "INDEX.md";
+}
+function resolveOkrGoal(root: OkrRoot, seq: OkrSeq): string {
+  const prefix = root === "executive" ? "exec" : "lead";
+  const re = new RegExp(`^${root}/okr/[^/]+/${prefix}-${seq}[^/]*/goal\\.md$`, "i");
+  for (const pool of [knowledge.importantFiles.value, knowledge.recentFiles.value]) {
+    const hit = (pool || []).find((f) => re.test(f.path));
+    if (hit) return hit.path;
+  }
+  return `${root}/okr/${prefix}-${seq}/goal.md`;
+}
+/* Bug 分类规则 & 类别元数据 */
+const BUG_CAT_RULES: Readonly<Array<{ match: (t: string, m: string) => boolean; label: string; cls: string }>> = [
+  { match: (t, m) => t === "security" || /安全|隐私|security|privacy/i.test(m), label: "安全", cls: "is-col-security" },
+  { match: (t, m) => t === "data" || /数据|data/i.test(m), label: "数据", cls: "is-col-data" },
+  { match: (_t, m) => /跨项目|rpc|contract|跨/i.test(m), label: "跨项目", cls: "is-col-cross" },
+  { match: (t, m) => t === "compatibility" || t === "ui" || /路由|权限|国际化|interface|compat|i18n|route/i.test(m), label: "接口", cls: "is-col-iface" },
+  { match: (t, m) => t === "performance" || /性能|perf|cpu|clipboard/i.test(m), label: "性能", cls: "is-col-perf" },
+  { match: (_t, m) => /代码质量|quality|type|dead|lint|test|typescript|类型|vue-tsc/i.test(m), label: "质量", cls: "is-col-quality" },
+];
+const BUG_CAT_META: Readonly<Record<string, { dir: string; prefix: string; fallback?: boolean }>> = {
+  "安全": { dir: "安全隐私", prefix: "bug-安全隐私" }, "数据": { dir: "数据", prefix: "数据" },
+  "跨项目": { dir: "跨项目", prefix: "跨项目" }, "接口": { dir: "接口", prefix: "接口" },
+  "性能": { dir: "性能问题", prefix: "bug-性能问题" }, "质量": { dir: "代码质量", prefix: "质量" },
+  "功能": { dir: "代码质量", prefix: "质量", fallback: true },
+};
+type KbPKey = "yivad" | "yipot" | "yipet" | "yiai" | "yiknowledge";
+const PROJECTS: Readonly<Record<KbPKey, { label: string; names: string[] }>> = {
+  yivad:       { label: "YiVad",       names: ["YiVad", "yivad"] },
+  yipot:       { label: "YiPot",       names: ["YiPot", "yipot"] },
+  yipet:       { label: "YiPet",       names: ["YiPet", "yipet"] },
+  yiai:        { label: "YiAi",        names: ["YiAi", "yiai"] },
+  yiknowledge: { label: "YiKnowledge", names: ["YiKnowledge", "yiknowledge"] },
+};
+const PKEY_LIST: readonly KbPKey[] = Object.keys(PROJECTS) as KbPKey[];
+/* pkey 归一化："YiVad" / "YIVAD" / "yivad" 全部 → yivad */
+function normalizePkey(raw: unknown): KbPKey {
+  const s = String(raw || "").trim();
+  const lower = s.toLowerCase();
+  for (const k of PKEY_LIST) {
+    const ok = k === lower || PROJECTS[k].names.some((n) => n.toLowerCase() === lower || n.toLowerCase() === s.toLowerCase());
+    if (ok) return k;
+  }
+  return "yivad";
+}
+function resolveBugReadme(pkey: KbPKey): string {
+  const pools = [knowledge.importantFiles.value, knowledge.recentFiles.value];
+  for (const pool of pools) {
+    const hit = (pool || []).find((f) => {
+      const p = f.path.toLowerCase();
+      return /^projects\//i.test(p) && f.name.toLowerCase() === "readme.md" && p.includes("/bugs/") && p.includes(`/${pkey}/`);
+    });
+    if (hit) return hit.path;
+  }
+  return `projects/${pkey}/bugs/README.md`;
+}
+function resolveBugCategory(bug: KnowledgeBugEntry): { label: string; cls: string } {
+  const t = (bug.type || "").toLowerCase();
+  const m = (bug.module || "").toLowerCase();
+  return BUG_CAT_RULES.find((r) => r.match(t, m)) ?? { label: "功能", cls: "is-col-func" };
+}
+// ── 锚点查表：7 家族 + 单一 buildAnchors 声明式驱动 ──
+function buildAnchors<T extends Record<string, string>>(specs: Array<[string, () => string]>): Readonly<T> {
+  const out: Record<string, string> = {};
+  for (const [k, fn] of specs) out[k] = fn();
+  return Object.freeze(out as T);
+}
+type KbFileParam = Parameters<typeof findKbFile>[0];
+const BOARD_ANCHORS = computed(() => buildAnchors<Record<string, string>>([
+  ["focusMain",   () => FOCUS_FILE_PATH],
+  ["sreDetail",   () => resolveFocus("sreDetail")],
+  ["okrTracker",  () => resolveFocus("okrTracker")],
+  ["roleActions", () => resolveFocus("roleActions")],
+  ["digest",      () => resolveFocus("digest")],
+  ["learnRisk",   () => resolveFocus("learnRisk")],
+  ["execOkr001",  () => resolveOkrGoal("executive", "001")],
+  ["execOkr002",  () => resolveOkrGoal("executive", "002")],
+  ["execOkr003",  () => resolveOkrGoal("executive", "003")],
+  ["leadOkr001",  () => resolveOkrGoal("leader", "001")],
+  ["leadOkr002",  () => resolveOkrGoal("leader", "002")],
+  ["aierIndex",   () => findKbFile({ dirFallback: "aier", suffix: "INDEX.md" })],
+  ["sreQuickRef", (): string => {
+    const p: KbFileParam = { name: /^quickref\.md$/i, dirFallback: "sre", suffix: "QUICKREF.md", categoryHint: "sre", preferRecent: false };
+    return findKbFile(p);
+  }],
+  ["execFrame",   () => findKbFile({ name: /^018.*框|高管.*框/i, final: "executive/strategy/018-战略-高管决策框架.md", dirFallback: "executive/strategy", categoryHint: "executive" })],
+  ["dataModel",   () => findKbFile({ name: /^012.*数据.*模型.*原/i, final: "leader/architecture/012-架构-数据模型设计原则.md", dirFallback: "leader/architecture", categoryHint: "leader" })],
+  ["vitest",      () => findKbFile({ name: /vitest|测试.*引入/i, final: "leader/decisions/yivad-003-决策-Vitest引入.md", dirFallback: "leader/decisions", categoryHint: "leader" })],
+  ["governance",  () => findKbFile({ name: /^007.*分类处/i, final: "curator/governance/007-治理-分类处理.md", dirFallback: "curator/governance", categoryHint: "curator" })],
+  ["readingList", () => findKbFile({ name: /^001.*阅读.*清单/i, final: "executive/reading-list/001-阅读-阅读清单.md", dirFallback: "executive/reading-list", categoryHint: "executive" })],
+]));
+const SB_ANCHORS = computed(() => buildAnchors<Record<string, string>>([
+  ["health",   () => findKbFile({ name: /^001.*知识.*健康.*看板/i, final: "curator/governance/001-治理-知识健康看板.md", dirFallback: "curator/governance", categoryHint: "curator" })],
+  ["workload", () => findKbFile({ name: /^003.*组织.*okr.*追|路线图.*003/i, final: "executive/roadmap/003-路线图-组织OKR追踪.md", dirFallback: "executive/roadmap", categoryHint: "executive" })],
+]));
+const BUG_ANCHORS = computed(() => buildAnchors<Record<string, string>>([
+  ["yivadIndex",  () => resolveBugReadme("yivad")],
+  ["yipotIndex",  () => resolveBugReadme("yipot")],
+  ["yipetIndex",  () => resolveBugReadme("yipet")],
+  ["yiaiIndex",   () => resolveBugReadme("yiai")],
+  ["yikbIndex",   () => resolveBugReadme("yiknowledge")],
+  ["sreRunbook",  () => BOARD_ANCHORS.value.sreQuickRef],
+]));
+const CATEGORY_INDEX: Readonly<Record<string, string>> = {
+  executive: "executive/INDEX.md", leader: "leader/INDEX.md", engineer: "engineer/INDEX.md",
+  sre: "sre/INDEX.md", aier: "aier/INDEX.md", product: "product/INDEX.md", curator: "curator/INDEX.md",
+};
+const categoryAnchor = (c: string) => CATEGORY_INDEX[c.toLowerCase()] ?? `${c.toLowerCase()}/INDEX.md`;
+
+/* 项目 README 锚点派生表（依赖 BUG_ANCHORS） */
+const PROJECT_README_ANCHOR: ComputedRef<Record<KbPKey, string>> = computed(() => {
+  const m: Record<KbPKey, string> = Object.create(null) as any;
+  const keyMap: Record<KbPKey, keyof typeof BUG_ANCHORS.value> = {
+    yivad: "yivadIndex", yipot: "yipotIndex", yipet: "yipetIndex", yiai: "yiaiIndex", yiknowledge: "yikbIndex",
+  };
+  for (const k of PKEY_LIST) m[k] = BUG_ANCHORS.value[keyMap[k]] ?? `projects/${k}/bugs/README.md`;
+  return Object.freeze(m);
+});
+
+/* ── 月度前缀 & slug 工具 ────────────────── */
+function resolveMonthlyPrefix(bug: any): string {
+  if (bug.contentPath) {
+    const m = String(bug.contentPath).match(/bugs\/(\d{4}-\d{2})(?:-\d{2})?\//);
+    if (m) return m[1];
+  }
+  const d = new Date(bug.closedAt ?? bug.resolvedAt ?? bug.updatedAt ?? bug.createdAt ?? Date.now());
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+const slugFromBug = (b: any) =>
+  (b.title || "").replace(/[^\w\u4e00-\u9fa5-]/g, "").slice(0, 20) || b.key || b.issue_key || "";
+function bugPathFromBug(bug: KnowledgeBugEntry, pk: string, seq: string, cat: { label: string }): string {
+  const dp = resolveMonthlyPrefix(bug);
+  const m = BUG_CAT_META[cat.label] ?? BUG_CAT_META["功能"] ?? { dir: "代码质量", prefix: "质量" };
+  const slug = slugFromBug(bug);
+  if (pk === "yipot") return `projects/yipot/bugs/${dp}/${seq}-${m.prefix}-${slug}.md`;
+  if (pk === "yipet") return `projects/yipet/bugs/${dp}/${m.dir}/${seq}-${m.dir}-${slug}.md`;
+  return `projects/${pk === "yiknowledge" ? "yiknowledge" : "yivad"}/bugs/${dp}/${m.dir}/${seq}-${m.prefix}-${slug}.md`;
+}
+
+// ── 三闸门契约：anchorToEntity → resolveLink → openAnchor (Gate A/B/C) ──
 const navigating = ref(false);
 type NavState = "gate-a" | "gate-b" | "gate-c";
 const navState = shallowRef<NavState>("gate-a");
 const navLabel = ref("解析锚点");
-function setNav(s: NavState, label: string): void {
-  navState.value = s;
-  navLabel.value = label;
-  navigating.value = true;
-}
-function clearNav(): void { navigating.value = false; }
-
-/* ──────────────────────────────────────────────────────────
- *  锚点解析器：mirror readingList.vue 的 anchorToEntity 逻辑
- *  保证首页与阅读清单的链接解析规则完全一致
- * ──────────────────────────────────────────────────────── */
+const setNav = (s: NavState, l: string) => { navState.value = s; navLabel.value = l; navigating.value = true; };
+const clearNav = () => { navigating.value = false; };
 function anchorToEntity(anchor: string): ResolveLinkInput | null {
   if (!anchor) return null;
   const a = String(anchor).trim();
+  // Branch 1: exec-001-023 — OKR goal
   if (/^exec[-_]\d{2,3}[-_]\d{1,3}$/i.test(a)) {
-    const normalized = a.toLowerCase().replace(/[ _]/g, "-");
-    return { type: "page", key: `executive/okr/${normalized}`, title: a };
+    return { type: "page", key: `executive/okr/${a.toLowerCase().replace(/[ _]/g, "-")}`, title: a };
   }
-  const numMatch = a.match(/\b(\d{3})(?:\.md)?\b/);
-  if (numMatch) {
-    const num = numMatch[1];
-    const fallback = num === "001"
-      ? `executive/reading-list/${num}-阅读-阅读清单`
-      : `executive/reading-list/${num}-阅读-读书笔记`;
-    return { type: "page", key: fallback, title: a };
+  // Branch 2: Reading List pure 3-digit ID (001 = 阅读清单 / 002+ = 读书笔记)
+  // MUST be standalone 3 digits — NOT a 3-digit fragment inside a longer path
+  const nm = a.match(/^\s*(\d{3})\s*$/);
+  if (nm) {
+    const n = nm[1];
+    return { type: "page", key: n === "001" ? `executive/reading-list/${n}-阅读-阅读清单` : `executive/reading-list/${n}-阅读-读书笔记`, title: a };
   }
+  // Branch 3: path / URL style with / or .md suffix — normalize & resolve
   if (a.includes("/") || /\.md\s*$/i.test(a)) {
-    const clean = a.replace(/§.*$/, "").replace(/^YiKnowledge\//i, "")
-      .replace(/^#\/?knowledge\//i, "").replace(/^\//, "").trim();
-    let candidate = clean;
-    if (!candidate.toLowerCase().startsWith("executive/")) {
-      if (/^(reading-list|okr|rss|strategy|process|notes|tactical|governance)\//i.test(candidate)) candidate = `executive/${candidate}`;
-      else if (!candidate.includes("/")) candidate = `executive/reading-list/${candidate}`;
+    // strip fragment (#hash) & section anchor (§...) before path canonicalization
+    const c = a
+      .replace(/#.*$/, "")
+      .replace(/§.*$/, "")
+      .replace(/^YiKnowledge\//i, "")
+      .replace(/^#\/?knowledge\//i, "")
+      .replace(/^\//, "")
+      .trim();
+    let cand = c;
+    if (!cand.toLowerCase().startsWith("executive/")) {
+      if (/^(reading-list|okr|rss|strategy|process|notes|tactical|governance)\//i.test(cand)) cand = "executive/" + cand;
+      else if (!cand.includes("/")) cand = "executive/reading-list/" + cand;
     }
-    return { type: "page", key: candidate.replace(/\.md$/i, ""), title: a };
+    return { type: "page", key: cand.replace(/\.md$/i, ""), title: a };
   }
   return null;
 }
-
-/**
- * 三闸门契约入口：所有 YiKnowledge 锚点跳转统一入口
- *   Gate A: anchorToEntity → resolveLink 路由模板存在性
- *   Gate B: gateBEntityExists HEAD 预检 (1500ms 超时)
- *   Gate C: openKnowledgePreview + 2s 看门狗 post-nav 校验
- */
 async function openAnchor(anchor: string): Promise<void> {
   const entity = anchorToEntity(anchor);
-  if (!entity) {
-    ElMessage.info(`未映射锚点: ${anchor}`);
-    return;
-  }
-  // Gate A
-  setNav("gate-a", "Gate A · 路由匹配");
+  if (!entity) { ElMessage.info(`未映射锚点: ${anchor}`); return; }
   const resolved = resolveLink(entity);
-  const expectedLink = resolved.ok ? resolved.link : "#preview-dialog";
-  const expectedParams = resolved.ok && "params" in resolved ? resolved.params : {};
-
-  // KB 文件路径归一（KnowledgePreviewDialog 只认 .md 相对路径）
+  const usePreview = !resolved.ok || entity.type === "page";
   const kbKey = entity.key ?? "";
   const mdPath = /\.md$/i.test(kbKey) ? kbKey : `${kbKey}.md`;
-
-  // Gate B
-  setNav("gate-b", "Gate B · HEAD 预检");
-  const exists = await gateBEntityExists(entity, { timeoutMs: 1500 }).catch(() => true);
-  if (!exists) ElMessage.warning(`锚点未命中索引，尝试直接预览: ${kbKey}`);
-
-  // Gate C
-  setNav("gate-c", "Gate C · 打开预览");
-  try {
-    await openFilePreview(mdPath);
-  } catch (e) {
-    ElMessage.warning(e instanceof Error ? e.message : "预览打开失败");
-    clearNav();
-    return;
+  await gateBEntityExists(entity, { timeoutMs: 1500 }).catch(() => true);
+  if (usePreview) {
+    try { await openFilePreview(mdPath); }
+    catch (e) { ElMessage.warning(e instanceof Error ? e.message : "预览打开失败"); return; }
+    nextTick(() => gateCPostPreview({ expectedPath: mdPath, timeoutMs: 2000 }).then((ok) => { if (!ok) ElMessage.warning("预览落地后验未匹配"); }));
+  } else {
+    try { await router.push(resolved.link); }
+    catch (e) { ElMessage.warning(e instanceof Error ? e.message : "路由跳转失败"); return; }
+    nextTick(() => gateCPostNavigate({
+      expectedLink: resolved.link,
+      expectedParams: "params" in resolved ? resolved.params : {},
+      expectedTitleKeyword: entity.title || "",
+      timeoutMs: 2000,
+    }).then((ok) => { if (!ok) ElMessage.info("路由落地后验未匹配"); }));
   }
-  nextTick(() =>
-    gateCPostNavigate({ expectedLink, expectedParams, expectedTitleKeyword: entity.title || "", timeoutMs: 2000 })
-      .then(ok => { if (!ok) ElMessage.info("路由落地后验未匹配（可能是 hash 跳转）"); })
-      .finally(clearNav)
-  );
 }
-
-/**
- * 延迟 2.4s 切换锚点（合成弹框 → 真实文件）；如果用户已主动交互关闭则跳过
- */
+async function gateCPostPreview(o: { expectedPath: string; timeoutMs?: number }): Promise<boolean> {
+  const t0 = Date.now(); const dl = o.timeoutMs ?? 2000;
+  const exp = normalizeKbPath(o.expectedPath);
+  const virt = VIRTUAL_PATH_PREFIX.some((p) => exp.startsWith(p));
+  while (Date.now() - t0 < dl) {
+    const dlg = previewDlg.value as any;
+    if (!dlg) { await sleep(80); continue; }
+    const vis = typeof dlg.visible === "object" ? !!dlg.visible.value : !!dlg.visible;
+    const cp = typeof dlg.currentPath === "object" ? (dlg.currentPath.value ?? "") : String(dlg.currentPath ?? "");
+    const cur = normalizeKbPath(cp);
+    if (!vis || !cur) { await sleep(80); continue; }
+    if (virt && cur === exp) return true;
+    if (!virt && pathsMatch(exp, cur)) return true;
+    await sleep(80);
+  }
+  return false;
+}
+const VIRTUAL_PATH_PREFIX = ["okr:", "sre:", "action:", "digest:", "bug:", "issue:"] as const;
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+function normalizeKbPath(p: string): string {
+  if (!p) return "";
+  let s = String(p).trim().replace(/\\/g, "/").replace(/^YiKnowledge\//i, "").replace(/^#\/?knowledge\//i, "").replace(/^\/+/, "");
+  if (!VIRTUAL_PATH_PREFIX.some((p2) => s.startsWith(p2)) && s && !/\.md\s*$/i.test(s)) s += ".md";
+  return s.toLowerCase();
+}
+const basename = (p: string) => { const i = p.lastIndexOf("/"); return i === -1 ? p : p.slice(i + 1); };
+const stripExt = (p: string) => p.replace(/\.md\s*$/i, "");
+const pathsMatch = (a: string, b: string) => {
+  if (!a || !b) return false;
+  const [A, B] = [a.toLowerCase(), b.toLowerCase()];
+  if (A === B) return true;
+  const [bnA, bnB] = [basename(A), basename(B)];
+  if (bnA && bnB && bnA === bnB) return true;
+  // 宽松前缀：A 是 B 的目录+文件前缀，或 B 是 A 的后缀（补 .md 也算）
+  const [sA, sB] = [stripExt(A), stripExt(B)];
+  if (sA && sB && (sA.endsWith(sB) || sB.endsWith(sA))) return true;
+  if (A.endsWith(B) || B.endsWith(A)) return true;
+  // reading-list 文件名结构：003-阅读-读书笔记  ===  003-阅读-读书笔记-卓有成效的管理者
+  if (/^\d{3}-阅读-阅读/.test(sA) || /^\d{3}-阅读-阅读/.test(sB)) {
+    const pre3 = (s: string) => s.match(/^(\d{3}-阅读-(?:阅读清单|读书笔记))/)?.[1] ?? "";
+    const [pA, pB] = [pre3(sA), pre3(sB)];
+    if (pA && pB && pA === pB) return true;
+  }
+  return false;
+};
+const scheduleAutoAnchor = (anchor?: string) => { if (anchor) setTimeout(() => openFocusAnchorIfIdle(anchor), 2400); };
 function openFocusAnchorIfIdle(anchor: string): void {
   try {
     const dlg = previewDlg.value as any;
     if (!dlg) { openAnchor(anchor); return; }
-    const visible = dlg.visible ?? dlg.modelValue ?? dlg._visible;
-    if (visible === false) { openAnchor(anchor); return; }
+    const vis = dlg.visible ?? dlg.modelValue ?? dlg._visible;
+    if (vis === false) { openAnchor(anchor); return; }
     const cur: string | undefined = dlg.currentPath ?? dlg.path ?? dlg._currentPath;
-    if (!cur || /^(digest:|sre:|okr:|action:|issue:)/.test(cur)) {
-      openAnchor(anchor);
+    if (!cur || /^(digest:|sre:|okr:|action:|issue:|bug:)/.test(cur)) openAnchor(anchor);
+  } catch { openAnchor(anchor); }
+}
+
+// ── 详情弹框 schema 驱动（单函数替代 6+ 个 open*Details） ──
+type PrevField = { k: string; v?: any; label?: string; as?: "text" | "colored" | "pill" } | false | null | undefined;
+function openPreview(title: string, path: string, fields: PrevField[], autoAnchor?: string) {
+  const rows = fields.filter(Boolean).map((f) => {
+    const x = f as { k: string; v: any; as?: string; label?: string };
+    let val: string;
+    if (x.as === "colored") {
+      val = `<span style="color:${x.v.color || x.v};font-weight:600">${x.v.text || x.v}</span>`;
+    } else if (x.as === "pill") {
+      val = `<span style="background:${x.v.bg || "#eee"};color:${x.v.color || "#333"};padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${x.v.text || x.v}</span>`;
+    } else {
+      val = String(x.v);
     }
-  } catch {
-    openAnchor(anchor);
-  }
+    return `| **${x.label || x.k}** | ${val} |`;
+  });
+  const content = [`# ${title}`, "", "| 字段 | 值 |", "|---|---|", ...rows].join("\n");
+  previewDlg.value?.openRaw({ title, content, path });
+  scheduleAutoAnchor(autoAnchor);
 }
+/* 详情弹框字段 builder：消除 open*Details 里手写 { k, v, as } 的重复 */
+type Field = PrevField;
+const F = {
+  text:     (k: string, v: any, l?: string): Field => (v == null || v === "" ? null : { k, v, label: l }),
+  colored:  (k: string, v: any, l?: string): Field => (v == null || v === "" ? null : { k, v, as: "colored", label: l }),
+  pill:     (k: string, v: any, l?: string): Field => (v == null || v === "" ? null : { k, v, as: "pill", label: l }),
+  pct:      (k: string, v: any, l?: string): Field => (typeof v === "number" ? { k, v: `${v}%`, label: l } : null),
+  coverage: (k: string, cov: any, tot: any): Field =>
+    typeof cov === "number" ? { k, v: `${cov} / ${tot ?? "-"}`, label: k } : null,
+  pri: (p: any): Field => (typeof p === "undefined" || p === null ? null : ({
+    k: "优先级", v: { text: priorityLabel(p), bg: priorityColor(p), color: "#fff" }, as: "pill",
+  })),
+  rec: (r: any): Field => (r ? { k: "推荐选项", v: { text: r, color: "var(--ho-okr-active)" }, as: "colored" } : null),
+};
+const digestBriefAnchor = () => F.text("完整简报", focus.digest.value.summary_file);
+const openOkrDetails      = (o: OkrTracker)  => openPreview(
+  `${o.id}: ${o.title}`, `okr:${o.id}`,
+  [
+    F.text("周期", o.period), F.text("负责人", o.owner), F.pct("进度", o.progress),
+    F.coverage("KR 覆盖", o.coverage, o.total),
+    F.colored("状态", okrStatusMeta(o.status)),
+    F.text("今日推进", o.today_focus), F.text("锚点", o.anchor),
+  ],
+  o.anchor,
+);
+const openSreDetails      = (s: SreStatusItem) => openPreview(
+  `${s.id || "SRE"}: ${s.title}`, `sre:${s.id || s.title}`,
+  [F.colored("级别", sreMeta(s.level)), F.text("Owner", s.owner), F.text("锚点", s.anchor), F.text("细节", s.detail)],
+  s.anchor,
+);
+const openActionDetails   = (a: FocusAction)  => openPreview(
+  `[${a.role}] ${a.title}`, `action:${a.role}:${a.title}`,
+  [
+    F.text("角色", a.role), F.pri(a.priority),
+    F.colored("状态", actionStatusMeta(a.status)),
+    F.text("为什么重要", a.why), F.text("锚点", a.anchor),
+  ],
+  a.anchor,
+);
+const openSignalDetails   = (s: DigestSignal)  => openPreview(
+  `${s.id} · 信号`, `digest:signal:${s.id}`,
+  [
+    F.colored("级别", sreMeta(digestLevel(s.level))),
+    typeof s.confidence === "number" ? { k: "置信度", v: `${s.confidence}%` } : null,
+    F.text("引用锚点", s.ref), digestBriefAnchor(),
+  ],
+  s.ref,
+);
+const openDecisionDetails = (d: DigestDecision) => openPreview(
+  `${d.id} · 待拍板决策`, `digest:decision:${d.id}`,
+  [F.rec(d.recommend), F.text("拍板截止", d.deadline), F.text("参考锚点", d.ref), digestBriefAnchor()],
+  d.ref,
+);
+const openRedlineDetails  = (r: DigestRedline)  => openPreview(
+  `${r.id} · 底线红线`, `digest:redline:${r.id}`,
+  [F.text("细则", r.detail), F.text("引用锚点", r.ref), digestBriefAnchor()],
+  r.ref,
+);
 
-/** 侧栏 Category 入口（优先走分类 INDEX.md，找不到则走知识库默认路由） */
+
+/* ── Category + Workload 入口 ── */
 function openCategory(category: string, freshness: number): void {
-  const idx = categoryAnchor(category);
-  const fallback = `#/knowledge/${category.toLowerCase()}`;
-  const entity = anchorToEntity(idx);
-  if (!entity) {
-    ElMessage.info(`无分类索引，跳转知识库: ${category}`);
-    router.push(fallback);
-    return;
-  }
   if (freshness < 50) ElMessage.info(`${category} 新鲜度仅 ${freshness}%，建议进入后点击 🔄 刷新`);
-  openAnchor(idx);
+  openAnchor(categoryAnchor(category));
+}
+const ROLE_ALIASES: Readonly<RegExp[]> = [
+  /(^|\s|c[- ]?suite|cxo|chief|founder|exec|ceo|cto|cfo|coo|vp|director)(\s|$)/i,
+  /tech[- ]?lead|\btl\b|技术(负责人|lead|主管|leader)|engineering[- ]?lead/i,
+  /eng(ineer)?|developer|fe[- ]?eng|be[- ]?eng|full[- ]?stack|工程师|前端|后端|全栈|开发/i,
+  /sre|可靠性|devops|运维|site[- ]?reliability/i,
+  /curator|策展|知识(运营|管理)|content[- ]?ops/i,
+  /ai[- ]?(eng|engineer)|ml[- ]?(eng|engineer)|算法(工程师)?|ai\s*dev/i,
+  /\bpm\b|product|产品(经理)?|\bpdm\b/i,
+  /leader|manager|主管|负责人|团队 lead/i,
+];
+function isRoleLike(a: string): boolean {
+  const lower = a.toLowerCase().trim();
+  const roles = new Set<string>();
+  for (const x of focus.actions.value) roles.add((x.role || "").toLowerCase());
+  for (const k of Object.keys(CATEGORY_INDEX)) roles.add(k.toLowerCase());
+  const ordered = [...roles].filter(Boolean).sort((x, y) => y.length - x.length);
+  for (const r of ordered) if (r && (lower === r || lower.includes(r) || r.includes(lower))) return true;
+  for (const re of ROLE_ALIASES) if (re.test(a)) return true;
+  return false;
+}
+function openWorkloadAssignee(a?: string | null): void {
+  if (!a) { openAnchor(SB_ANCHORS.value.workload); return; }
+  if (isRoleLike(a)) { openAnchor(BOARD_ANCHORS.value.roleActions); return; }
+  const linkRes = resolveLink({ type: "issue", key: null, title: `@${a}` });
+  const base = linkRes.ok ? linkRes.link.replace(/issue\/$/, "issue") : "/issue";
+  router.push(`${base}${base.includes("?") ? "&" : "?"}assignee=${encodeURIComponent(a)}`);
 }
 
-/** Workload 行点击 → 跳组织 OKR 追踪 或 Issue 列表带 assignee 过滤 */
-function openWorkloadAssignee(assignee?: string | null): void {
-  if (!assignee) {
-    openAnchor(SB_ANCHORS.workload);
-    return;
-  }
-  // assignee 匹配 CEO / Tech Lead 等角色 → 跳对应行动项详情；否则跳 Issue 过滤
-  const roleMap: Record<string, string> = {
-    "CEO": "Executive",
-    "Tech Lead": "Tech Lead",
-    "Engineer": "Engineer",
-    "SRE": "SRE",
-    "Curator": "Curator",
-    "AI Eng": "AI Eng",
-  };
-  const r = roleMap[assignee] || assignee;
-  if (Object.values(roleMap).some(v => r.includes(v))) {
-    openAnchor(BOARD_ANCHORS.roleActions);
-  } else {
-    const linkRes = resolveLink({ type: "issue", key: null, title: `@${assignee}` });
-    const url = linkRes.ok ? linkRes.link.replace(/issue\/$/, "issue") : "/issue";
-    const sep = url.includes("?") ? "&" : "?";
-    router.push(`${url}${sep}assignee=${encodeURIComponent(assignee)}`);
-  }
-}
-
-// ── Color tokens (mapped to CSS vars declared in styles) ──
-const PRIORITY_COLORS: Record<string, string> = {
-  p0: "var(--ho-pri-p0)", p1: "var(--ho-pri-p1)", p2: "var(--ho-pri-p2)",
-  p3: "var(--ho-pri-p3)", p4: "var(--ho-pri-p4)"
-};
-function priorityColor(p: string): string { return PRIORITY_COLORS[p] || "var(--ho-pri-p4)"; }
-function priorityLabel(p: string): string { return (p || "").toUpperCase(); }
-
-const animTotal = useAnimatedNumber(computed(() => stats.totalIssues));
-const animBugs = useAnimatedNumber(computed(() => stats.openBugCount));
-
-const STATUS_COLORS: Record<string, string> = {
-  todo: "var(--ho-st-todo)", in_progress: "var(--ho-st-wip)", in_review: "var(--ho-st-review)",
-  done: "var(--ho-st-done)", backlog: "var(--ho-st-backlog)", cancelled: "var(--ho-st-cancel)"
-};
-const STATUS_LINKS: Record<string, string> = {
-  todo: "/issue?status=todo", in_progress: "/issue?status=in_progress",
-  in_review: "/issue?status=in_review", done: "/issue?status=done", backlog: "/issue?status=backlog"
-};
-const statusSegments = computed(() => [
-  { key: "todo", label: "Todo", count: stats.todoCount, color: STATUS_COLORS.todo, link: STATUS_LINKS.todo },
-  { key: "in_progress", label: "WIP", count: stats.inProgressCount, color: STATUS_COLORS.in_progress, link: STATUS_LINKS.in_progress },
-  { key: "in_review", label: "Review", count: stats.inReviewCount, color: STATUS_COLORS.in_review, link: STATUS_LINKS.in_review },
-  { key: "done", label: "Done", count: stats.doneCount, color: STATUS_COLORS.done, link: STATUS_LINKS.done },
-  { key: "backlog", label: "Backlog", count: stats.backlogCount, color: STATUS_COLORS.backlog, link: STATUS_LINKS.backlog },
-].filter(s => s.count > 0));
-
-const completionRate = computed(() => {
-  const base = stats.totalIssues - stats.cancelledCount - stats.backlogCount;
-  return base ? Math.round((stats.doneCount / base) * 100) : 0;
-});
-const bugRatio = computed(() => stats.totalIssues ? Math.round((stats.openBugCount / stats.totalIssues) * 100) : 0);
-const velocityDelta = computed(() => {
-  if (!stats.doneLastWeekCount) return stats.doneWeekCount > 0 ? 100 : 0;
-  return Math.round(((stats.doneWeekCount - stats.doneLastWeekCount) / stats.doneLastWeekCount) * 100);
-});
-const velocityPerDay = computed(() => (stats.doneWeekCount / 5).toFixed(1));
-const healthWarnings = computed(() => (stats.overdueCount || 0) + (stats.blockedCount || 0) + (stats.staleCount || 0) + (stats.unassignedCount || 0));
-const dataQualityWarn = computed(() => {
-  const items: string[] = [];
-  if (stats.noPriorityCount) items.push(`${stats.noPriorityCount} no priority`);
-  if (stats.noDueDateCount) items.push(`${stats.noDueDateCount} no due date`);
-  if (stats.noTypeCount) items.push(`${stats.noTypeCount} no type`);
-  return items.length ? items.join(" · ") : "";
-});
-const weeklyGoal = 25;
-const weekProgress = computed(() => Math.min(100, Math.round((stats.doneWeekCount / weeklyGoal) * 100)));
-
-// ── SRE Matrix helpers ──
-const SRE_LEVEL_ORDER = ["critical", "major", "warn", "clear"] as const;
-type SreLevelKey = typeof SRE_LEVEL_ORDER[number];
-const sreLevelLabels: Record<SreLevelKey | string, string> = {
-  critical: "严重",
-  major: "重要",
-  warn: "警告",
-  clear: "正常",
-};
-function sreLevelLabel(k: string): string {
-  return sreLevelLabels[k] ?? "警告";
-}
-const sreImpactLabels: Record<SreLevelKey | string, string> = {
-  critical: "P0 · 全站受影响",
-  major: "P1 · 核心链路受损",
-  warn: "P2 · 局部劣化",
-  clear: "P5 · 正常运行",
-};
-function impactLabel(level: string): string {
-  return sreImpactLabels[level] ?? sreImpactLabels.warn;
-}
-
+// ── SRE 视图：单对象 sreStats 聚合 counts/legend/sloPct ──
 const activeSreFilters = ref<string[]>([]);
-function toggleSreLevelFilter(key: string, _idx?: number): void {
+function toggleSreLevelFilter(key: string) {
   const arr = activeSreFilters.value.slice();
   const pos = arr.indexOf(key);
-  if (pos >= 0) arr.splice(pos, 1);
-  else arr.push(key);
+  pos >= 0 ? arr.splice(pos, 1) : arr.push(key);
   activeSreFilters.value = arr;
 }
-function clearSreFilters(): void {
-  activeSreFilters.value = [];
-}
-function matchSreFilter(level: string): boolean {
-  if (!activeSreFilters.value.length) return true;
-  return activeSreFilters.value.includes(level);
-}
-const sreLevelCounts = computed<Record<string, number>>(() => {
-  const out: Record<string, number> = {};
-  for (const it of focus.sre.value.items) {
-    const k = it.level || "warn";
-    out[k] = (out[k] ?? 0) + 1;
-  }
-  return out;
+type SreLevelStat = { key: (typeof SRE_LEVEL_ORDER)[number]; count: number; color: string };
+type SreStats = Readonly<{
+  total: number;
+  counts: Readonly<Record<string, number>>;
+  legend: SreLevelStat[];
+  sloPct: number;
+  filtered: SreStatusItem[];
+}>;
+const sreStats: ComputedRef<SreStats> = computed(() => {
+  const items = focus.sre.value.items;
+  const total = items.length;
+  const counts: Record<string, number> = {};
+  for (const it of items) counts[it.level || "warn"] = (counts[it.level || "warn"] ?? 0) + 1;
+  const legend = SRE_LEVEL_ORDER.map((key) => ({
+    key, count: counts[key] ?? 0, color: sreMeta(key).color,
+  }));
+  const t = total || 1;
+  const pen = (counts.critical ?? 0) * 10 + (counts.major ?? 0) * 4 + (counts.warn ?? 0);
+  const sloPct = total ? Math.max(0, Math.round(100 - (pen / (t * 4)) * 100)) : 100;
+  const orderIdx = (lv: string) => SRE_LEVEL_ORDER.indexOf((lv as any) ?? "warn");
+  const filters = activeSreFilters.value;
+  const filtered: SreStatusItem[] = items.slice()
+    .sort((a, b) => orderIdx(a.level) - orderIdx(b.level))
+    .filter((it) => !filters.length || filters.includes(it.level));
+  return Object.freeze({ total, counts: Object.freeze(counts), legend, sloPct, filtered });
 });
-const sreLevelLegend = computed(() =>
-  SRE_LEVEL_ORDER.map((k) => ({
-    key: k,
-    count: sreLevelCounts.value[k] ?? 0,
-    color: SRE_LEVEL_META[k]?.color ?? SRE_LEVEL_META.warn.color,
-  }))
-);
-const sreHeatSegments = computed(() => {
-  const total = focus.sre.value.items.length || 1;
-  return SRE_LEVEL_ORDER.map((k, index) => {
-    const count = sreLevelCounts.value[k] ?? 0;
-    return {
-      key: k,
-      index,
-      count,
-      color: SRE_LEVEL_META[k]?.color ?? SRE_LEVEL_META.warn.color,
-      pct: total ? Math.round((count / total) * 100) : 0,
-    };
-  });
-});
-const sreSloPct = computed(() => {
-  const total = focus.sre.value.items.length;
-  if (!total) return 100;
-  const penalized =
-    (sreLevelCounts.value.critical ?? 0) * 10 +
-    (sreLevelCounts.value.major ?? 0) * 4 +
-    (sreLevelCounts.value.warn ?? 0) * 1;
-  return Math.max(0, Math.round(100 - (penalized / (total * 4)) * 100));
-});
-const filteredSreItems = computed<SreStatusItem[]>(() =>
-  focus.sre.value.items
-    .slice()
-    .sort((a, b) => {
-      const ai = SRE_LEVEL_ORDER.indexOf((a.level as any) ?? "warn");
-      const bi = SRE_LEVEL_ORDER.indexOf((b.level as any) ?? "warn");
-      return ai - bi;
-    })
-    .filter((it) => matchSreFilter(it.level))
-);
 
-function progressColor(v: number): string {
-  if (v >= 80) return "var(--ho-status-clear)";
-  if (v >= 50) return "var(--ho-status-warn)";
-  return "var(--ho-status-danger)";
-}
-function rateColor(v: number): string { return progressColor(v); }
-
+/* ── 通用工具 & 今日状态 ── */
 const CAT_LABEL: Record<string, string> = { engineer: "Eng", executive: "Exec", leader: "Lead", aier: "AI", product: "Prod", sre: "SRE", curator: "Cur" };
-function catLabel(cat?: string): string { return CAT_LABEL[cat || ""] || cat || ""; }
-
-const activityItems = computed(() => knowledge.activityItems.value);
-const activityGroups = computed(() => {
-  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
-  const todayMs = todayStart.getTime();
-  const yesterdayMs = todayMs - 86400000;
-  const groups: { label: string; items: typeof activityItems.value }[] = [
-    { label: t("home.activity.today"), items: [] },
-    { label: t("home.activity.yesterday"), items: [] },
-    { label: t("home.activity.thisWeek"), items: [] }
-  ];
-  for (const item of activityItems.value) {
-    const ts = new Date(item.updatedAt).getTime();
-    if (ts >= todayMs) groups[0].items.push(item);
-    else if (ts >= yesterdayMs) groups[1].items.push(item);
-    else groups[2].items.push(item);
-  }
-  return groups.filter(g => g.items.length > 0);
-});
-
-const todayLabel = computed(() => {
-  const d = new Date();
-  return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()] + " " + (d.getMonth()+1) + "/" + d.getDate();
-});
+const catLabel = (c?: string) => CAT_LABEL[c || ""] || c || "";
+const todayLabel = computed(() => { const d = new Date(); return ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()] + " " + (d.getMonth()+1) + "/" + d.getDate(); });
 function timeAgo(ts: string | number): string {
   const m = Math.floor((Date.now() - new Date(ts).getTime()) / 60000);
   if (m < 1) return "now"; if (m < 60) return `${m}m`;
-  const h = Math.floor(m / 60); if (h < 24) return `${h}h`;
-  return `${Math.floor(h / 24)}d`;
+  const h = Math.floor(m / 60); return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`;
 }
-function retryAll() { retry(); daily.retry(); knowledge.retry(); focus.retry(); }
-
-const SEV_LABELS: Record<string, string> = { critical: "Critical", urgent: "Urgent", major: "Major", high: "High", medium: "Medium", minor: "Minor", low: "Low", trivial: "Trivial" };
-function sevLabel(v: string): string { return SEV_LABELS[v] || v; }
-function sevColor(v: string): string {
-  const m: Record<string, string> = {
-    critical: "var(--ho-status-danger)", urgent: "var(--ho-status-danger)",
-    major: "var(--ho-status-major)", high: "var(--ho-status-major)",
-    medium: "var(--ho-pri-p2)", minor: "var(--ho-text-secondary)",
-    low: "var(--ho-text-secondary)", trivial: "var(--ho-text-placeholder)"
-  };
-  return m[v] || "var(--ho-text-placeholder)";
-}
-
-// ── Focus Board meta tables ──
-const SRE_LEVEL_META: Record<string, { color: string; bg: string; label: string; text: string }> = {
-  critical: { color: "var(--ho-status-danger)", bg: "var(--ho-bg-danger)", label: "CRITICAL", text: "严重" },
-  major:    { color: "var(--ho-status-major)",  bg: "var(--ho-bg-major)",  label: "MAJOR",    text: "重要" },
-  warn:     { color: "var(--ho-status-warn)",   bg: "var(--ho-bg-warn)",   label: "WARN",     text: "警告" },
-  clear:    { color: "var(--ho-status-clear)",  bg: "var(--ho-bg-clear)",  label: "CLEAR",    text: "正常" }
-};
-function sreMeta(level: string) {
-  return SRE_LEVEL_META[level] || SRE_LEVEL_META.warn;
-}
-const OKR_STATUS_META: Record<string, { text: string; color: string; bg: string }> = {
-  active:    { text: "进行中", color: "var(--ho-okr-active)", bg: "var(--ho-okr-active-bg)" },
-  at_risk:   { text: "有风险", color: "var(--ho-status-major)", bg: "var(--ho-bg-major)" },
-  off_track: { text: "偏离",   color: "var(--ho-status-danger)", bg: "var(--ho-bg-danger)" },
-  done:      { text: "完成",   color: "var(--ho-status-clear)", bg: "var(--ho-bg-clear)" }
-};
-function okrStatusMeta(s: string) {
-  return OKR_STATUS_META[s] || { text: s, color: "var(--ho-text-secondary)", bg: "var(--ho-fill)" };
-}
-const ACTION_STATUS_META: Record<string, { text: string; color: string; bg: string }> = {
-  todo:        { text: "待办",   color: "var(--ho-text-secondary)", bg: "var(--ho-fill)" },
-  in_progress: { text: "进行中", color: "var(--ho-okr-active)", bg: "var(--ho-okr-active-bg)" },
-  in_review:   { text: "评审中", color: "var(--ho-status-warn)", bg: "var(--ho-bg-warn)" },
-  done:        { text: "完成",   color: "var(--ho-status-clear)", bg: "var(--ho-bg-clear)" },
-  blocked:     { text: "阻塞",   color: "var(--ho-status-danger)", bg: "var(--ho-bg-danger)" }
-};
-function actionStatusMeta(s: string) {
-  return ACTION_STATUS_META[s] || { text: s, color: "var(--ho-text-secondary)", bg: "var(--ho-fill)" };
-}
-
-// ── Detail dialog builders (issue preview + okr/sre/action/signal/decision/redline) ──
-
-function openOkrDetails(o: OkrTracker) {
-  const rows: string[] = [];
-  if (o.period) rows.push(`| **周期** | ${o.period} |`);
-  if (o.owner) rows.push(`| **负责人** | ${o.owner} |`);
-  rows.push(`| **进度** | ${o.progress}% |`);
-  if (typeof o.coverage === "number" && typeof o.total === "number") {
-    rows.push(`| **KR 覆盖** | ${o.coverage} / ${o.total} |`);
-  }
-  const st = okrStatusMeta(o.status);
-  rows.push(`| **状态** | <span style="color:${st.color};font-weight:600">${st.text}</span> |`);
-  if (o.today_focus) rows.push(`| **今日推进** | ${o.today_focus} |`);
-  if (o.anchor) rows.push(`| **锚点** | ${o.anchor} |`);
-  const content = [
-    `# ${o.id}: ${o.title}`,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    ...rows,
-  ].join("\n");
-  previewDlg.value?.openRaw({
-    title: `${o.id}: ${o.title}`,
-    content,
-    path: `okr:${o.id}`,
-  });
-}
-
-function openSreDetails(s: SreStatusItem) {
-  const meta = sreMeta(s.level);
-  const rows: string[] = [];
-  rows.push(`| **级别** | <span style="color:${meta.color};font-weight:700">${meta.text}</span> |`);
-  if (s.owner) rows.push(`| **Owner** | ${s.owner} |`);
-  if (s.anchor) rows.push(`| **锚点** | ${s.anchor} |`);
-  if (s.detail) rows.push(`| **细节** | ${s.detail} |`);
-  const content = [
-    `# ${s.id || "SRE"}: ${s.title}`,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    ...rows,
-  ].join("\n");
-  previewDlg.value?.openRaw({
-    title: `${s.id || "SRE"}: ${s.title}`,
-    content,
-    path: `sre:${s.id || s.title}`,
-  });
-  if (s.anchor) { const a = s.anchor; setTimeout(() => openFocusAnchorIfIdle(a), 2400); }
-}
-
-function openActionDetails(a: FocusAction) {
-  const st = actionStatusMeta(a.status);
-  const pri = priorityColor(a.priority);
-  const rows: string[] = [];
-  rows.push(`| **角色** | ${a.role} |`);
-  rows.push(`| **优先级** | <span style="background:${pri};color:#fff;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:700">${priorityLabel(a.priority)}</span> |`);
-  rows.push(`| **状态** | <span style="color:${st.color};font-weight:600">${st.text}</span> |`);
-  if (a.why) rows.push(`| **为什么重要** | ${a.why} |`);
-  if (a.anchor) rows.push(`| **锚点** | ${a.anchor} |`);
-  const content = [
-    `# [${a.role}] ${a.title}`,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    ...rows,
-  ].join("\n");
-  previewDlg.value?.openRaw({
-    title: a.title,
-    content,
-    path: `action:${a.role}:${a.title}`,
-  });
-  if (a.anchor) { const anc = a.anchor; setTimeout(() => openFocusAnchorIfIdle(anc), 2400); }
-}
-
-const focusBoardHasContent = computed(() =>
-  focus.available.value &&
-  (!!focus.hero.value.hero ||
-    focus.sre.value.items.length > 0 ||
-    focus.okrs.value.length > 0 ||
-    focus.actions.value.length > 0 ||
-    digestHasContent.value)
-);
-
+const retryAll = () => { retry(); daily.retry(); knowledge.retry(); focus.retry(); };
+const truncate = (s: string, n: number) => (s.length > n ? s.slice(0, n) + "…" : s);
+const digestLevel = (l: string) => ["critical", "major", "warn", "clear"].includes(l) ? l : "warn";
 const digestHasContent = computed(() => {
   const d = focus.digest.value;
-  return (
-    d.signals.length > 0 ||
-    d.decisions.length > 0 ||
-    d.redlines.length > 0 ||
-    !!d.summary_file
-  );
+  return d.signals.length > 0 || d.decisions.length > 0 || d.redlines.length > 0 || !!d.summary_file;
 });
-
 const digestCompliant = computed(() => {
   const d = focus.digest.value;
   return d.signals.length === 3 && d.decisions.length === 2 && d.redlines.length === 1;
 });
+const focusBoardHasContent = computed(() =>
+  focus.available.value && (
+    !!focus.hero.value.hero ||
+    focus.sre.value.items.length > 0 ||
+    focus.okrs.value.length > 0 ||
+    focus.actions.value.length > 0 ||
+    digestHasContent.value
+  ),
+);
 
-function digestLevel(level: string): string {
-  return ["critical", "major", "warn", "clear"].includes(level) ? level : "warn";
-}
-
-function openSignalDetails(s: DigestSignal) {
-  const meta = sreMeta(digestLevel(s.level));
-  const rows: string[] = [];
-  rows.push(`| **级别** | <span style="color:${meta.color};font-weight:700">${meta.text}</span> |`);
-  if (typeof s.confidence === "number") rows.push(`| **置信度** | ${s.confidence}% |`);
-  if (s.ref) rows.push(`| **引用锚点** | ${s.ref} |`);
-  const summary = focus.digest.value.summary_file;
-  if (summary) rows.push(`| **完整简报** | ${summary} |`);
-  const content = [
-    `# ${s.id} · 信号`,
-    "",
-    s.title,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    ...rows,
-  ].join("\n");
-  previewDlg.value?.openRaw({
-    title: `${s.id} · 信号`,
-    content,
-    path: `digest:signal:${s.id}`,
-  });
-  if (s.ref) { const r = s.ref; setTimeout(() => openFocusAnchorIfIdle(r), 2400); }
-}
-
-function openDecisionDetails(d: DigestDecision) {
-  const rows: string[] = [];
-  if (d.recommend) rows.push(`| **推荐选项** | <span style="color:var(--ho-okr-active);font-weight:700">${d.recommend}</span> |`);
-  if (d.deadline) rows.push(`| **拍板截止** | ${d.deadline} |`);
-  if (d.ref) rows.push(`| **参考锚点** | ${d.ref} |`);
-  const summary = focus.digest.value.summary_file;
-  if (summary) rows.push(`| **完整简报** | ${summary} |`);
-  const content = [
-    `# ${d.id} · 待拍板决策`,
-    "",
-    d.title,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    ...rows,
-  ].join("\n");
-  previewDlg.value?.openRaw({
-    title: `${d.id} · 待拍板决策`,
-    content,
-    path: `digest:decision:${d.id}`,
-  });
-  if (d.ref) { const rf = d.ref; setTimeout(() => openFocusAnchorIfIdle(rf), 2400); }
-}
-
-function openRedlineDetails(r: DigestRedline) {
-  const rows: string[] = [];
-  if (r.detail) rows.push(`| **细则** | ${r.detail} |`);
-  if (r.ref) rows.push(`| **引用锚点** | ${r.ref} |`);
-  const summary = focus.digest.value.summary_file;
-  if (summary) rows.push(`| **完整简报** | ${summary} |`);
-  const content = [
-    `# ${r.id} · 底线红线`,
-    "",
-    `> 🚨 **${r.title}**`,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    ...rows,
-  ].join("\n");
-  previewDlg.value?.openRaw({
-    title: `${r.id} · 底线红线`,
-    content,
-    path: `digest:redline:${r.id}`,
-  });
-  if (r.ref) { const rr = r.ref; setTimeout(() => openFocusAnchorIfIdle(rr), 2400); }
-}
-
-/* ════════════════════════════════════════════════════════════
- *  Issue 动态模块 · SSOT = YiKnowledge projects/* /bugs Markdown 文件
- *  4 语义分组：Critical / Recent / Cross-Project / Code Quality
- *  每行严格遵循 Activity Paradigm：icon / pill / verb / title / meta
- * ════════════════════════════════════════════════════════════ */
+// ── Issue Feed · 4 语义分组 · SSOT ──
 interface KbBugFeedItem {
-  id: string;
-  title: string;
-  project: string;
-  projectKey: "yivad" | "yipot" | "yipet" | "yiai" | "yiknowledge";
-  categoryLabel: string;
-  categoryColorClass: string;
-  severity: string;
-  severitySre: "critical" | "major" | "warn" | "clear";
-  status: "open" | "in_progress" | "resolved" | "closed" | "rejected" | "reopened" | "done" | "cancelled";
-  statusLabel: string;
-  statusColor: string;
-  assignee?: string;
-  updatedAt: number;
-  kbAnchor: string;
-  kbReadmeAnchor: string;
+  id: string; title: string; project: string; projectKey: KbPKey;
+  categoryLabel: string; categoryColorClass: string;
+  severity: string; severitySre: "critical" | "major" | "warn" | "clear";
+  status: string; statusLabel: string; statusColor: string;
+  assignee?: string; updatedAt: number; kbAnchor: string; kbReadmeAnchor: string;
 }
-
-const PROJECT_KEY_MAP: Record<string, KbBugFeedItem["projectKey"]> = {
-  YiVad: "yivad", YiPot: "yipot", YiPet: "yipet", YiAi: "yiai", YiKnowledge: "yiknowledge",
-  yivad: "yivad", yipot: "yipot", yipet: "yipet", yiai: "yiai", yiknowledge: "yiknowledge",
-};
-const PROJECT_README_ANCHOR: Record<KbBugFeedItem["projectKey"], string> = {
-  yivad: BUG_ANCHORS.yivadIndex, yipot: BUG_ANCHORS.yipotIndex, yipet: BUG_ANCHORS.yipetIndex,
-  yiai: BUG_ANCHORS.yiaiIndex, yiknowledge: BUG_ANCHORS.yikbIndex,
-};
-
-interface BugCatMeta { label: string; cls: string; }
-function resolveBugCategory(bug: KnowledgeBugEntry): BugCatMeta {
-  const t = (bug.type || "").toLowerCase();
-  const m = (bug.module || "").toLowerCase();
-  if (t === "security" || /安全|隐私|security|privacy/.test(m)) return { label: "安全", cls: "is-col-security" };
-  if (t === "data" || /数据|data/.test(m)) return { label: "数据", cls: "is-col-data" };
-  if (/跨项目|rpc|contract|feedback|跨/.test(m)) return { label: "跨项目", cls: "is-col-cross" };
-  if (t === "compatibility" || t === "ui" || /路由|权限|国际化|interface|compat|i18n|route/.test(m)) return { label: "接口", cls: "is-col-iface" };
-  if (t === "performance" || /性能|perf|cpu|clipboard/.test(m)) return { label: "性能", cls: "is-col-perf" };
-  if (/代码质量|quality|type|dead|lint|test|typescript|类型|vue-tsc/.test(m)) return { label: "质量", cls: "is-col-quality" };
-  return { label: "功能", cls: "is-col-func" };
-}
-
-const BUG_SEVERITY_SRE: Record<string, KbBugFeedItem["severitySre"]> = {
-  critical: "critical", P0: "critical",
-  major: "major", P1: "major", high: "major",
-  medium: "warn", P2: "warn", minor: "warn",
-  trivial: "clear", P3: "clear", low: "clear", p0: "critical", p1: "major", p2: "warn", p3: "clear", p4: "clear",
-};
-const BUG_STATUS_LABEL: Record<string, string> = {
-  open: "待处理", in_progress: "修复中", resolved: "已修复",
-  closed: "已关闭", rejected: "不处理", reopened: "重新开启", done: "已完成", cancelled: "已取消",
-  "已修复": "已修复", "已解决": "已解决", todo: "待办", in_review: "评审中",
-};
-const BUG_STATUS_COLOR: Record<string, string> = {
-  open: "var(--ho-status-danger)", in_progress: "var(--ho-status-warn)",
-  resolved: "var(--ho-status-clear)", closed: "var(--ho-st-backlog)",
-  rejected: "var(--ho-text-placeholder)", reopened: "var(--ho-status-major)",
-  done: "var(--ho-status-clear)", cancelled: "var(--ho-st-cancel)",
-  "已修复": "var(--ho-status-clear)", "已解决": "var(--ho-status-clear)",
-  todo: "var(--ho-st-todo)", in_review: "var(--ho-st-review)",
-};
-
-const SRE_SEV_ICON_CLS: Record<KbBugFeedItem["severitySre"], string> = {
-  critical: "is-col-warn",
-  major: "is-col-major",
-  warn: "is-col-wip",
-  clear: "is-col-review",
-};
-
 function normalizeKbBug(bug: KnowledgeBugEntry, idx: number): KbBugFeedItem {
-  const pKey = PROJECT_KEY_MAP[bug.project || bug.project_key || ""] || PROJECT_KEY_MAP[(bug.project_key || bug.project || "").toLowerCase()] || "yivad";
+  const pKey = normalizePkey(bug.project || bug.project_key || "yivad");
   const cat = resolveBugCategory(bug);
-  const sevSre = BUG_SEVERITY_SRE[bug.severity || bug.priority || "medium"] || "warn";
-  const statusVal = (bug.status || "open") as KbBugFeedItem["status"];
-  const keyMatch = String(bug.key || "").match(/\d+/);
-  const seqNo = (keyMatch ? keyMatch[0] : String(idx + 1)).padStart(3, "0");
+  const sevSre = resolveFromSSOT<KbBugFeedItem["severitySre"]>(META.bugSev, bug.severity || bug.priority || "medium", "warn");
+  const st = (bug.status || "open") as string;
+  const nm = String(bug.key || "").match(/\d+/);
+  const seq = (nm ? nm[0] : String(idx + 1)).padStart(3, "0");
   return {
-    id: `${pKey}-${seqNo}`,
-    title: bug.title || bug.key || "(untitled)",
-    project: bug.project || pKey.toUpperCase(),
-    projectKey: pKey,
-    categoryLabel: cat.label,
-    categoryColorClass: cat.cls,
-    severity: bug.severity || bug.priority || "warn",
-    severitySre: sevSre,
-    status: statusVal,
-    statusLabel: BUG_STATUS_LABEL[statusVal] || String(statusVal),
-    statusColor: BUG_STATUS_COLOR[statusVal] || "var(--ho-text-secondary)",
+    id: `${pKey}-${seq}`, title: bug.title || bug.key || "(untitled)",
+    project: bug.project || PROJECTS[pKey].label, projectKey: pKey,
+    categoryLabel: cat.label, categoryColorClass: cat.cls,
+    severity: bug.severity || bug.priority || "warn", severitySre: sevSre,
+    status: st,
+    statusLabel: resolveFromSSOT<string>(META.bugStatusLabel, st, st),
+    statusColor: resolveFromSSOT<string>(META.bugStatusColor, st, "var(--el-text-color-secondary)"),
     assignee: bug.assignee,
     updatedAt: (bug as unknown as { updatedAt?: number }).updatedAt ?? Date.now(),
-    kbAnchor: bugPathFromBug(bug, pKey, seqNo, cat),
-    kbReadmeAnchor: PROJECT_README_ANCHOR[pKey],
+    kbAnchor: bugPathFromBug(bug, pKey, seq, cat),
+    kbReadmeAnchor: PROJECT_README_ANCHOR.value[pKey],
   };
 }
-
-function bugPathFromBug(bug: KnowledgeBugEntry, pKey: string, seqNo: string, cat: BugCatMeta): string {
-  const datePrefix = "2026-09";
-  const catDirMap: Record<string, string> = {
-    安全: "安全隐私", 数据: "数据", 跨项目: "跨项目",
-    接口: "接口", 性能: "性能问题", 质量: "代码质量", 功能: "代码质量",
-  };
-  const prefixMap: Record<string, string> = {
-    安全: "bug-安全隐私", 数据: "数据", 跨项目: "跨项目",
-    接口: "接口", 性能: "bug-性能问题", 质量: "质量", 功能: "质量",
-  };
-  const slug = (bug.title || "").replace(/[^\w\u4e00-\u9fa5-]/g, "").slice(0, 20) || bug.key || "";
-  const dir = catDirMap[cat.label] || "代码质量";
-  const prefix = prefixMap[cat.label] || "质量";
-  if (pKey === "yipot") {
-    return `projects/yipot/bugs/${datePrefix}/${seqNo}-${prefix}-${slug}.md`;
-  }
-  if (pKey === "yipet") {
-    return `projects/yipet/bugs/${datePrefix}/${dir}/${seqNo}-${dir}-${slug}.md`;
-  }
-  return `projects/yivad/bugs/${datePrefix}/${dir}/${seqNo}-${prefix}-${slug}.md`;
-}
-
 const kbBugFromKnowledge: ComputedRef<KbBugFeedItem[]> = computed(() => {
   const fromList = knowledge.recentBugs.value.map((b, i) => normalizeKbBug(b, i));
-  const fromAct: KbBugFeedItem[] = activityItems.value
-    .filter(a => a.type === "bug")
-    .map((a, i) => {
-      const isHigh = a.severity === "critical" || a.severity === "major";
+  const fromAct: KbBugFeedItem[] = knowledge.activityItems.value
+    .filter((a: any) => a.type === "bug")
+    .map((a: any, i: number) => {
+      const high = a.severity === "critical" || a.severity === "major";
       return {
-        id: `act-${i}-${a.severity || "b"}`,
-        title: a.title,
-        project: "YiVad",
-        projectKey: "yivad" as const,
-        categoryLabel: isHigh ? "安全" : "质量",
-        categoryColorClass: isHigh ? "is-col-security" : "is-col-quality",
+        id: `act-${i}-${a.severity || "b"}`, title: a.title,
+        project: PROJECTS.yivad.label, projectKey: "yivad",
+        categoryLabel: high ? "安全" : "质量",
+        categoryColorClass: high ? "is-col-security" : "is-col-quality",
         severity: a.severity || "warn",
-        severitySre: BUG_SEVERITY_SRE[a.severity || "medium"] || "warn",
-        status: "resolved",
-        statusLabel: "已修复",
-        statusColor: BUG_STATUS_COLOR.resolved,
-        assignee: undefined,
-        updatedAt: a.updatedAt,
-        kbAnchor: a.path || BUG_ANCHORS.yivadIndex,
-        kbReadmeAnchor: BUG_ANCHORS.yivadIndex,
+        severitySre: resolveFromSSOT<KbBugFeedItem["severitySre"]>(META.bugSev, a.severity || "medium", "warn"),
+        status: "resolved", statusLabel: "已修复",
+        statusColor: resolveFromSSOT<string>(META.bugStatusColor, "resolved", "var(--ho-status-clear)"),
+        assignee: undefined, updatedAt: a.updatedAt,
+        kbAnchor: a.path || BUG_ANCHORS.value.yivadIndex,
+        kbReadmeAnchor: BUG_ANCHORS.value.yivadIndex,
       };
     });
   const seen = new Set<string>();
   return [...fromList, ...fromAct]
-    .filter(x => (seen.has(x.title) ? false : (seen.add(x.title), true)))
+    .filter((x) => (seen.has(x.title) ? false : (seen.add(x.title), true)))
     .sort((a, b) => b.updatedAt - a.updatedAt);
 });
-
 const kbBugFeedAll: ComputedRef<KbBugFeedItem[]> = computed(() => {
   if (kbBugFromKnowledge.value.length) return kbBugFromKnowledge.value;
-  const allDaily: Issue[] = [
-    ...daily.overdue.value, ...daily.todayDue.value, ...daily.todayInProgress.value, ...daily.pendingReview.value,
+  const src: Issue[] = [
+    ...daily.overdue.value, ...daily.todayDue.value,
+    ...daily.todayInProgress.value, ...daily.pendingReview.value,
   ];
-  return allDaily.slice(0, 16).map<KbBugFeedItem>((item, idx) => {
-    const pkRaw = (item.project_key || "yivad").toString();
-    const pKey = (PROJECT_KEY_MAP[pkRaw] || PROJECT_KEY_MAP[pkRaw.toLowerCase()] || "yivad") as KbBugFeedItem["projectKey"];
+  return src.slice(0, 16).map<KbBugFeedItem>((it, idx) => {
+    const pKey = normalizePkey(it.project_key || "yivad");
     const sevSre: KbBugFeedItem["severitySre"] =
-      item.priority === "urgent" ? "critical" :
-      item.priority === "high" ? "major" :
-      item.priority === "medium" ? "warn" : "clear";
-    const isResolved = item.status === "done" || item.status === "cancelled";
-    const st = (isResolved ? "resolved" : item.status === "in_review" ? "in_progress" : item.status === "in_progress" ? "in_progress" : "open") as KbBugFeedItem["status"];
+      it.priority === "urgent" ? "critical" : it.priority === "high" ? "major"
+        : it.priority === "medium" ? "warn" : "clear";
+    const done = it.status === "done" || it.status === "cancelled";
+    const st: string = done ? "resolved"
+      : (it.status === "in_review" || it.status === "in_progress") ? it.status : "open";
     return {
-      id: `daily-${idx}-${item.key}`,
-      title: item.title,
-      project: item.project_key || pKey.toUpperCase(),
-      projectKey: pKey,
-      categoryLabel: isResolved ? "质量" : "功能",
-      categoryColorClass: isResolved ? "is-col-quality" : "is-col-func",
-      severity: item.priority || "warn",
-      severitySre: sevSre,
-      status: st,
-      statusLabel: BUG_STATUS_LABEL[st] || st,
-      statusColor: BUG_STATUS_COLOR[st] || "var(--ho-text-secondary)",
-      assignee: item.assignee,
-      updatedAt: new Date(item.updated_at || Date.now()).getTime(),
-      kbAnchor: PROJECT_README_ANCHOR[pKey],
-      kbReadmeAnchor: PROJECT_README_ANCHOR[pKey],
+      id: `daily-${idx}-${it.key}`, title: it.title,
+      project: it.project_key || PROJECTS[pKey].label, projectKey: pKey,
+      categoryLabel: done ? "质量" : "功能",
+      categoryColorClass: done ? "is-col-quality" : "is-col-func",
+      severity: it.priority || "warn", severitySre: sevSre, status: st,
+      statusLabel: resolveFromSSOT<string>(META.bugStatusLabel, st, st),
+      statusColor: resolveFromSSOT<string>(META.bugStatusColor, st, "var(--el-text-color-secondary)"),
+      assignee: it.assignee, updatedAt: new Date(it.updated_at || Date.now()).getTime(),
+      kbAnchor: PROJECT_README_ANCHOR.value[pKey],
+      kbReadmeAnchor: PROJECT_README_ANCHOR.value[pKey],
     };
   });
 });
-
-// ── 4 语义分组 ──
-const kbBugCritical: ComputedRef<KbBugFeedItem[]> = computed(() =>
-  kbBugFeedAll.value
-    .filter(b => b.severitySre === "critical" || b.severitySre === "major")
-    .sort((a, b) => (b.severitySre === "critical" ? 1 : 0) - (a.severitySre === "critical" ? 1 : 0) || (b.updatedAt - a.updatedAt))
-    .slice(0, 3)
+// 4 分组工厂 · 单一 computed 产出 config 数组
+type BugPredicate = (b: KbBugFeedItem) => boolean;
+function bugGroup(pred: BugPredicate, limit: number,
+  sort: (a: KbBugFeedItem, b: KbBugFeedItem) => number = (a, b) => b.updatedAt - a.updatedAt,
+) {
+  return kbBugFeedAll.value.filter(pred).sort(sort).slice(0, limit);
+}
+const ISSUE_GROUP_DEFS: Readonly<Array<Omit<IssueGroupConfig, "items" | "chevronAnchor"> & {
+  pred: BugPredicate; limit: number;
+  sort?: (a: KbBugFeedItem, b: KbBugFeedItem) => number;
+  // 允许懒求值：字符串字面量或动态 resolve 函数
+  chevronAnchor: string | (() => string);
+}>> = [
+  {
+    label: "高危缺陷", labelClass: "ho-issue-group__label--danger", icon: Warning,
+    pred: (b) => b.severitySre === "critical" || b.severitySre === "major", limit: 3,
+    sort: (a, b) => (Number(b.severitySre === "critical") - Number(a.severitySre === "critical"))
+             || b.updatedAt - a.updatedAt,
+    chevronText: "Runbook", chevronAnchor: () => BUG_ANCHORS.value.sreRunbook, danger: true,
+  },
+  {
+    label: "最近变更", labelClass: "ho-issue-group__label--clear", icon: CircleCheck,
+    pred: (b) => ["resolved","closed","done"].includes(b.status), limit: 5,
+    chevronText: "YiVad", chevronAnchor: () => BUG_ANCHORS.value.yivadIndex, resolved: true,
+  },
+  {
+    label: "跨项目 / 接口类", labelClass: "ho-issue-group__label--cross", icon: Link,
+    pred: (b) => ["跨项目","接口","数据"].includes(b.categoryLabel), limit: 4,
+    chevronText: "RPC 规范",
+    chevronAnchor: () => findKbFile({
+      name: /跨项目|rpc|contract|接口.*调用|跨.*rpc/i,
+      final: "engineer/build/007-构建-实现跨项目RPC调用.md",
+      dirFallback: "engineer/build", categoryHint: "engineer",
+    }),
+  },
+  {
+    label: "代码质量专项", labelClass: "ho-issue-group__label--quality", icon: DataBoard,
+    pred: (b) => b.categoryLabel === "质量" || b.categoryLabel === "性能", limit: 5,
+    chevronText: "ADR",
+    chevronAnchor: () => findKbFile({
+      name: /架构.*决策|决策.*设计|adr.*001|001.*架构/i,
+      final: "leader/architecture/001-架构-架构决策设计.md",
+      dirFallback: "leader/architecture", categoryHint: "leader",
+    }),
+  },
+];
+const issueGroups: ComputedRef<IssueGroupConfig[]> = computed(() =>
+  ISSUE_GROUP_DEFS.map((g) => {
+    const items = bugGroup(g.pred, g.limit, g.sort);
+    const anchor = typeof g.chevronAnchor === "function" ? g.chevronAnchor() : g.chevronAnchor;
+    return { label: g.label, labelClass: g.labelClass, icon: g.icon,
+             chevronText: g.chevronText, chevronAnchor: anchor,
+             resolved: (g as any).resolved, danger: (g as any).danger, items } as IssueGroupConfig;
+  }),
 );
-const kbBugRecent: ComputedRef<KbBugFeedItem[]> = computed(() =>
-  kbBugFeedAll.value
-    .filter(b => b.status === "resolved" || b.status === "closed" || b.status === "done")
-    .sort((a, b) => b.updatedAt - a.updatedAt)
-    .slice(0, 5)
-);
-const kbBugCross: ComputedRef<KbBugFeedItem[]> = computed(() =>
-  kbBugFeedAll.value
-    .filter(b => b.categoryLabel === "跨项目" || b.categoryLabel === "接口" || b.categoryLabel === "数据")
-    .slice(0, 4)
-);
-const kbBugQuality: ComputedRef<KbBugFeedItem[]> = computed(() =>
-  kbBugFeedAll.value
-    .filter(b => b.categoryLabel === "质量" || b.categoryLabel === "性能")
-    .slice(0, 5)
-);
-
-const hasIssueFeed: ComputedRef<boolean> = computed(() =>
-  kbBugCritical.value.length > 0 || kbBugRecent.value.length > 0 ||
-  kbBugCross.value.length > 0 || kbBugQuality.value.length > 0
-);
-
+const hasIssueFeed: ComputedRef<boolean> = computed(() => issueGroups.value.some((g) => g.items.length > 0));
 function openKbBugRow(bug: KbBugFeedItem): void {
   if (!bug.kbAnchor) { previewIssueFallback(bug); return; }
   openAnchor(bug.kbAnchor);
-  const readme = bug.kbReadmeAnchor;
-  setTimeout(() => openFocusAnchorIfIdle(readme), 2400);
+  scheduleAutoAnchor(bug.kbReadmeAnchor);
 }
-
 function previewIssueFallback(bug: KbBugFeedItem): void {
-  const sevMeta = sreMeta(bug.severitySre);
-  const content = [
-    `# ${bug.id.toUpperCase()}: ${bug.title}`,
-    "",
-    "| 字段 | 值 |",
-    "|---|---|",
-    `| **项目** | ${bug.project} |`,
-    `| **分类** | <span style="font-weight:700">${bug.categoryLabel}</span> |`,
-    `| **严重度** | <span style="color:${sevMeta.color};font-weight:700;background:${sevMeta.bg};padding:1px 7px;border-radius:6px">${sevMeta.text}</span> |`,
-    `| **状态** | <span style="color:${bug.statusColor};font-weight:700">${bug.statusLabel}</span> |`,
-    bug.assignee ? `| **处理人** | ${bug.assignee} |` : "",
-    `| **最后更新** | ${new Date(bug.updatedAt).toLocaleDateString()} |`,
-    "",
-    "---",
-    "",
-    `> 自动跳转对应项目缺陷索引：[\`${bug.kbReadmeAnchor}\`](${bug.kbReadmeAnchor}) · 等待 2.4s`,
-  ].filter(Boolean).join("\n");
-  previewDlg.value?.openRaw({
-    title: `${bug.id.toUpperCase()}: ${truncate(bug.title, 44)}`,
-    content,
-    path: `bug:${bug.id}`,
-  });
-  setTimeout(() => openFocusAnchorIfIdle(bug.kbReadmeAnchor), 2400);
-}
-
-const focusHasItems = computed(() =>
-  daily.overdue.value.length > 0 || daily.todayDue.value.length > 0 ||
-  daily.todayInProgress.value.length > 0 || daily.pendingReview.value.length > 0
-);
-
-const PRIORITY_ORDER: Record<string, number> = { p0: 0, p1: 1, p2: 2, p3: 3, p4: 4, urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
-function sortByPriority(items: Issue[]): Issue[] {
-  return [...items].sort((a, b) => (PRIORITY_ORDER[a.priority] ?? 99) - (PRIORITY_ORDER[b.priority] ?? 99));
-}
-
-function truncate(s: string, n: number): string { return s.length > n ? s.slice(0, n) + "…" : s; }
-
-function daysOverdue(due: string | undefined): number {
-  if (!due) return 0;
-  const d = new Date(due); d.setHours(0,0,0,0);
-  return Math.floor((Date.now() - d.getTime()) / 86400000);
-}
-
-async function previewIssue(item: Issue) {
-  let issue = item;
-  if (!item.description) {
-    try {
-      const res = await getIssue(item.key);
-      issue = (res.data as any)?.list?.[0] || item;
-    } catch { /* use item as-is */ }
-  }
-  const meta: string[] = [];
-  if (issue.status) meta.push(`| **Status** | ${issue.status} |`);
-  if (issue.priority) meta.push(`| **Priority** | ${issue.priority} |`);
-  if (issue.assignee) meta.push(`| **Assignee** | ${issue.assignee} |`);
-  if (issue.due_date) meta.push(`| **Due** | ${issue.due_date} |`);
-  if (issue.project_key) meta.push(`| **Project** | ${issue.project_key} |`);
-  if (issue.story_points) meta.push(`| **Points** | ${issue.story_points} |`);
-  const content = [
-    `# ${issue.key}: ${issue.title}`,
-    '',
-    '| | |',
-    '|---|----|',
-    ...meta,
-    '',
-    '---',
-    '',
-    issue.description || '*No description*'
-  ].join('\n');
-  previewDlg.value?.openRaw({
-    title: `${issue.key}: ${issue.title}`,
-    content,
-    path: `issue:${issue.key}`,
-  });
+  const sev = sreMeta(bug.severitySre);
+  openPreview(`${bug.id.toUpperCase()}: ${truncate(bug.title, 44)}`, `bug:${bug.id}`, [
+    { k: "项目", v: bug.project }, { k: "分类", v: bug.categoryLabel },
+    { k: "严重度", v: sev, as: "pill" },
+    { k: "状态", v: { text: bug.statusLabel, color: bug.statusColor, bg: "#fff" }, as: "colored" },
+    bug.assignee ? { k: "处理人", v: bug.assignee } : null,
+    { k: "最后更新", v: new Date(bug.updatedAt).toLocaleDateString() },
+  ], bug.kbReadmeAnchor);
 }
 </script>
 
 <style scoped lang="scss">
-// ═══════════════════════════════════════════════════════════
-//  Semantic Design Tokens (no numeric suffixes, BEM-aligned)
-// ═══════════════════════════════════════════════════════════
+/* 语义 token 由 @/styles/theme/tokens.ts 统一注册；本文件仅留 surface override */
+
+/* 图标尺寸 token：xs(行内附属) / sm(列表项主体) / md(区块头) / lg(空态 & 主入口) */
 .ho-root {
-  /* Status / Severity */
-  --ho-status-danger:  #ef4444;
-  --ho-status-major:   #ea580c;
-  --ho-status-warn:    var(--el-color-warning);
-  --ho-status-clear:   #10b981;
-
-  /* Background accents for each status level */
-  --ho-bg-danger:      #fef2f2;
-  --ho-bg-major:       #fff7ed;
-  --ho-bg-warn:        var(--el-color-warning-light-9);
-  --ho-bg-clear:       #ecfdf5;
-
-  /* Issue status colors */
-  --ho-st-todo:        #909399;
-  --ho-st-wip:         #5ab1ef;
-  --ho-st-review:      #e6a23c;
-  --ho-st-done:        #67c23a;
-  --ho-st-backlog:     #9a60b4;
-  --ho-st-cancel:      #ee6666;
-
-  /* Priority colors */
-  --ho-pri-p0:         #f56c6c;
-  --ho-pri-p1:         #e6a23c;
-  --ho-pri-p2:         #409eff;
-  --ho-pri-p3:         #909399;
-  --ho-pri-p4:         #c0c4cc;
-
-  /* OKR accent colors */
-  --ho-okr-active:     #2563eb;
-  --ho-okr-active-bg:  #eff6ff;
-
-  /* Common surface aliases */
-  --ho-fill:           var(--el-fill-color);
-  --ho-text-primary:   var(--el-text-color-primary);
-  --ho-text-secondary: var(--el-text-color-secondary);
-  --ho-text-placeholder: var(--el-text-color-placeholder);
+  --ho-icon-xs: 11px;
+  --ho-icon-sm: 14px;
+  --ho-icon-md: 12px;
+  --ho-icon-lg: 24px;
 }
 
-.ho-root { box-sizing: border-box; min-height: 100%; padding: 20px 24px 80px; background: var(--el-bg-color-page); }
+/* ── Base ────────────────────────────────── */
+.ho-root { box-sizing: border-box; min-height: 100%; padding: 20px 24px 80px; background: var(--el-bg-color-page, #f2f3f5); }
 .ho__error { display: flex; align-items: center; justify-content: center; min-height: 400px; }
+.ho__spacer { height: 24px; }
+.ho-chevron-btn { padding: 0 4px; margin-left: 6px; font-size: 10px; font-weight: 600; color: var(--el-color-primary); }
+.ho-empty-icon { color: var(--ho-status-clear, #10b981); margin-right: 6px; line-height: 1; }
 
-// ── Header ──
-.ho-head { display: flex; gap: 16px; align-items: center; padding: 14px 20px; margin-bottom: 14px; background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter); border-radius: 14px; }
+/* ── Header ──────────────────────────────── */
+.ho-head {
+  display: flex; gap: 16px; align-items: center;
+  padding: 14px 20px; margin-bottom: 14px;
+  background: var(--el-bg-color, #fff);
+  border: 1px solid var(--el-border-color-lighter, #ebeef5); border-radius: 14px;
+}
 .ho-head__left { display: flex; gap: 14px; align-items: center; flex: 1; min-width: 0; }
-.ho-head__icon { display: flex; flex-shrink: 0; align-items: center; justify-content: center; width: 40px; height: 40px; color: #fff; background: linear-gradient(135deg, var(--el-color-primary), #6366f1); border-radius: 10px; }
-.ho-head__title { margin: 0; font-size: 15px; font-weight: 700; color: var(--ho-text-primary); line-height: 1.3; }
-.ho-head__desc { margin: 2px 0 0; font-size: 11px; color: var(--ho-text-secondary); }
+.ho-head__icon {
+  display: flex; flex-shrink: 0; align-items: center; justify-content: center;
+  width: 44px; height: 44px; color: #fff;
+  background: linear-gradient(135deg, var(--el-color-primary), var(--ho-accent-focus));
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.ho-head__title { margin: 0; font-size: 15px; font-weight: 700; color: var(--el-text-color-primary, #303133); line-height: 1.3; }
+.ho-head__desc { margin: 2px 0 0; font-size: 11px; color: var(--el-text-color-secondary, #909399); }
 .ho-head__right { display: flex; flex-shrink: 0; gap: 10px; align-items: center; }
-.ho-head__nav { display: inline-flex; gap: 5px; align-items: center; padding: 3px 8px; background: var(--ho-fill); border: 1px solid var(--el-border-color-lighter); border-radius: 10px; overflow: hidden; }
-.ho-head__nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
-  &.is-gate-a { background: #8b5cf6; box-shadow: 0 0 0 3px #ede9fe; animation: ho-dot-blink 0.8s ease-in-out infinite; }
-  &.is-gate-b { background: var(--ho-status-warn); box-shadow: 0 0 0 3px #fef3c7; animation: ho-dot-blink 0.8s ease-in-out 0.2s infinite; }
-  &.is-gate-c { background: var(--ho-status-clear); box-shadow: 0 0 0 3px var(--ho-bg-clear); animation: ho-dot-blink 0.8s ease-in-out 0.4s infinite; }
+.ho-head__stat { font-size: 11px; color: var(--el-text-color-secondary, #909399); white-space: nowrap; b { font-weight: 700; color: var(--el-text-color-primary, #303133); } }
+.ho-head__date { font-size: 11px; font-weight: 600; color: var(--el-text-color-placeholder, #a8abb2); }
+.ho-head__nav {
+  display: inline-flex; gap: 5px; align-items: center;
+  padding: 3px 8px; background: var(--el-fill-color, #f0f2f5);
+  border: 1px solid var(--el-border-color-lighter, #ebeef5); border-radius: 10px;
 }
-@keyframes ho-dot-blink { 50% { transform: scale(1.25); } }
-.ho-head__nav-label { font-size: 10px; font-weight: 600; color: var(--ho-text-secondary); white-space: nowrap; }
-.ho-fade-enter-active, .ho-fade-leave-active { transition: opacity 0.18s ease, transform 0.18s ease; }
-.ho-fade-enter-from, .ho-fade-leave-to { opacity: 0; transform: translateY(-2px); }
-.ho-head__live { display: inline-flex; gap: 4px; align-items: center; padding: 2px 8px; font-size: 10px; font-weight: 600; color: var(--el-color-primary); background: var(--el-color-primary-light-9); border: 1px solid var(--el-color-primary-light-5); border-radius: 10px; }
-.ho-head__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--el-color-primary); }
-.ho-head__stat { font-size: 11px; color: var(--ho-text-secondary); white-space: nowrap; b { font-weight: 700; color: var(--ho-text-primary); } }
-.ho-head__date { font-size: 11px; font-weight: 600; color: var(--ho-text-placeholder); }
-
-// ── KPI Cards ──
-.ho-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-
-.ho-metric {
-  display: flex; flex-direction: column; gap: 2px;
-  padding: 14px 16px; background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter); border-radius: 12px;
-  cursor: pointer; transition: all 0.15s ease;
-  &:hover { border-color: var(--el-color-primary-light-5); box-shadow: 0 2px 8px rgb(0 0 0 / 5%); }
-  &.is-warn { border-left: 3px solid var(--ho-status-warn); }
-  &.is-danger { border-left: 3px solid var(--ho-status-danger); }
+.ho-head__nav-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  &.is-gate-a { background: var(--ho-accent-focus-soft); }
+  &.is-gate-b { background: var(--ho-status-warn); }
+  &.is-gate-c { background: var(--ho-status-clear); }
 }
-.ho-metric__row { display: flex; gap: 6px; align-items: baseline; &--sub { margin-top: auto; } }
-.ho-metric__label { flex: 1; font-size: 10px; font-weight: 600; color: var(--ho-text-secondary); text-transform: uppercase; letter-spacing: 0.4px; }
-.ho-metric__value { font-size: 28px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.15; color: var(--ho-text-primary); }
-.ho-metric__delta { display: inline-flex; gap: 2px; align-items: center; font-size: 10px; font-weight: 600; &.is-up { color: var(--ho-status-danger); } &.is-down { color: var(--ho-status-clear); } }
-.ho-metric__ctx { font-size: 10px; color: var(--ho-text-placeholder); cursor: pointer; white-space: nowrap; &:hover { text-decoration: underline; } &.is-warn { color: var(--ho-status-warn); font-weight: 600; } &.is-danger { color: var(--ho-status-danger); font-weight: 600; } &.is-green { color: var(--ho-status-clear); } &.is-red { color: var(--ho-status-danger); } }
-.ho-metric__bars { display: flex; gap: 1px; height: 5px; margin-top: 2px; overflow: hidden; border-radius: 3px; background: var(--ho-fill); }
-.ho-metric__bar { display: block; height: 100%; min-width: 2px; cursor: pointer; transition: opacity 0.12s; &:hover { opacity: 0.75; } }
+.ho-head__nav-label { font-size: 10px; font-weight: 600; color: var(--el-text-color-secondary, #909399); }
 
-// Attention grid
-.ho-metric--attn { cursor: default; }
-.ho-attn { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; flex: 1; }
-.ho-attn__item { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 8px 4px; cursor: pointer; border-radius: 8px; background: var(--el-fill-color-light); transition: all 0.12s; &:hover { background: var(--ho-fill); } &.is-warn { background: var(--ho-bg-warn); } &.is-danger { background: var(--ho-bg-danger); } }
-.ho-attn__n { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; color: var(--ho-text-primary); }
-.ho-attn__l { font-size: 9px; font-weight: 500; color: var(--ho-text-secondary); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 1px; }
-
-// ── Body grid ──
+/* ── Body grid ───────────────────────────── */
 .ho__body { display: grid; grid-template-columns: 1fr 268px; gap: 14px; align-items: start; }
 .ho__main { min-width: 0; display: flex; flex-direction: column; gap: 14px; }
+@media (max-width: 1024px) { .ho__body { grid-template-columns: 1fr; } }
 
-.ho-card { padding: 18px 22px; background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter); border-radius: 14px; }
-.ho-card__head { display: flex; gap: 8px; align-items: baseline; padding-left: 12px; margin-bottom: 10px; border-left: 3px solid var(--el-border-color); }
-.ho-card__head--focus { border-left-color: #6366f1; }
-.ho-card__head--activity { border-left-color: var(--el-color-primary); }
-.ho-card__title { font-size: 13px; font-weight: 600; color: var(--ho-text-primary); }
-.ho-card__sub { margin-left: auto; font-size: 10px; color: var(--ho-text-placeholder); }
-.ho-card__badge { margin-left: 4px; font-size: 11px; color: var(--ho-text-placeholder); }
-.ho-card__loading { display: flex; justify-content: center; padding: 24px 0; color: var(--ho-text-secondary); }
-.ho-card__empty { display: flex; align-items: center; justify-content: center; padding: 24px 0; font-size: 12px; color: var(--ho-text-placeholder); }
-
-// ── Today's Focus issue list ──
-.ho-focus__empty-icon { color: var(--ho-status-clear); margin-right: 6px; }
-
-// ── Activity + Actlist shared tokens ──
-// 最近动态模块 = 首页其它列表模块的参考设计模板
-//  结构:  ho-activity__head (分组小标题) + ho-activity__item (icon + status pill + verb + title + time)
-//  其它区块 (SRE/OKR/Actions/Digest/IssueGroups) 统一复用该结构：class="ho-activity__item ho-actlist__item"
-.ho-activity { display: flex; flex-direction: column; gap: 2px; }
-.ho-activity__head {
-  display: flex; align-items: baseline;
-  padding: 10px 6px 6px;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.3px;
-  color: var(--ho-text-secondary); text-transform: uppercase;
-  border-top: 1px dashed var(--el-border-color-lighter);
-  :first-child & { border-top: 0; padding-top: 2px; }
-  span:first-child { font-size: 10px; }
-}
-.ho-activity__item {
-  display: flex; align-items: center;
-  gap: 8px;
-  padding: 5px 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.12s ease;
-  min-height: 28px;
-  &:hover { background: var(--el-fill-color-light); }
-  .ho-activity__icon { flex-shrink: 0; color: var(--ho-text-secondary); font-size: 13px; }
-}
-.ho-activity__spacer { flex: 1; min-width: 0; }
-.ho-activity__icon {
-  font-size: 13px;
-  &.is-col-okr    { color: #6366f1; }
-  &.is-col-sig    { color: #8b5cf6; }
-  &.is-col-dec    { color: #0ea5e9; }
-  &.is-col-red    { color: var(--ho-status-danger); }
-  &.is-col-warn   { color: var(--ho-status-major); }
-  &.is-col-major  { color: var(--ho-status-warn); }
-  &.is-col-wip    { color: var(--ho-st-wip); }
-  &.is-col-review { color: #8b5cf6; }
-}
-.ho-activity__sev {
-  flex-shrink: 0;
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 22px; height: 16px; padding: 0 5px;
-  border-radius: 4px;
-  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px;
-  &.is-sre-critical, &.is-sre-major { color: #fff; background: var(--ho-status-danger); }
-  &.is-sre-warn   { color: #fff; background: var(--ho-status-warn); }
-  &.is-sre-clear  { color: #fff; background: var(--ho-status-clear); }
-  &.is-critical { color: #fff; background: var(--ho-status-danger); }
-  &.is-major    { color: #fff; background: var(--ho-status-major); }
-  &.is-warn     { color: #fff; background: var(--ho-status-warn); }
-  &.is-clear    { color: #fff; background: var(--ho-status-clear); }
-}
-.ho-activity__verb {
-  flex-shrink: 0;
-  font-size: 9px; color: var(--ho-text-placeholder);
-  font-family: ui-monospace, monospace; font-weight: 600;
-  max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.ho-activity__title {
-  flex: 1;
-  min-width: 0;
-  font-size: 12px; font-weight: 500; color: var(--ho-text-primary); line-height: 1.4;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.ho-activity__time {
-  flex-shrink: 0;
-  font-size: 10px; color: var(--ho-text-placeholder);
-  font-variant-numeric: tabular-nums;
-}
-.ho-activity__cat {
-  flex-shrink: 0;
-  display: inline-flex; align-items: center; justify-content: center;
-  height: 15px; padding: 0 6px;
-  border-radius: 5px;
-  font-size: 9px; font-weight: 700; letter-spacing: 0.2px; text-transform: uppercase;
-  background: var(--el-fill-color-light); color: var(--ho-text-secondary);
-  &.is-executive { background: var(--ho-okr-active-bg); color: var(--ho-okr-active); }
-  &.is-leader    { background: #ede9fe; color: #6d28d9; }
-  &.is-engineer  { background: #dbeafe; color: #1d4ed8; }
-  &.is-sre       { background: var(--ho-bg-warn); color: var(--ho-status-warn); }
-  &.is-aier      { background: #dcfce7; color: #15803d; }
-  &.is-product   { background: #fee2e2; color: #b91c1c; }
-  &.is-curator   { background: #fef3c7; color: #92400e; }
-  &.is-other, &.is-other { background: var(--el-fill-color-light); color: var(--ho-text-placeholder); }
-}
-
-/* Unified Actlist container (Today's Focus sub-sections + Issue groups) */
-.ho-actlist {
-  display: flex; flex-direction: column;
-  + .ho-actlist { margin-top: 4px; }
-  &.is-hero-critical { background: var(--ho-bg-danger); border-left: 3px solid var(--ho-status-danger); border-radius: 8px; margin-bottom: 2px; }
-  &.is-hero-major    { background: var(--ho-bg-major);  border-left: 3px solid var(--ho-status-major); border-radius: 8px; margin-bottom: 2px; }
-  &.is-hero-warn     { background: var(--ho-bg-warn);   border-left: 3px solid var(--ho-status-warn);  border-radius: 8px; margin-bottom: 2px; }
-  &.is-digest-degraded { opacity: 0.92; border-left: 3px solid #94a3b8; border-radius: 6px; }
-}
-/* Actlist head alignment on .ho-activity__head */
-.ho-actlist > .ho-activity__head { display: flex; align-items: center; }
-.ho-actlist__count {
-  margin-left: auto; padding: 1px 6px; min-width: 16px; text-align: center;
-  font-size: 9px; font-weight: 700; color: var(--ho-text-secondary);
-  background: var(--ho-fill); border-radius: 8px; letter-spacing: 0;
-  &--warn { background: var(--ho-bg-danger); color: var(--ho-status-danger); }
-}
-.ho-actlist__degraded { margin-left: 4px; font-size: 9px; font-weight: 600; padding: 1px 5px; border-radius: 5px; background: #fef3c7; color: #92400e; }
-.ho-actlist__tag {
-  font-size: 9px; font-weight: 700; letter-spacing: 0.3px;
-  padding: 1px 7px; border-radius: 10px; text-transform: uppercase;
-}
-
-/* Actlist items shared padding bump (dense by default) */
-.ho-actlist__items { display: flex; flex-direction: column; }
-.ho-actlist__item {
-  /* inherit from ho-activity__item, no additional defaults — for subclassing */
-}
-/* hero item: first row of a focus banner */
-.ho-actlist__hero-item {
-  display: flex; gap: 7px; align-items: center;
-  padding: 6px 10px 4px; margin: 0 4px;
-  border-radius: 6px; cursor: pointer; transition: all 0.12s;
-  &:hover { background: #ffffff70; }
-}
-.ho-actlist__verb {
-  flex-shrink: 0; font-size: 9px; color: var(--ho-text-placeholder);
-  font-family: ui-monospace, monospace; font-weight: 600;
-}
-.ho-actlist__hero-title {
-  font-size: 12px; font-weight: 700; color: var(--ho-text-primary);
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.4;
-}
-.ho-actlist__must-pill {
-  flex-shrink: 0; max-width: 48%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 9px; font-weight: 700; color: #4338ca; background: #e0e7ff;
-  padding: 1px 7px; border-radius: 7px; letter-spacing: 0.2px;
-}
-.ho-actlist__narr {
-  margin: 0 10px 4px; padding: 0 6px 4px;
-  font-size: 10px; color: var(--ho-text-secondary); line-height: 1.5;
-  border-left: 2px solid #ddd6fe;
-}
-
-/* OKR row: progress bar inline */
-.ho-actlist__item--okr {
-  padding-bottom: 8px;
-}
-.ho-actlist__sev-okr {
-  flex-shrink: 0; font-size: 9px; font-weight: 700; letter-spacing: 0.2px;
-  padding: 1px 6px; border-radius: 8px; text-transform: uppercase;
-}
-.ho-actlist__cov {
-  flex-shrink: 0; font-size: 9px; font-weight: 600; color: var(--ho-text-secondary);
-  font-variant-numeric: tabular-nums;
-}
-.ho-actlist__owner {
-  flex-shrink: 0; max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 9px; color: var(--ho-text-placeholder);
-}
-.ho-actlist__progbar {
-  flex-shrink: 0; display: inline-block;
-  width: 48px; height: 4px; overflow: hidden; background: var(--ho-fill); border-radius: 3px;
-  vertical-align: middle;
-}
-.ho-actlist__progfill { display: block; height: 100%; border-radius: 3px; transition: width 0.4s ease; }
-.ho-actlist__pct {
-  flex-shrink: 0; width: 30px; text-align: right;
-  font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums;
-}
-
-/* Actions row: two small pills + status verb */
-.ho-actlist__role-pill {
-  flex-shrink: 0; font-size: 9px; font-weight: 700;
-  padding: 1px 6px; border-radius: 5px; color: #6366f1; background: #f5f3ff;
-  max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.ho-actlist__pri-pill {
-  flex-shrink: 0; font-size: 8px; font-weight: 700; color: #fff;
-  padding: 1px 5px; border-radius: 4px; min-width: 20px; text-align: center;
-}
-
-/* Digest sub-blocks */
-.ho-actlist__sub { padding: 2px 0; }
-.ho-actlist__sub + .ho-actlist__sub { margin-top: 2px; padding-top: 4px; border-top: 1px dashed var(--el-border-color-lighter); }
-.ho-actlist__sub--red { background: var(--ho-bg-danger); border-radius: 6px; padding: 3px 4px; margin-top: 4px; }
-
-.ho-actlist__sub-label {
-  padding: 6px 8px 3px; font-size: 8px; font-weight: 800; letter-spacing: 0.6px;
-  text-transform: uppercase;
-  &--sig     { color: #6d28d9; }
-  &--dec     { color: #0284c7; }
-  &--redline { color: var(--ho-status-danger); }
-}
-.ho-actlist__sig-level {
-  flex-shrink: 0; font-size: 8px; font-weight: 700; padding: 1px 5px; border-radius: 3px; text-transform: uppercase;
-  &.is-critical, &.is-major { color: #fff; background: var(--ho-status-danger); }
-  &.is-warn  { color: #fff; background: var(--ho-status-warn); }
-  &.is-clear { color: #fff; background: var(--ho-status-clear); }
-}
-.ho-actlist__conf {
-  flex-shrink: 0; font-size: 9px; font-weight: 700; font-variant-numeric: tabular-nums;
-  padding: 1px 5px; border-radius: 4px; background: #ede9fe; color: #6d28d9;
-}
-.ho-actlist__dec-pill {
-  flex-shrink: 0; font-size: 9px; font-weight: 700;
-  padding: 1px 6px; border-radius: 5px; background: #dbeafe; color: #1d4ed8;
-}
-.ho-actlist__dead {
-  flex-shrink: 0; font-size: 9px; font-weight: 600; font-variant-numeric: tabular-nums;
-  color: var(--ho-status-major); cursor: default;
-}
-.ho-actlist__red-pill {
-  flex-shrink: 0; font-size: 8px; font-weight: 800; color: #fff; background: var(--ho-status-danger);
-  padding: 1px 5px; border-radius: 4px; min-width: 18px; text-align: center;
-  font-family: ui-monospace, monospace;
-}
-.ho-actlist__subtext { font-size: 10px; color: var(--ho-text-secondary); }
-
-/* Issue group rows */
-.ho-actlist__item--issue {
-  &:hover {
-    background: var(--el-fill-color-light);
-    .ho-actlist__issue-pri { filter: brightness(1.1); }
-  }
-}
-.ho-actlist__issue-pri {
-  flex-shrink: 0; width: 22px; height: 15px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 8px; font-weight: 700; color: #fff; border-radius: 4px;
-  transition: filter 0.15s;
-}
-.ho-actlist__issue-proj {
-  flex-shrink: 0; font-size: 8px; font-weight: 600;
-  padding: 0 5px; height: 15px; line-height: 15px;
-  color: var(--el-color-primary); background: var(--el-color-primary-light-9);
-  border-radius: 4px; max-width: 52px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-}
-.ho-actlist__issue-who {
-  flex-shrink: 0; max-width: 54px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  font-size: 10px; color: var(--ho-text-placeholder);
-}
-.ho-actlist__issue-time {
-  flex-shrink: 0; font-size: 10px; font-variant-numeric: tabular-nums; font-weight: 500;
-  color: var(--ho-text-placeholder);
-  &.is-overdue { color: var(--ho-status-danger); font-weight: 700; }
-}
-
-/* Shared chevron button (aligned to .ho-activity__head) */
-.ho-fb-btn-chevron { padding: 0 4px; margin-left: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.2px; color: var(--el-color-primary); }
-
-/* Divider between board sections and issue dynamic list */
-.ho-fb-divider {
-  display: flex; align-items: center; margin: 10px 2px 8px; color: var(--ho-text-placeholder);
-  &::before, &::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--el-border-color-lighter)); }
-  &::after { background: linear-gradient(90deg, var(--el-border-color-lighter), transparent); }
-  span { padding: 0 12px; font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--el-color-primary); background: var(--el-color-primary-light-9); border-radius: 10px; }
-}
-
-/* ═══════════════════════════════════════════════════════════
- *  SRE Status Matrix (full-width, edge-to-edge)
- * ═══════════════════════════════════════════════════════════ */
-.ho-fb-sre {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 12px 18px 14px;
-  margin-bottom: 10px;
-  background: linear-gradient(180deg, var(--el-bg-color) 0%, var(--el-fill-color-light) 100%);
+/* 公共 surface：卡片边框/背景/悬浮统一基底（scoped 下禁用 @extend，模板显式追加类） */
+.ho-surface-card {
+  background: var(--el-bg-color);
   border: 1px solid var(--el-border-color-lighter);
   border-radius: 14px;
-  border-left: 4px solid var(--ho-status-warn);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
+  transition: box-shadow 0.2s ease, border-color 0.15s;
+  &:hover { box-shadow: var(--ho-shadow-card); }
+}
+.ho-card { padding: 16px 20px; }
+.ho-card__head {
+  display: flex; gap: 8px; align-items: baseline;
+  padding-left: 12px; margin-bottom: 10px;
+  border-left: 3px solid var(--el-border-color, #dcdfe6);
+}
+.ho-card__head--focus { border-left-color: var(--ho-accent-focus); }
+.ho-card__title { font-size: 13px; font-weight: 600; color: var(--el-text-color-primary, #303133); }
+.ho-card__sub { margin-left: auto; font-size: 10px; color: var(--el-text-color-placeholder, #a8abb2); }
+.ho-card__badge { margin-left: 4px; font-size: 11px; color: var(--el-text-color-placeholder, #a8abb2); }
+.ho-card__loading { padding: 30px 0; text-align: center; color: var(--el-text-color-placeholder, #a8abb2); }
+.ho-card__empty { display: flex; align-items: center; justify-content: center; padding: 24px; color: var(--el-text-color-secondary, #909399); font-size: 15px; }
 
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--ho-status-danger), var(--ho-status-major), var(--ho-status-warn), var(--ho-status-clear));
-    opacity: 0.55;
-    z-index: 0;
-  }
-  &:hover { box-shadow: 0 4px 14px rgb(0 0 0 / 5%); }
-}
-.ho-fb-sre__head {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 2px 2px 2px;
-  position: relative;
-  z-index: 1;
-}
-.ho-fb-sre__head-left {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  flex-wrap: wrap;
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.ho-fb-sre__label {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--ho-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  padding-left: 6px;
-  border-left: 3px solid var(--ho-status-warn);
-}
-.ho-fb-sre__count {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ho-text-placeholder);
-  font-variant-numeric: tabular-nums;
-  padding: 2px 8px;
-  background: var(--ho-fill);
-  border-radius: 10px;
-  flex-shrink: 0;
-}
-
-/* Legend chips (filters) */
-.ho-fb-sre__legend { display: inline-flex; gap: 4px; align-items: center; flex-wrap: wrap; }
-.ho-fb-sre-legend {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  padding: 2px 7px;
-  border-radius: 8px;
-  cursor: pointer;
-  background: #fff;
-  border: 1px solid var(--el-border-color-lighter);
-  transition: all 0.14s ease;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--ho-text-secondary);
-  user-select: none;
-  &:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgb(0 0 0 / 6%); }
-  &.is-empty { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.4); &:hover { transform: none; box-shadow: none; } }
-  &.is-active { box-shadow: 0 0 0 1px currentColor inset; background: #fafbff; }
-  &.is-critical { color: var(--ho-status-danger); &.is-active { background: var(--ho-bg-danger); } }
-  &.is-major    { color: var(--ho-status-major);  &.is-active { background: var(--ho-bg-major); } }
-  &.is-warn     { color: var(--ho-status-warn);   &.is-active { background: var(--ho-bg-warn); } }
-  &.is-clear    { color: var(--ho-status-clear);  &.is-active { background: var(--ho-bg-clear); } }
-}
-.ho-fb-sre-legend__dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px #fff; }
-.ho-fb-sre-legend__text { letter-spacing: 0.2px; }
-.ho-fb-sre-legend__count { font-variant-numeric: tabular-nums; opacity: 0.92; }
-
-/* Severity heat strip (full-width, edge-to-edge inside the card) */
-.ho-fb-sre__strip {
-  display: flex;
-  width: calc(100% + 36px);
-  margin: 0 -18px 2px;
-  height: 22px;
-  overflow: hidden;
-  background: var(--ho-fill);
-  border-top: 1px solid var(--el-border-color-lighter);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  position: relative;
-  z-index: 1;
-}
-.ho-fb-sre-strip__seg {
-  position: relative;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  transition: flex 0.35s ease, filter 0.15s ease;
-  opacity: 0.94;
-  &.is-clickable { cursor: pointer; }
-  &:hover.is-clickable { filter: brightness(1.08); }
-  &::after {
-    content: "";
-    position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.28) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.08) 100%);
-    pointer-events: none;
-  }
-}
-.ho-fb-sre-strip__label {
-  position: relative;
-  z-index: 1;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
-  color: #fff;
-  text-shadow: 0 1px 1px rgb(0 0 0 / 25%);
-}
-.ho-fb-sre-strip__seg.is-clear .ho-fb-sre-strip__label,
-.ho-fb-sre-strip__seg.is-warn  .ho-fb-sre-strip__label {
-  color: #1f2937;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-}
-
-/* Items grid: responsive, fills full container width */
-.ho-fb-sre__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 8px;
-  width: 100%;
-  position: relative;
-  z-index: 1;
-  padding: 4px 2px 2px;
-  &[data-filter-mode="filtered"] .ho-fb-sre-item {
-    animation: sre-filter-in 0.24s ease both;
-  }
-}
-@keyframes sre-filter-in {
-  from { opacity: 0; transform: translateY(3px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* SRE card item */
-.ho-fb-sre-item {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  background: #fff;
-  border: 1px solid var(--el-border-color-lighter);
-  border-left: 4px solid var(--el-border-color);
-  cursor: pointer;
-  outline: none;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
-  min-height: 72px;
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 8px 18px rgb(99 102 241 / 9%), 0 2px 6px rgb(0 0 0 / 4%);
-    border-color: var(--el-color-primary-light-5);
-    background: #fcfcff;
-  }
-  &:focus-visible {
-    box-shadow: 0 0 0 3px #c7d2fe, 0 0 0 1px #6366f1 inset;
-  }
-  &.is-critical {
-    border-left-color: var(--ho-status-danger);
-    background: linear-gradient(180deg, #fff 0%, var(--ho-bg-danger) 100%);
-    animation: sre-pulse-danger 3.4s ease-in-out infinite;
-  }
-  &.is-major {
-    border-left-color: var(--ho-status-major);
-    background: linear-gradient(180deg, #fff 0%, var(--ho-bg-major) 100%);
-  }
-  &.is-warn {
-    border-left-color: var(--ho-status-warn);
-    background: linear-gradient(180deg, #fff 0%, var(--ho-bg-warn) 100%);
-  }
-  &.is-clear {
-    border-left-color: var(--ho-status-clear);
-    background: linear-gradient(180deg, #fff 0%, var(--ho-bg-clear) 100%);
-  }
-  &.is-flash { animation-iteration-count: 2; animation-duration: 2.2s; }
-}
-@keyframes sre-pulse-danger {
-  0%, 100% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0%); }
-  50%      { box-shadow: 0 0 0 4px rgb(239 68 68 / 10%); }
-}
-
-.ho-fb-sre-item__top {
-  display: flex;
+/* ── Activity / Actlist 统一范式（icon + pill + verb + title + meta） ── */
+.ho-activity { display: flex; flex-direction: column; gap: 2px; }
+.ho-activity__head {
+  display: flex; align-items: center;
+  padding: 12px 6px 8px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.4px;
+  color: var(--el-text-color-secondary, #909399); text-transform: uppercase;
+  border-top: 1px dashed var(--el-border-color-lighter, #ebeef5);
+  :first-child & { border-top: 0; padding-top: 4px; }
+  :deep(.el-button .el-icon), :deep(.ho-count .el-icon) { margin-right: 3px; }
+  :deep(.ho-issue-group__label) { display: inline-flex; align-items: center; gap: 3px; line-height: 1; }
   gap: 6px;
-  align-items: center;
-  width: 100%;
-  flex-wrap: wrap;
 }
-.ho-fb-sre-item__led {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  box-shadow: 0 0 0 2px #fff;
-  &.is-pulse { animation: sre-led-blink 1.1s ease-in-out infinite; }
+.ho-activity__item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 7px 8px; border-radius: 8px;
+  cursor: pointer; transition: background 0.15s ease, transform 0.1s ease;
+  min-height: 34px;
+  &:hover { background: var(--ho-surface-hover, #f5f7fa); transform: translateX(2px); }
 }
-@keyframes sre-led-blink {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.35; transform: scale(0.78); }
-}
-.ho-fb-sre-item__tag {
-  flex-shrink: 0;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 1px 6px;
-  border-radius: 5px;
-  text-transform: uppercase;
-  border: 1px solid currentColor;
-  opacity: 0.85;
-}
-.ho-fb-sre-item__title {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ho-text-primary);
-  line-height: 1.35;
-}
-.ho-fb-sre-item__spacer { flex: 0 0 4px; }
-.ho-fb-sre-item__owner {
-  flex-shrink: 0;
-  display: inline-flex;
-  gap: 3px;
-  align-items: center;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--ho-text-secondary);
-  padding: 1px 6px;
-  background: rgba(255,255,255,0.8);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 20px;
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-}
-.ho-fb-sre-item__chev {
-  flex-shrink: 0;
-  color: var(--ho-text-placeholder);
-  transition: transform 0.15s ease, color 0.15s ease;
-  display: flex;
-}
-.ho-fb-sre-item:hover .ho-fb-sre-item__chev {
-  transform: translateX(2px);
-  color: var(--el-color-primary);
-}
-
-.ho-fb-sre-item__mid { padding-left: 14px; }
-.ho-fb-sre-item__detail {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 11px;
-  line-height: 1.5;
-  color: var(--ho-text-secondary);
-}
-
-.ho-fb-sre-item__bot {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding-top: 4px;
-  border-top: 1px dashed var(--el-border-color-lighter);
-  margin-top: 2px;
-}
-.ho-fb-sre-item__imp {
-  flex-shrink: 0;
-  font-size: 9px;
-  font-weight: 800;
-  letter-spacing: 0.35px;
-  padding: 1px 8px;
-  border-radius: 20px;
-  text-transform: uppercase;
-  border: 1px solid currentColor;
-  opacity: 0.9;
-}
-.ho-fb-sre-item__hint {
-  flex: 1;
-  min-width: 0;
-  text-align: right;
-  font-size: 9px;
-  font-weight: 600;
-  color: var(--ho-text-placeholder);
-  letter-spacing: 0.2px;
-  opacity: 0.9;
-}
-
-/* Tooltip for SRE cards (global, not scoped, so use element-plus popper class via :deep is impossible; style our own wrapper inside tooltip slot) */
-.ho-fb-sre-tip {
-  max-width: 280px;
-  line-height: 1.55;
-  font-size: 11px;
-}
-.ho-fb-sre-tip__title { font-size: 12px; font-weight: 700; margin-bottom: 4px; }
-.ho-fb-sre-tip__body  { color: #e5e7eb; }
-.ho-fb-sre-tip__foot  { font-size: 10px; color: #d1d5db; margin-top: 4px; font-style: italic; }
-
-/* Foot bar for active filters */
-.ho-fb-sre__foot {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: var(--el-fill-color-light);
-  border: 1px dashed var(--el-border-color-lighter);
-  font-size: 10px;
-  color: var(--ho-text-secondary);
-  z-index: 1;
-  position: relative;
-}
-.ho-fb-sre__foot-tip { flex: 1; min-width: 0; font-weight: 600; }
-.ho-fb-sre__foot-clear {
-  flex-shrink: 0;
-  padding: 0 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--el-color-danger);
-  &:hover { text-decoration: underline; }
-}
-
-/* SRE Matrix responsive: fill full screen width across breakpoints */
-@media (max-width: 1024px) {
-  .ho-fb-sre { padding: 12px 16px 14px; }
-  .ho-fb-sre__strip { width: calc(100% + 32px); margin: 0 -16px 2px; }
-}
-@media (max-width: 760px) {
-  .ho-fb-sre { padding: 12px 14px 14px; border-radius: 12px; }
-  .ho-fb-sre__strip { width: calc(100% + 28px); margin: 0 -14px 2px; }
-  .ho-fb-sre__grid { grid-template-columns: 1fr 1fr; }
-  .ho-fb-sre-item__owner { max-width: 88px; }
-}
-@media (max-width: 560px) {
-  .ho-fb-sre { padding: 10px 12px 12px; margin-bottom: 10px; }
-  .ho-fb-sre__strip { width: calc(100% + 24px); margin: 0 -12px 2px; height: 18px; }
-  .ho-fb-sre-strip__label { font-size: 8px; }
-  .ho-fb-sre__grid { grid-template-columns: 1fr; gap: 6px; }
-  .ho-fb-sre__legend { display: none; }
-  .ho-fb-sre__count { order: -1; }
-}
-
-/* ═══════════════════════════════════════════════════════════
- *  Issue 动态模块样式（4 语义分组 + Activity Paradigm 扩展）
- *  所有类名语义化：无数字后缀
- * ══════════════════════════════════════════════════════════ */
-
-/* Group container tweaks for new icon category colors (映射到 ho-activity__icon) */
 .ho-activity__icon {
-  &.is-col-security { color: var(--ho-status-danger); }
-  &.is-col-data     { color: var(--ho-status-major); }
-  &.is-col-cross    { color: #8b5cf6; }
-  &.is-col-iface    { color: var(--ho-st-wip); }
-  &.is-col-perf     { color: #0891b2; }
-  &.is-col-quality  { color: #059669; }
-  &.is-col-func    { color: var(--ho-st-wip); }
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  width: var(--ho-icon-sm); height: var(--ho-icon-sm);
+  font-size: var(--ho-icon-sm); color: var(--el-text-color-secondary, #909399);
+  line-height: 1;
+  overflow: hidden; /* 防止 SVG 按 viewBox 物理尺寸溢出 */
+  &.is-col-okr      { color: var(--ho-col-okr-fg); }
+  &.is-col-sig      { color: var(--ho-sem-signal-fg); }
+  &.is-col-dec      { color: var(--ho-sem-decision-fg); }
+  &.is-col-red      { color: var(--ho-sem-redline-fg); }
+  &.is-col-warn     { color: var(--ho-col-risk-fg); }
+  &.is-col-major    { color: var(--ho-status-warn); }
+  &.is-col-wip      { color: var(--ho-st-wip); }
+  &.is-col-review   { color: var(--ho-sem-signal-fg); }
+  &.is-col-security { color: var(--ho-col-rd-fg); }
+  &.is-col-data     { color: var(--ho-col-risk-fg); }
+  &.is-col-cross    { color: var(--ho-col-cross-fg); }
+  &.is-col-iface    { color: var(--ho-col-action-fg); }
+  &.is-col-perf     { color: var(--ho-col-perf-fg); }
+  &.is-col-quality  { color: var(--ho-status-clear); }
+  &.is-col-func     { color: var(--ho-col-kb-fg); }
+}
+.ho-activity__spacer { flex: 1; min-width: 0; }
+.ho-verb {
+  flex-shrink: 0; font-size: 9px; color: var(--el-text-color-placeholder, #a8abb2);
+  font-family: ui-monospace, monospace; font-weight: 700; letter-spacing: 0.2px;
+  max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 1px 0;
+}
+.ho-act-title {
+  flex: 1; min-width: 0;
+  font-size: 12.5px; font-weight: 600; color: var(--el-text-color-primary, #303133); line-height: 1.4;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 
-/* ── Issue row base: shared row variant severity visual emphasis */
-.ho-issue-row {
-  border-radius: 8px;
-  transition: background 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+/* ── Unified Pill（所有药丸共用 BEM，variant 仅改颜色） ── */
+.ho-pill {
+  flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
+  height: 16px; padding: 0 6px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.2px;
+  border-radius: 5px; text-transform: uppercase;
+  background: var(--el-fill-color, #f0f2f5); color: var(--el-text-color-secondary, #909399);
+  line-height: 1;
 
-  &.is-sev-critical {
-    background: linear-gradient(90deg, var(--ho-bg-danger) 0%, transparent 100%);
-    &:hover { box-shadow: inset 0 0 0 1px var(--ho-status-danger) inset; }
+  &--sev {
+    color: #fff;
+    &.is-critical, &.is-major { background: var(--ho-status-danger); }
+    &.is-warn { background: var(--ho-status-warn); color: #1f2937; }
+    &.is-clear { background: var(--ho-status-clear); color: #1f2937; }
   }
-  &.is-sev-major {
-    background: linear-gradient(90deg, var(--ho-bg-major) 0%, transparent 100%);
+  &--cat {
+    &.is-executive { background: var(--ho-cat-exec-bg); color: var(--ho-cat-exec-fg); }
+    &.is-leader    { background: var(--ho-cat-lead-bg); color: var(--ho-cat-lead-fg); }
+    &.is-engineer  { background: var(--ho-cat-eng-bg);  color: var(--ho-cat-eng-fg); }
+    &.is-sre       { background: var(--ho-cat-sre-bg);  color: var(--ho-cat-sre-fg); }
+    &.is-aier      { background: var(--ho-cat-ai-bg);   color: var(--ho-cat-ai-fg); }
+    &.is-product   { background: var(--ho-cat-prod-bg); color: var(--ho-cat-prod-fg); }
+    &.is-curator   { background: var(--ho-cat-curator-bg); color: var(--ho-cat-curator-fg); }
+    &.is-other     { background: var(--el-fill-color-light); color: var(--el-text-color-placeholder); }
+    &.is-col-security { background: var(--ho-bg-danger);   color: var(--ho-col-rd-fg); }
+    &.is-col-data     { background: var(--ho-bg-major);    color: var(--ho-col-risk-fg); }
+    &.is-col-cross    { background: var(--ho-col-cross-bg);  color: var(--ho-col-cross-fg); }
+    &.is-col-iface    { background: var(--ho-interface-bg);  color: var(--ho-interface-fg); }
+    &.is-col-perf     { background: var(--ho-perf-bg);       color: var(--ho-perf-fg); }
+    &.is-col-quality  { background: var(--ho-quality-bg);    color: var(--ho-quality-fg); }
+    &.is-col-func     { background: var(--ho-col-kb-bg);     color: var(--ho-col-kb-fg); }
   }
+  &--role     { color: var(--ho-accent-focus);   background: var(--ho-accent-focus-bg); max-width: 90px; }
+  &--pri      { color: #fff; font-size: 8px; border-radius: 4px; min-width: 20px; text-align: center; }
+  &--must     { color: var(--ho-accent-focus-strong); background: var(--ho-accent-focus-bg); max-width: 60%; letter-spacing: 0.2px; padding: 0 8px; white-space: normal; line-height: 1.3; height: auto; text-align: left; }
+  &--conf     { background: var(--ho-cat-lead-bg); color: var(--ho-cat-lead-fg); font-variant-numeric: tabular-nums; }
+  &--dec      { background: var(--ho-cat-eng-bg);  color: var(--ho-cat-eng-fg); }
+  &--red      { color: #fff; background: var(--ho-sem-redline-fg); font-family: ui-monospace, monospace; min-width: 18px; text-align: center; }
+  &--warn     { background: var(--ho-cat-curator-bg); color: var(--ho-cat-curator-fg); }
+  &--status.is-resolved { background: var(--ho-bg-clear); color: var(--ho-status-clear); }
 }
 
-/* ── Severity 药丸样式:  */
-.ho-issue-sev {
-  flex-shrink: 0;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.4px;
-  padding: 1px 6px;
-  border-radius: 4px;
-  min-width: 30px;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
-  &.is-critical { background: var(--ho-status-danger); }
-  &.is-major    { background: var(--ho-status-major); }
-  &.is-warn     { background: var(--ho-status-warn); color: #1f2937; }
-  &.is-clear    { background: var(--ho-status-clear); }
+/* ── Actlist 容器 ── */
+.ho-actlist {
+  display: flex; flex-direction: column;
+  + .ho-actlist { margin-top: 6px; }
+  &.is-hero-critical { background: var(--ho-bg-danger); border: 1px solid var(--ho-status-danger); border-radius: 12px; padding: 2px 0; }
+  &.is-hero-major    { background: var(--ho-bg-major);  border: 1px solid var(--ho-status-major);  border-radius: 12px; padding: 2px 0; }
+  &.is-hero-warn     { background: var(--ho-bg-warn);   border: 1px solid var(--ho-status-warn);   border-radius: 12px; padding: 2px 0; }
+  &.is-hero-clear    { background: var(--ho-bg-clear);  border: 1px solid var(--ho-status-clear);  border-radius: 12px; padding: 2px 0; }
+  &.is-digest-degraded { opacity: 0.92; border: 1px solid var(--ho-muted-fg); border-radius: 10px; }
+}
+.ho-actlist > .ho-activity__head { display: flex; align-items: center; padding-left: 10px; padding-right: 10px; }
+.ho-actlist__items { display: flex; flex-direction: column; padding: 0 4px; }
+.ho-count {
+  margin-left: auto; padding: 1px 6px; min-width: 16px; text-align: center;
+  font-size: 9px; font-weight: 700; color: var(--el-text-color-secondary, #909399);
+  background: var(--el-fill-color, #f0f2f5); border-radius: 8px;
 }
 
-/* ── Category 类别: semantic colors */
-.ho-issue-cat {
-  flex-shrink: 0;
-  font-size: 8px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 5px;
-  background: var(--ho-fill);
-  color: var(--ho-text-secondary);
-  letter-spacing: 0.1px;
-
-  &.is-col-security { background: #fee2e2; color: #b91c1c; }
-  &.is-col-data     { background: #ffedd5; color: #9a3412; }
-  &.is-col-cross    { background: #ede9fe; color: #5b21b6; }
-  &.is-col-iface    { background: #dbeafe; color: #1d4ed8; }
-  &.is-col-perf     { background: #cffafe; color: #155e75; }
-  &.is-col-quality  { background: var(--ho-bg-clear); color: #047857; }
-  &.is-col-func    { background: var(--el-fill-color-light); color: var(--ho-text-placeholder); }
+/* Hero banner row */
+.ho-hero-row {
+  display: flex; gap: 8px; align-items: center;
+  padding: 10px 12px 8px; margin: 0 8px;
+  border-radius: 10px; cursor: pointer; transition: background 0.15s, transform 0.1s;
+  &:hover { background: rgba(255,255,255,0.55); transform: translateX(2px); }
+}
+.ho-hero-title { font-size: 13px; font-weight: 800; color: var(--el-text-color-primary, #303133); line-height: 1.45; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0.1px; }
+.ho-narr {
+  margin: 0 14px 8px; padding: 6px 10px;
+  font-size: 11px; color: var(--el-text-color-secondary, #909399); line-height: 1.6;
+  border-left: 2px solid var(--ho-accent-focus-soft-bg);
+  background: rgba(255,255,255,0.4); border-radius: 0 6px 6px 0;
 }
 
-/* ── 单行 Status inline status inline pill wrapper: status-color */
-.ho-issue-status {
-  flex-shrink: 0;
-  font-size: 10px;
-  font-weight: 700;
-  max-width: 52px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
+/* OKR row meta */
+.ho-meta {
+  flex-shrink: 0; font-size: 10px; font-weight: 600;
+  font-variant-numeric: tabular-nums; color: var(--el-text-color-secondary, #909399);
+  display: inline-flex; align-items: center; gap: 4px;
+  &--dim       { color: var(--el-text-color-placeholder, #a8abb2); max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; font-weight: 500; }
+  &--proj      { font-size: 8px; font-weight: 700; padding: 0 6px; height: 15px; line-height: 15px; color: var(--el-color-primary); background: var(--el-color-primary-light-9); border-radius: 4px; }
+  &--deadline  { color: var(--ho-status-major); }
 }
-.ho-issue-status-pill {
-  flex-shrink: 0;
-  font-size: 8px;
-  font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: var(--ho-fill);
-  color: var(--ho-text-placeholder);
-  &.is-resolved { background: var(--ho-bg-clear); color: var(--ho-status-clear); }
-  &.is-open     { background: var(--ho-bg-danger); color: var(--ho-status-danger); }
-  &.is-progress { background: var(--ho-bg-warn);  color: var(--ho-status-warn); }
+.ho-progbar {
+  flex-shrink: 0; display: inline-block; width: 48px; height: 4px;
+  background: var(--el-fill-color, #f0f2f5); border-radius: 3px; vertical-align: middle; overflow: hidden;
+}
+.ho-progfill { display: block; height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.ho-pct { flex-shrink: 0; width: 30px; text-align: right; font-size: 10px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.ho-subtext { font-size: 10px; color: var(--el-text-color-secondary, #909399); }
+
+/* Digest sub */
+.ho-digest-sub {
+  padding: 2px 0; + .ho-digest-sub { margin-top: 2px; padding-top: 4px; border-top: 1px dashed var(--el-border-color-lighter, #ebeef5); }
+  &.is-red { background: var(--ho-sem-redline-bg); border-radius: 6px; padding: 3px 4px; margin-top: 4px; }
+}
+.ho-digest-sub__label {
+  padding: 6px 8px 3px; font-size: 8px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
+  &.is-sig     { color: var(--ho-cat-lead-fg); }
+  &.is-dec     { color: var(--ho-sem-decision-fg); }
+  &.is-redline { color: var(--ho-sem-redline-fg); }
 }
 
-/* ── 分组 Group header label带图标 label style variants aligned S  */
+/* ── Issue Group ── */
+.ho-divider {
+  display: flex; align-items: center; margin: 14px 2px 10px; color: var(--el-text-color-placeholder, #a8abb2);
+  &::before, &::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--el-border-color-lighter, #ebeef5)); }
+  &::after { background: linear-gradient(90deg, var(--el-border-color-lighter, #ebeef5), transparent); }
+  span { padding: 0 14px; font-size: 9px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--el-color-primary); background: var(--el-color-primary-light-9); border-radius: 10px; }
+}
 .ho-issue-group {
   &__label {
-    display: inline-flex;
-    gap: 4px;
-    align-items: center;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-
+    display: inline-flex; gap: 4px; align-items: center;
+    font-size: 11px; font-weight: 700;
     &--danger  { color: var(--ho-status-danger); }
     &--clear   { color: var(--ho-status-clear); }
     &--cross   { color: #7c3aed; }
     &--quality { color: #0ea5e9; }
   }
+  &--critical { border-radius: 8px; padding: 2px 6px 4px; }
 }
 
-/* ── fb-divider 右侧内联按钮对齐 */
-.ho-fb-divider {
-  align-items: center;
-  .ho-fb-btn-chevron { flex-shrink: 0; margin-left: auto; }
+/* ── SRE Matrix（极简版） ── */
+.ho-sre {
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 14px 16px 16px; margin: 8px 0 12px;
+  border-left: 3px solid var(--ho-status-warn);
+  border-radius: 0 10px 10px 0;
+  background: var(--el-fill-color-light, #f5f7fa);
+  /* 当 --ho-status-warn 因 setProperty 竞争解算为空时，fallback 到 EP 官方黄。*/
+  border-left-color: var(--ho-status-warn, #e6a23c);
+  transition: border-left-color 0.2s ease;
+}
+.ho-sre__head { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.ho-sre__title {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--el-text-color-primary, #303133);
+  padding-left: 8px; border-left: 3px solid var(--ho-status-warn, #e6a23c);
+}
+.ho-sre__count {
+  font-size: 10px; font-weight: 700; color: var(--el-text-color-placeholder, #a8abb2);
+  font-variant-numeric: tabular-nums; padding: 2px 8px; background: var(--el-fill-color, #f0f2f5); border-radius: 10px;
+}
+.ho-sre__legend { display: inline-flex; gap: 4px; align-items: center; flex-wrap: wrap; flex: 1; }
+.ho-sre-chip {
+  display: inline-flex; gap: 4px; align-items: center;
+  padding: 2px 7px; border-radius: 8px; cursor: pointer;
+  background: var(--el-bg-color, #fff); border: 1px solid var(--el-border-color-lighter, #ebeef5);
+  transition: all 0.14s ease; font-size: 10px; font-weight: 600; color: var(--el-text-color-secondary, #909399);
+  user-select: none;
+  &:hover { transform: translateY(-1px); box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+  &.is-empty  { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.4); &:hover { transform: none; box-shadow: none; } }
+  &.is-active { box-shadow: inset 0 0 0 1px currentColor; background: var(--ho-surface-kb-bg, #f0f9eb); }
+  &.is-critical { color: var(--ho-status-danger, #f56c6c); &.is-active { background: var(--ho-bg-danger, #fef0f0); } }
+  &.is-major    { color: var(--ho-status-major, #ef4444);  &.is-active { background: var(--ho-bg-major, #fee2e2); } }
+  &.is-warn     { color: var(--ho-status-warn, #e6a23c);   &.is-active { background: var(--ho-bg-warn, #fdf6ec); } }
+  &.is-clear    { color: var(--ho-status-clear, #67c23a);  &.is-active { background: var(--ho-bg-clear, #f0f9eb); } }
+}
+.ho-sre-chip__dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px var(--el-bg-color, #fff); }
+.ho-sre__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 8px; }
+.ho-sre-card {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 10px 12px; border-radius: 10px;
+  background: var(--el-bg-color); border: 1px solid var(--el-border-color-lighter);
+  border-left: 4px solid var(--el-border-color);
+  cursor: pointer; outline: none;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  min-height: 72px;
+  &:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.05); border-color: var(--el-color-primary-light-5); }
+  &:focus-visible { box-shadow: 0 0 0 3px #c7d2fe; }
+  &.is-critical { border-left-color: var(--ho-status-danger); animation: ho-sre-pulse 3.4s ease-in-out infinite; }
+  &.is-major    { border-left-color: var(--ho-status-major);  }
+  &.is-warn     { border-left-color: var(--ho-status-warn);   }
+  &.is-clear    { border-left-color: var(--ho-status-clear);  }
+  &.is-flash    { animation-iteration-count: 2; animation-duration: 2.2s; }
+}
+@keyframes ho-sre-pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 0 4px rgba(239,68,68,0.10); } }
+.ho-sre-card__top { display: flex; gap: 6px; align-items: center; width: 100%; flex-wrap: wrap; }
+.ho-sre-card__led {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 0 2px #fff;
+  &.is-pulse { animation: ho-led-blink 1.1s ease-in-out infinite; }
+}
+@keyframes ho-led-blink { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.78); } }
+.ho-sre-card__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--el-text-color-primary, #303133); line-height: 1.35; }
+.ho-sre-card__owner {
+  flex-shrink: 0; display: inline-flex; gap: 4px; align-items: center;
+  font-size: 10px; font-weight: 600; color: var(--el-text-color-secondary, #909399);
+  padding: 1px 6px 1px 4px; background: rgba(255,255,255,0.8);
+  border: 1px solid var(--el-border-color-lighter, #ebeef5); border-radius: 20px;
+  max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ho-sre-card__detail {
+  display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+  font-size: 11px; line-height: 1.5; color: var(--el-text-color-secondary, #909399);
+  padding-left: 14px;
+}
+.ho-sre-card__bot {
+  display: flex; gap: 8px; align-items: center;
+  padding-top: 6px; border-top: 1px dashed var(--el-border-color-lighter, #ebeef5);
+}
+.ho-hint {
+  flex: 1; min-width: 0; text-align: right;
+  font-size: 10px; font-weight: 600; color: var(--el-text-color-placeholder, #a8abb2);
+  letter-spacing: 0.3px; opacity: 0.85;
+}
+.ho-sre__foot {
+  display: flex; gap: 10px; align-items: center;
+  padding: 6px 10px; border-radius: 8px;
+  background: var(--el-fill-color-light, #f5f7fa); border: 1px dashed var(--el-border-color-lighter, #ebeef5);
+  font-size: 10px; color: var(--el-text-color-secondary, #909399);
+  span { flex: 1; min-width: 0; font-weight: 600; }
 }
 
-/* Issue group subtle visual  */
-.ho-issue-group {
-  &--critical  { border-radius: 8px; padding: 2px 6px 4px; }
-  &--recent + &--recent { margin-top: 4px; }
+@media (max-width: 760px) {
+  .ho-sre__grid { grid-template-columns: 1fr 1fr; }
+  .ho-sre__legend { display: none; }
+}
+@media (max-width: 560px) {
+  .ho-sre { padding: 10px 12px 12px; }
+  .ho-sre__grid { grid-template-columns: 1fr; gap: 6px; }
 }
 
-/* ═══════════════════════════════════════════════════════════
- *  Sidebar (ho__side) — 专业样式重建
- *  视觉对齐主区 ho-card, 语义化 accent border, BEM 纯净
- * ══════════════════════════════════════════════════════════ */
-.ho__side {
-  position: sticky;
-  top: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-width: 0;
-  align-self: start;
-}
-
-/* ── Sidebar Card 基类 (与 ho-card 同构但更紧凑) ── */
+/* ── Sidebar：row-grid 统一（kh / wl 完全复用 ho-row 结构） ── */
+.ho__side { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 12px; min-width: 0; align-self: start; }
+@media (max-width: 1024px) { .ho__side { position: static; } }
 .ho-sb {
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 14px;
-  padding: 12px 14px 14px;
-  overflow: hidden;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  &:hover {
-    border-color: var(--el-border-color-light);
-    box-shadow: 0 4px 14px rgb(0 0 0 / 5%);
-  }
-  /* 第一个子块 accent border: 知识健康 */
-  &:first-of-type {
-    border-top: 3px solid var(--ho-status-clear);
-  }
-  /* 第二个子块 accent border: workload */
-  &:nth-of-type(2) {
-    border-top: 3px solid var(--el-color-primary);
-  }
+  padding: 14px 16px 16px; overflow: hidden;
+  &:hover { border-color: var(--el-border-color-light, #e4e7ed); }
+  &--health   { border-top: 3px solid var(--ho-status-clear, #10b981); }
+  &--workload { border-top: 3px solid var(--el-color-primary); }
 }
 .ho-sb__head {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 2px 10px;
-  margin-bottom: 8px;
-  border-bottom: 1px dashed var(--el-border-color-lighter);
-  cursor: pointer;
-  user-select: none;
-  span {
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    color: var(--ho-text-primary);
-    flex: 1;
-    min-width: 0;
-  }
-  .ho-sb__head-link {
-    flex-shrink: 0;
-    font-size: 11px;
-    color: var(--ho-text-placeholder);
-    transition: transform 0.14s ease, color 0.14s ease;
-  }
-  &:hover .ho-sb__head-link {
-    color: var(--el-color-primary);
-    transform: translateX(2px);
-  }
+  display: flex; align-items: center; gap: 6px;
+  padding: 2px 2px 10px; margin-bottom: 8px;
+  border-bottom: 1px dashed var(--el-border-color-lighter, #ebeef5);
+  cursor: pointer; user-select: none;
+  span { flex: 1; min-width: 0; font-size: 11px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; color: var(--el-text-color-primary, #303133); }
   &:active { transform: scale(0.99); }
 }
+.ho-sb__link { flex-shrink: 0; font-size: 11px; color: var(--el-text-color-placeholder, #a8abb2); transition: transform 0.14s, color 0.14s; }
+.ho-sb__head:hover .ho-sb__link { color: var(--el-color-primary); transform: translateX(2px); }
 
-/* ── Knowledge Health: Big percentage + label ── */
+/* Knowledge Health */
 .ho-kh {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 2px;
-  padding: 10px 10px 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  border-radius: 10px;
-  background: linear-gradient(135deg, var(--ho-bg-clear) 0%, var(--el-bg-color) 100%);
-  border: 1px solid #d1fae5;
-  transition: all 0.14s ease;
-  &:hover {
-    border-color: var(--ho-status-clear);
-    box-shadow: 0 3px 10px rgb(16 185 129 / 10%);
-    transform: translateY(-1px);
-  }
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 12px 14px 14px; margin-bottom: 10px; cursor: pointer;
+  border-radius: 12px; background: linear-gradient(135deg, var(--ho-bg-clear, #ecfdf5) 0%, var(--el-bg-color, #fff) 100%);
+  border: 1px solid var(--ho-status-clear, #10b981); opacity: 0.96;
+  transition: box-shadow 0.15s ease, transform 0.12s ease, border-color 0.15s ease, opacity 0.15s ease;
+  &:hover { border-color: var(--ho-status-clear, #10b981); box-shadow: 0 4px 14px var(--ho-bg-clear, #ecfdf5); transform: translateY(-1px); opacity: 1; }
 }
-.ho-kh__pct {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.5px;
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
+.ho-kh__pct { font-size: 32px; font-weight: 800; line-height: 1.05; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
 .ho-kh__label {
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--ho-text-secondary);
-  letter-spacing: 0.2px;
-  text-transform: lowercase;
-  &::first-letter { text-transform: uppercase; }
+  font-size: 10px; font-weight: 600; color: var(--el-text-color-secondary, #909399); letter-spacing: 0.3px;
+  text-transform: lowercase; &::first-letter { text-transform: uppercase; }
 }
 
-/* ── Category rows （行高 32px 统一范式）── */
-.ho-kh__cats {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+/* ── Shared row-grid（kh__cat + wl__row 合并，消除 90% 属性重复） ── */
+.ho-row-grid { display: flex; flex-direction: column; gap: 3px; }
+.ho-row {
+  display: grid; grid-template-columns: 68px 1fr 24px;
+  align-items: center; gap: 10px;
+  height: 32px; padding: 0 8px;
+  border-radius: 8px; cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  &:hover { background: var(--el-fill-color-light, #f5f7fa); transform: translateX(2px); }
 }
-.ho-kh__cat {
-  display: grid;
-  grid-template-columns: 62px 1fr 22px;
-  align-items: center;
-  gap: 8px;
-  height: 30px;
-  padding: 0 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.12s ease;
-  &:hover { background: var(--el-fill-color-light); }
+.ho-row__name {
+  font-size: 10px; font-weight: 700; color: var(--el-text-color-secondary, #909399);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  letter-spacing: 0.2px; /* 保留 RSS/OKR 等缩写原始大小写 */
 }
-.ho-kh__cat-name {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ho-text-secondary);
-  letter-spacing: 0.2px;
-  text-transform: lowercase;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  &::first-letter { text-transform: uppercase; }
+.ho-row__bar { display: block; height: 5px; background: var(--el-fill-color, #f0f2f5); border-radius: 3px; overflow: hidden; min-width: 0; }
+.ho-row__fill {
+  display: block; height: 100%; border-radius: 3px;
+  background: var(--el-color-primary); transition: width 0.4s ease;
+  &.is-over { background: var(--ho-status-danger); animation: ho-wl-over 1.6s ease-in-out infinite; }
 }
-.ho-kh__cat-bar {
-  display: block;
-  height: 5px;
-  background: var(--ho-fill);
-  border-radius: 3px;
-  overflow: hidden;
-  min-width: 0;
+@keyframes ho-wl-over { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); } 50% { box-shadow: 0 0 0 2px rgba(239,68,68,0.18); } }
+.ho-row__n {
+  font-size: 10px; font-weight: 700; color: var(--el-text-color-placeholder, #a8abb2);
+  text-align: right; font-variant-numeric: tabular-nums;
 }
-.ho-kh__cat-fill {
-  display: block;
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.4s ease;
-}
-.ho-kh__cat-n {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ho-text-placeholder);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
+</style>
 
-/* ── Workload rows （与 kh__cat 完全相同行高范式）── */
-.ho-wl {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.ho-wl__row {
-  display: grid;
-  grid-template-columns: 62px 1fr 22px;
-  align-items: center;
-  gap: 8px;
-  height: 30px;
-  padding: 0 6px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.12s ease;
-  &:hover { background: var(--el-fill-color-light); }
-}
-.ho-wl__name {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ho-text-secondary);
-  letter-spacing: 0.1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ho-wl__bar {
-  display: block;
-  height: 5px;
-  background: var(--ho-fill);
-  border-radius: 3px;
-  overflow: hidden;
-  min-width: 0;
-}
-.ho-wl__fill {
-  display: block;
-  height: 100%;
-  border-radius: 3px;
-  background: var(--el-color-primary);
-  transition: width 0.4s ease;
-  &.is-over {
-    background: var(--ho-status-danger);
-    animation: wl-over-pulse 1.6s ease-in-out infinite;
+<!-- 全局兜底：h() 渲染的私有组件 DOM 不带 scoped hash，需全局约束图标尺寸 -->
+<style lang="scss">
+.ho-root {
+  --ho-icon-xs: 11px; --ho-icon-sm: 14px; --ho-icon-md: 12px; --ho-icon-lg: 24px;
+  /* 按尺寸分组：所有 h() 渲染的 SVG/el-icon 统一 width/height/font-size */
+  .ho-activity__icon svg, .ho-activity__icon .el-icon,
+  .ho-card__loading svg, .ho-card__loading .el-icon {
+    width: var(--ho-icon-sm) !important; height: var(--ho-icon-sm) !important; font-size: var(--ho-icon-sm) !important;
+    display: inline-block; flex-shrink: 0; vertical-align: middle;
   }
-}
-@keyframes wl-over-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgb(239 68 68 / 0%); }
-  50%      { box-shadow: 0 0 0 2px rgb(239 68 68 / 18%); }
-}
-.ho-wl__n {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--ho-text-placeholder);
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ── Sidebar 响应式：小屏堆叠 ── */
-@media (max-width: 1024px) {
-  .ho__body { grid-template-columns: 1fr; }
-  .ho__side { position: static; }
+  .ho-activity__head svg, .ho-activity__head .el-icon,
+  .ho-sb__head svg, .ho-sb__head .el-icon,
+  .ho-card__badge svg, .ho-card__badge .el-icon {
+    width: var(--ho-icon-md) !important; height: var(--ho-icon-md) !important; font-size: var(--ho-icon-md) !important;
+  }
+  .ho-activity__head .ho-count svg, .ho-activity__head .el-button svg,
+  .ho-activity__head .ho-count .el-icon, .ho-activity__head .el-button .el-icon,
+  .ho-sre-card__owner svg, .ho-sre-card__owner .el-icon {
+    width: var(--ho-icon-xs) !important; height: var(--ho-icon-xs) !important; font-size: var(--ho-icon-xs) !important;
+  }
+  .ho-card__empty svg, .ho-card__empty .el-icon {
+    width: var(--ho-icon-lg) !important; height: var(--ho-icon-lg) !important; font-size: var(--ho-icon-lg) !important;
+  }
 }
 </style>

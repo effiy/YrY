@@ -105,9 +105,11 @@ onActivated(() => rebind());
 onDeactivated(() => unbind());
 
 /* ── HelpOS 入口（对齐 PRD FR-01 / FR-09 / Dev §2 GC-1~5 ── */
+// ⚠️ installHelpOS 内部调用 provide()，必须在 setup() 同步执行（Vue 3.5 约束）
+installHelpOS({ enabled: () => true /* TODO(feature-flags): 接入 src/shared/feature-flags.ts # YV-09-70/p1 */ });
+bindHelpShortcut(helpAPI);
+
 onMounted(() => {
-  installHelpOS({ enabled: () => true /* TODO(feature-flags): 接入 src/shared/feature-flags.ts # YV-09-70/p1 */ });
-  bindHelpShortcut(helpAPI);
   rebind();
 });
 

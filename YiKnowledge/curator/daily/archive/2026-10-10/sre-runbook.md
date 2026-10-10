@@ -1,8 +1,9 @@
 ---
-title: SRE 红黄灯详情 - 2026-10-10
-aliases: [sre-status-detail, SRE详情, sre-brief]
+title: SRE 红黄灯运行手册
+aliases: [sre-status-detail, SRE详情, sre-brief, sre-runbook, 003-今日焦点-SRE详情]
 tags: [sre, daily, focus, runbook]
 category: sre
+date: 2026-10-10
 created: 2026-10-10
 updated: 2026-10-10
 last_verified: 2026-10-10
@@ -14,16 +15,17 @@ review_cycle: daily
 roles: [sre, leader, engineer]
 benefit: 将首页 SRE 状态灯的每一条告警延伸为 4 字段的运行手册式详情（Impact / Root Hypothesis / Mitigation / ETA），让点击 SRE 灯的人直接获得"下一步做什么"，而不是只看到一行标题。
 acceptance_criteria:
-  - 与 001-今日焦点-焦点总控.md 中 sre_status.items 的 id 严格 1:1
+  - 与 focus-board.md 中 sre_status.items 的 id 严格 1:1
   - 每条详情必须包含 impact / root_hypothesis / mitigation / eta 四个字段
   - level 字段取值限定于 critical/major/warn/clear
 related:
-  - ./001-今日焦点-焦点总控.md
+  - ../focus-board.md
+  - ./INDEX.md
   - ../../sre/QUICKREF.md
   - ../../leader/risk/007-风险-Runbook模板.md
 ---
 
-# SRE 红黄灯详情（SRE Status Detail · 2026-10-10）
+# SRE 红黄灯运行手册（SRE Status Detail · 2026-10-10）
 
 > 首页 3 条 SRE 灯的运行手册式详情。点击首页 Today's Focus 的任意一条 SRE 条目 → 预览弹框 → 点击锚点跳转本文件对应章节。
 
@@ -55,7 +57,7 @@ related:
 | **Mitigation（处置步骤）** | ① 在 yipot-011-体积红线 ADR 记录三条处置项 ② `cargo build --release` 启用 opt=z+lto+strip ③ 移除 2 个未启用的 tauri plugin ④ 切片后对照到 sre/QUICKREF 体积段 |
 | **ETA（预计恢复）** | **2026-10-13 12:00** 前 release 切片 ≤ 16.9MB（裕量 ≥ 1.1MB） · 否则触发 L2 回滚：禁用自动公证 + 发版公告 |
 
-锚点：[治理-分类处理](../governance/007-治理-分类处理.md) · [sre QUICKREF](../../sre/QUICKREF.md)
+锚点：[治理-分类处理](../../curator/governance/007-治理-分类处理.md) · [sre QUICKREF](../../sre/QUICKREF.md)
 
 ---
 

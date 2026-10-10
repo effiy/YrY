@@ -37,9 +37,21 @@ class ShortcutRegistry {
 
   private findConflict(shortcut: ShortcutDefinition): ShortcutDefinition | null {
     for (const [, existing] of this.shortcuts) {
-      if (existing.keys === shortcut.keys && existing.scope === shortcut.scope && existing.id !== shortcut.id) {
-        return existing;
+      if (existing.id === shortcut.id) continue;
+      if (existing.scope !== shortcut.scope) continue;
+
+      // 序列快捷键：比较 sequence；单键快捷键：比较 keys（空 keys 不参与冲突判定）
+      const seqA = shortcut.sequence;
+      const seqB = existing.sequence;
+      if (seqA && seqB) {
+        if (seqA.length === seqB.length && seqA.every((k, i) => k === seqB[i])) return existing;
+        continue;
       }
+      if (!seqA && !seqB) {
+        if (shortcut.keys && shortcut.keys === existing.keys) return existing;
+        continue;
+      }
+      // 一个是序列一个是单键，不可能冲突
     }
     return null;
   }

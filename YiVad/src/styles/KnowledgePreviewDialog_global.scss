@@ -15,3 +15,48 @@
   padding-top: 16px;
   overflow: hidden;
 }
+
+/* ── 强制禁用 KnowledgePreviewDialog 所有过渡/动画（点击文件打开即时显示） ── */
+.kpd-dialog.el-dialog,
+.el-overlay.kpd-dialog + .el-overlay-dialog .el-dialog,
+.el-overlay-dialog:has(.kpd-dialog) .el-dialog {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+/* Element Plus 默认 dialog 进入/离开过渡类：v-zoom/fade + dialog-fade-center/top 等 */
+body .el-overlay-dialog .kpd-dialog {
+  animation: none !important;
+  transition: none !important;
+}
+/* 遮罩层过渡禁用 */
+body .el-overlay:has(+ .el-overlay-dialog .kpd-dialog),
+body .el-overlay.is-message-box.is-fade-enter-active,
+body .el-overlay-leave-active:has(+ .el-overlay-dialog .kpd-dialog) {
+  transition: none !important;
+  animation: none !important;
+}
+/* 彻底禁用所有 dialog 过渡：覆盖 Element Plus 内置 dialog-fade* 动画 */
+.kpd-dialog.el-dialog.v-enter-active,
+.kpd-dialog.el-dialog.v-leave-active,
+.kpd-dialog.el-dialog.v-enter-from,
+.kpd-dialog.el-dialog.v-leave-to,
+.kpd-dialog.el-dialog.dialog-fade-enter-active,
+.kpd-dialog.el-dialog.dialog-fade-leave-active,
+.kpd-dialog.el-dialog.dialog-fade-enter-from,
+.kpd-dialog.el-dialog.dialog-fade-leave-to {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+/* 遮罩 overlay 全局类 */
+.el-overlay.v-enter-active:has(~ .el-overlay-dialog .kpd-dialog),
+.el-overlay.v-leave-active:has(~ .el-overlay-dialog .kpd-dialog),
+.el-overlay.v-enter-from:has(~ .el-overlay-dialog .kpd-dialog),
+.el-overlay.v-leave-to:has(~ .el-overlay-dialog .kpd-dialog) {
+  transition: none !important;
+  animation: none !important;
+  opacity: 1 !important;
+}

@@ -2,16 +2,15 @@
 import { ref, computed, watch, nextTick, onBeforeUnmount } from "vue";
 import { useRouter } from "vue-router";
 import { ElInput, ElMessage } from "element-plus";
-import { ArrowLeft, ChatDotRound, Close, Download, Loading, FolderOpened, Reading } from "@element-plus/icons-vue";
+import { ArrowLeft, ChatDotRound, Close, Download, Loading, FolderOpened } from "@element-plus/icons-vue";
 import { useMarkdown, runMermaid } from "@/hooks/useMarkdown";
 import { useResizable } from "@/hooks/useResizable";
 import { useAiChatBridge } from "@/hooks/useAiChatBridge";
 import { readKnowledgeFile, writeKnowledgeFile } from "@/api/modules/knowledgeService";
-import { createReadingItem, getReadingList } from "@/api/modules/readingListService";
 
 const emit = defineEmits<{ closed: [] }>();
 import type { KnowledgeMeta } from "@/api/interface/yiAi";
-import KnowledgeChatPanel from "@/views/ai-chat/components/KnowledgeChatPanel.vue";
+import { KnowledgeChatPanel } from "@/views/ai-chat/components/KnowledgeChatPanel.vue";
 import KnowledgeMetaStrip from "@/components/KnowledgeMetaStrip/KnowledgeMetaStrip.vue";
 import KnowledgeTocSidebar from "./KnowledgeTocSidebar.vue";
 import KnowledgeToolbar, { type KbMode } from "./KnowledgeToolbar.vue";
@@ -42,43 +41,6 @@ const showChat = ref(false);
 
 /** Navigation history for internal-link clicks inside the preview. */
 const navHistory = ref<string[]>([]);
-
-/** Reading list — add current file to the reading list. */
-const addingToReadingList = ref(false);
-const readingItemExists = ref(false);
-
-async function checkReadingItemExists() {
-  if (!currentPath.value) return;
-  try {
-    const res = await getReadingList({ pageSize: 1 });
-    const list = (res.data as any)?.list ?? [];
-    readingItemExists.value = list.some((item: any) => item.link === currentPath.value);
-  } catch {
-    readingItemExists.value = false;
-  }
-}
-
-async function addToReadingList() {
-  if (!currentPath.value || addingToReadingList.value) return;
-  addingToReadingList.value = true;
-  try {
-    await createReadingItem({
-      title: title.value,
-      type: "article",
-      dimension: "management",
-      ownerRole: "ceo",
-      priority: "medium",
-      noteKey: currentPath.value,
-      status: "queued"
-    });
-    readingItemExists.value = true;
-    ElMessage.success("Added to reading list");
-  } catch (e: unknown) {
-    ElMessage.error(e instanceof Error ? e.message : "Failed to add to reading list");
-  } finally {
-    addingToReadingList.value = false;
-  }
-}
 
 const displayHtml = computed(() => renderWithHtml(rawContent.value));
 
@@ -187,11 +149,13 @@ function _formatMetaLines(meta: KnowledgeMeta, classification: string): string[]
   return lines;
 }
 
-/** System prompt fed to the embedded chat — structured context with metadata. */
+/** System prompt fed to the embedded chat — structured context with metadata.
+ *  Content is truncated to keep the total prompt within safe token bounds. */
+const MAX_SYSTEM_CONTENT_CHARS = 16_000;
 const chatSystemPrompt = computed(() => {
   if (!showChat.value || !rawContent.value) return "";
   const classification = classificationPath.value?.map(s => s.label).join(" / ") || "";
-  const lines: string[] = [
+  const headerLines: string[] = [
     `You are an expert knowledge assistant. You have been given a document to analyze and discuss.`,
     "",
     `## Document`,
@@ -199,11 +163,9 @@ const chatSystemPrompt = computed(() => {
     `- **Title:** ${title.value || "Untitled"}`,
     ..._formatMetaLines(meta.value, classification)
   ];
-  lines.push(
-    "",
-    "## Content",
-    "",
-    rawContent.value,
+  const header = headerLines.join("\n");
+  // Truncate body content if the combined size would exceed the safe bound
+  const tailLines = [
     "",
     "---",
     "",
@@ -212,8 +174,16 @@ const chatSystemPrompt = computed(() => {
     "- When citing the document, reference specific sections or line content.",
     "- If asked about something not covered in the document, clearly state that.",
     "- Use the document metadata above to provide context about ownership, status, and relationships."
-  );
-  return lines.join("\n");
+  ];
+  const tail = tailLines.join("\n");
+  const budget = MAX_SYSTEM_CONTENT_CHARS - header.length - tail.length - "\n## Content\n\n".length;
+  const content = rawContent.value || "";
+  const trimmedContent =
+    content.length > budget && budget > 0
+      ? content.slice(0, budget) + `\n\n[Content truncated — ${content.length - budget} chars omitted]`
+      : content;
+  const parts: string[] = [header, "", "## Content", "", trimmedContent, tail];
+  return parts.join("\n");
 });
 
 const previewHtml = computed(() => renderWithHtml(editContent.value));
@@ -301,7 +271,6 @@ function loadDoc(path: string) {
     })
     .finally(() => {
       loading.value = false;
-      checkReadingItemExists();
     });
 }
 
@@ -325,7 +294,6 @@ function openRaw(p: { title: string; content: string; meta?: KnowledgeMeta; path
   meta.value = p.meta || {};
   toc.value = [];
   _saveFileFn.value = null;
-  checkReadingItemExists();
 }
 
 /** Open the dialog for a generic file with a custom save callback.
@@ -350,7 +318,6 @@ function openFile(opts: {
   meta.value = {};
   toc.value = [];
   _saveFileFn.value = opts.onSave;
-  checkReadingItemExists();
 }
 
 function close() {
@@ -595,7 +562,7 @@ function onToolbarModeChange(value: KbMode) {
   mode.value = VALID.includes(value) ? value : "preview";
 }
 
-defineExpose({ open, openRaw, openFile });
+defineExpose({ open, openRaw, openFile, visible, currentPath, loading, mode });
 </script>
 
 <template>
@@ -607,6 +574,7 @@ defineExpose({ open, openRaw, openFile });
     :show-close="false"
     append-to-body
     class="kpd-dialog"
+    :transition="''"
     @close="close"
   >
     <!-- Toolbar: mode switch + actions -->
@@ -618,8 +586,6 @@ defineExpose({ open, openRaw, openFile });
       :has-content="!!rawContent"
       :saving="saving"
       :source-route="sourceRoute"
-      :reading-item-exists="readingItemExists"
-      :adding-to-reading-list="addingToReadingList"
       :nav-history-length="navHistory.length"
       @update:mode="onToolbarModeChange"
       @go-back="goBack"
@@ -627,7 +593,6 @@ defineExpose({ open, openRaw, openFile });
       @save="save"
       @open-in-source-page="openInSourcePage"
       @download-file="downloadFile"
-      @add-to-reading-list="addToReadingList"
       @toggle-chat="toggleChat"
       @refresh="loadDoc(currentPath)"
       @close="close"

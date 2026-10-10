@@ -16,6 +16,14 @@ import aiohttp
 
 from domain.ai.image_helpers import _extract_user_only_text, _resolve_images
 from domain.ai.ollama_service import OllamaService
+# ⚠ IMPORTANT: These symbols must be explicitly re-exported here so that
+# `from domain.ai.chat import classify_error` works. Python does NOT
+# automatically expose sub-module attributes through a parent namespace — the
+# package `import X` statements above only bind the _modules_; attributes
+# need explicit re-exports. This is the root cause of
+# "cannot import name 'classify_error' from 'domain.ai.chat'"
+# whenever services/ai/chat_service.py re-imports these symbols.
+from domain.ai.error_classifier import classify_error  # noqa: F401
 from shared.config import settings
 
 logger = logging.getLogger(__name__)
@@ -97,3 +105,17 @@ async def get_model_info(params: dict[str, Any] = None) -> dict[str, Any]:
         info["status"] = "configured"
 
     return info
+
+
+# ── Explicit symbol re-exports (for `from domain.ai.chat import X` callers) ─
+# These re-bind the symbols into this module's namespace at runtime. The
+# import statement above already binds classify_error; we add the remaining
+# names that chat_service.py (and others) rely on via wildcard / named
+# re-imports so future Python/linter upgrades do not silently break them.
+__all__ = [
+    "OllamaService",
+    "chat",
+    "classify_error",
+    "get_model_info",
+    "list_ollama_models",
+]

@@ -57,12 +57,18 @@ export function hslToHex(h: number, s: number, l: number): HexColor {
 
 export function lighten(color: string, amount: number): HexColor | null {
   const c = colord(color);
-  return c.isValid() ? c.lighten(clamp(amount, 0, 1)).toHex() as HexColor : null;
+  if (!c.isValid()) return null;
+  /* 使用「与白色按比例混合」的 lighten 语义，与 Element Plus Sass 调色板（mix(white, $color, $amount)）精确对齐；
+     colord 自带的 .lighten(amount) 是 HSL 亮度绝对加量，对中高亮度色(≥50%)会很快饱和到纯白，
+     导致 warning/success/primary 的 L5/L9 阶错误地直接坍缩到 #ffffff。 */
+  return c.mix(colord("#ffffff"), clamp(amount, 0, 1)).toHex() as HexColor;
 }
 
 export function darken(color: string, amount: number): HexColor | null {
   const c = colord(color);
-  return c.isValid() ? c.darken(clamp(amount, 0, 1)).toHex() as HexColor : null;
+  if (!c.isValid()) return null;
+  // 对称地，darken 采用与黑色混合，保持 mix-based 语义一致性
+  return c.mix(colord("#000000"), clamp(amount, 0, 1)).toHex() as HexColor;
 }
 
 export function saturate(color: string, amount: number): HexColor | null {

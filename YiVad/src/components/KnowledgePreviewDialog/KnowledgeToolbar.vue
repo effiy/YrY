@@ -3,7 +3,7 @@
  * KnowledgeToolbar — toolbar for knowledge preview dialog.
  * Extracted from KnowledgePreviewDialog.vue: nav, mode switch, actions.
  */
-import { ArrowLeft, ChatDotRound, Close, Download, FolderOpened, Reading, Refresh } from "@element-plus/icons-vue";
+import { ArrowLeft, ChatDotRound, Close, Download, FolderOpened, Refresh } from "@element-plus/icons-vue";
 
 export type KbMode = "preview" | "edit" | "split";
 
@@ -15,8 +15,6 @@ defineProps<{
   hasContent: boolean;
   saving: boolean;
   sourceRoute: any;
-  readingItemExists: boolean;
-  addingToReadingList: boolean;
   navHistoryLength: number;
 }>();
 
@@ -27,7 +25,6 @@ const emit = defineEmits<{
   save: [];
   openInSourcePage: [];
   downloadFile: [];
-  addToReadingList: [];
   toggleChat: [];
   refresh: [];
   close: [];
@@ -76,15 +73,6 @@ function onModeChange(value: unknown) {
       />
       <el-button size="small" text :icon="Download" title="Download file" @click="emit('downloadFile')" />
       <el-button size="small" text :icon="Refresh" :loading="loading" title="Refresh" @click="emit('refresh')" />
-      <el-button
-        size="small"
-        text
-        :type="readingItemExists ? 'primary' : 'default'"
-        :icon="Reading"
-        :loading="addingToReadingList"
-        :title="readingItemExists ? 'Already in reading list' : 'Add to reading list'"
-        @click="emit('addToReadingList')"
-      />
       <el-button
         :type="showChat ? 'primary' : 'default'"
         :icon="ChatDotRound"

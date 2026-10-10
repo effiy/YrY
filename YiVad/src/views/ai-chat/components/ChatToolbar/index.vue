@@ -1,5 +1,5 @@
 <script setup lang="ts" name="aiChatToolbar">
-import { inject, ref, computed, onMounted } from "vue";
+import { inject, ref, computed, onMounted, watch } from "vue";
 import {
   ChatLineSquare,
   Picture,
@@ -110,6 +110,39 @@ const {
 
 const store = useAiChatStore();
 const { slowThresholdMs } = useSlowThreshold();
+
+// ── Two-way sync for externally-driven model selection ──
+// KnowledgeChatPanel (and other embedders) owns a local `selectedModel` and
+// expects ChatToolbar to emit changes via `update-selected-model`. Internally
+// ChatToolbar's ModelSelector mutates `store.selectedModel`, so we set up
+// bidirectional sync so:
+//   1) prop changes → reflect into store (ModelSelector reads from store)
+//   2) store changes → emit to parent so the panel's local state stays aligned
+watch(
+  () => props.selectedModel,
+  v => {
+    if (v && v !== store.selectedModel) store.selectedModel = v;
+  },
+  { immediate: true }
+);
+watch(
+  () => store.selectedModel,
+  v => {
+    if (v && v !== props.selectedModel) emit("update-selected-model", v);
+  }
+);
+// Also expose the parent-provided model list (if any) to the store so the
+// model popover can still render something useful when running inside an
+// embedded preview dialog that doesn't have the full store wired up.
+watch(
+  () => props.availableModels ?? [],
+  list => {
+    if (list.length && !store.availableModels.length) {
+      store.availableModels.splice(0, store.availableModels.length, ...list);
+    }
+  },
+  { immediate: true }
+);
 
 // ── More tools dropdown ──
 const moreToolsVisible = ref(false);

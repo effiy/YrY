@@ -670,7 +670,6 @@ const LEADER: RoleDef = {
     { want: "ADR 8 字段 Gold Copy", file: "decisions/ADR-Template.md", icon: "📝", confidence: 5 },
     { want: "STRIDE 威胁建模模板", file: "risk/STRIDE-Template.md", icon: "🛡️", confidence: 5 },
     { want: "微前端 4×4×4 决策矩阵", file: "architecture/微前端决策矩阵-4x4x4.md", icon: "🧩", confidence: 5 },
-    { want: "反上马 5 条 (微前端)", file: "architecture/微前端-反上马5条.md", icon: "🚫", confidence: 5 },
     { want: "技术债务分层管理法", file: "roadmap/Tech-Debt-Portfolio.md", icon: "📉", confidence: 4 },
     { want: "PoC 评估 Checklist", file: "capacity/PoC-Evaluation-Checklist.md", icon: "🔬", confidence: 4 },
     { want: "跨项目锁序约定", file: "architecture/全局锁序约定-Rust.md", icon: "🔐", confidence: 5 },
@@ -814,14 +813,6 @@ const PRODUCT: RoleDef = {
       unit: "ms",
       rationale: "YiVad 开发环境 HMR p95 ≤ 650ms，不达标默认禁用 tsChecker (tools.tsChecker: false)。",
       ref: "YiVad/rsbuild.config.ts tools.tsChecker"
-    },
-    {
-      label: "微前端 反上马 5 条",
-      threshold: "5 / 5 同时通过",
-      direction: "min",
-      unit: "条",
-      rationale: "微前端方案必须在 5 条硬阈值全部达标后才能上马，否则禁止引入 qiankun / module federation。",
-      ref: "YiKnowledge/leader/architecture/微前端-反上马5条.md"
     },
     {
       label: "前端性能测量方法",

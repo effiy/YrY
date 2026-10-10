@@ -1,8 +1,9 @@
 ---
-title: 每日决策简报 - 2026-10-10
-aliases: [daily-digest, 决策简报, decision-briefing]
+title: 每日决策简报
+aliases: [daily-digest, 决策简报, decision-briefing, 002-今日焦点-决策简报]
 tags: [focus, daily, executive, decision]
 category: curator
+date: 2026-10-10
 created: 2026-10-10
 updated: 2026-10-10
 last_verified: 2026-10-10
@@ -16,9 +17,10 @@ benefit: 为首页「今日焦点」模块提供一页式决策上下文：3 条
 acceptance_criteria:
   - signals/decisions/redlines 三组列表的数量严格为 3/2/1，缺一则首页自动降级为纯 issue 模式
   - 每条记录必须带有 ref 锚点指向 YiKnowledge 可点击路径
-  - 与 001-今日焦点-焦点总控.md 中的 hero/must_do_one 叙事保持一致
+  - 与 focus-board.md 中的 hero/must_do_one 叙事保持一致
 related:
-  - ./001-今日焦点-焦点总控.md
+  - ../focus-board.md
+  - ./INDEX.md
   - ../../executive/strategy/018-战略-高管决策框架.md
   - ../../sre/QUICKREF.md
 ---
@@ -31,9 +33,9 @@ related:
 
 | # | 信号摘要 | 影响窗口 | 置信度 | 引用锚点 |
 |---|---------|---------|-------|---------|
-| S1 | 首页 OKR 追踪的 `okr=0` 统计异常根因定位到 `kbExtractOkrRef` 正则对 `exec-NNN-NN` 三段式匹配失败，导致 Q3 经营 OKR 的仪表盘覆盖率被系统性低估 | 今日内修复，否则 Q3-Q4 衔接期预算与招聘规划锚点失真 | **95%** · 已完成正则补丁本地验证 | [lead-001 技术评审闭环](../okr/2026-Q3/lead-001-technical-review-loop/goal.md) |
+| S1 | 首页 OKR 追踪的 `okr=0` 统计异常根因定位到 `kbExtractOkrRef` 正则对 `exec-NNN-NN` 三段式匹配失败，导致 Q3 经营 OKR 的仪表盘覆盖率被系统性低估 | 今日内修复，否则 Q3-Q4 衔接期预算与招聘规划锚点失真 | **95%** · 已完成正则补丁本地验证 | [lead-001 技术评审闭环](../../leader/okr/2026-Q3/lead-001-technical-review-loop/goal.md) |
 | S2 | YiAi 嵌入节流 3000ms 上线后 API 429 清零，但 RAG Recall@5 基线尚未做 smoke 回归，需要 AI Eng 今日下午输出一次快照 | 48h 内补齐，否则节流过猛会牺牲召回，后续阅读清单的"跨书整合"输出质量下降 | **75%** · 缺一组 20 条 query 的对照数据 | [aier INDEX](../../aier/INDEX.md) |
-| S3 | YiPot release 体积最近一次切片达 **17.8MB**，距离 18MB 红线 200KB 裕量，`dead_code` lint + `strip` 组合可再减 ~900KB，建议本周内合并 | 本周五前完成 PR，否则下次 release 自动触碰到二进制体积红线 L1 回滚 | **88%** · 已生成两次 release 切片对照 | [治理-分类处理](../governance/007-治理-分类处理.md) |
+| S3 | YiPot release 体积最近一次切片达 **17.8MB**，距离 18MB 红线 200KB 裕量，`dead_code` lint + `strip` 组合可再减 ~900KB，建议本周内合并 | 本周五前完成 PR，否则下次 release 自动触碰到二进制体积红线 L1 回滚 | **88%** · 已生成两次 release 切片对照 | [治理-分类处理](../../curator/governance/007-治理-分类处理.md) |
 
 ## 二、2 项必须拍板的决策（Decisions · 2/2）
 

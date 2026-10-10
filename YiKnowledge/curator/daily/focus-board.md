@@ -1,6 +1,6 @@
 ---
 title: 今日焦点总控
-aliases: [daily-focus, 今日焦点, 焦点看板, focus-board]
+aliases: [daily-focus, 今日焦点, 焦点看板, focus-board, 001-今日焦点-焦点总控, daily/001-今日焦点-焦点总控]
 tags: [focus, daily, executive, dashboard, okr, sre]
 category: curator
 created: 2026-10-10
@@ -21,11 +21,11 @@ acceptance_criteria:
   - daily_digest 区段（signals=3 / decisions=2 / redlines=1）数量合规，缺一则降级
   - focus_links 区段至少 4 条，每条可通过 KnowledgePreviewDialog 打开正文
 related:
-  - ./002-今日焦点-决策简报-2026-10-10.md
-  - ./003-今日焦点-SRE详情-2026-10-10.md
-  - ./004-今日焦点-OKR追蹤卡-2026-10-10.md
-  - ./005-今日焦点-角色行动项详情-2026-10-10.md
-  - ./006-今日焦点-学习与风险摘要-2026-10-10.md
+  - ./archive/2026-10-10/decision-brief.md
+  - ./archive/2026-10-10/sre-runbook.md
+  - ./archive/2026-10-10/okr-tracker.md
+  - ./archive/2026-10-10/role-actions.md
+  - ./archive/2026-10-10/learning-risk.md
   - ../governance/001-治理-知识健康看板.md
   - ../../executive/okr/2026-Q3/exec-001-市场情报与竞争洞察/goal.md
   - ../../executive/okr/2026-Q3/exec-002-经营战略与组织路线/goal.md
@@ -33,6 +33,7 @@ related:
   - ../../leader/okr/2026-Q3/lead-001-technical-review-loop/goal.md
   - ../../leader/okr/2026-Q4/lead-002-testing-safety-net/goal.md
   - ../../sre/INDEX.md
+  - ./archive/2026-10-10/INDEX.md
 ---
 
 # 今日焦点总控 (Daily Focus Board)
@@ -51,7 +52,7 @@ related:
 ## 二、SRE 运行红黄灯
 
 > 级别: `critical` 红 / `major` 橙 / `warn` 黄 / `clear` 绿
-> 每条详情的 4 字段（Impact / Root Hypothesis / Mitigation / ETA）见：`./003-今日焦点-SRE详情-2026-10-10.md`
+> 每条详情的 4 字段（Impact / Root Hypothesis / Mitigation / ETA）见：`./archive/2026-10-10/sre-runbook.md`
 
 ```yaml
 sre_status:
@@ -61,25 +62,25 @@ sre_status:
       level: warn
       title: YiVad 前端 e2e 覆盖率基线尚未建立（LCP p95 ≤ 2.0s 红线无持续监控）
       owner: Tech Lead
-      anchor: curator/daily/003-今日焦点-SRE详情-2026-10-10.md#sre-001
+      anchor: curator/daily/archive/2026-10-10/sre-runbook.md#sre-001
       detail: p95 性能红线 (LCP ≤ 2.0s, HMR ≤ 650ms) 无持续监控看板；今日补齐 smoke 脚手架
     - id: SRE-002
       level: warn
       title: YiPot 二进制体积接近红线（当前 17.8MB，目标 < 18MB，裕量仅 200KB）
       owner: Platform Owner
-      anchor: curator/daily/003-今日焦点-SRE详情-2026-10-10.md#sre-002
+      anchor: curator/daily/archive/2026-10-10/sre-runbook.md#sre-002
       detail: 下一步：dead_code lint + strip + LLTO 后再做一次 release 切片验证
     - id: SRE-003
       level: clear
       title: YiAi RAG 嵌入节流 3000ms 已生效，API 429 清零（Recall@5 对照今日下午产出）
       owner: AI Eng
-      anchor: curator/daily/003-今日焦点-SRE详情-2026-10-10.md#sre-003
+      anchor: curator/daily/archive/2026-10-10/sre-runbook.md#sre-003
 ```
 
 ## 三、OKR 锚点追踪
 
 > 与 5 个活跃 goal 文件 1:1 对应；每条均含 `coverage` = 已完成 KR 数 / 总 KR 数。
-> 每条「今天推进 / 卡点 / 下一锚点 / 预期产出」4 字段详情见：`./004-今日焦点-OKR追蹤卡-2026-10-10.md`
+> 每条「今天推进 / 卡点 / 下一锚点 / 预期产出」4 字段详情见：`./archive/2026-10-10/okr-tracker.md`
 
 ```yaml
 okr_trackers:
@@ -88,10 +89,10 @@ okr_trackers:
     period: 2026 Q3
     owner: CEO
     progress: 74
-    coverage: 3          # 已达成 KR 数
-    total: 4              # 总 KR 数
-    status: active        # active | at_risk | off_track | done
-    anchor: curator/daily/004-今日焦点-OKR追蹤卡-2026-10-10.md#exec-001
+    coverage: 3
+    total: 4
+    status: active
+    anchor: curator/daily/archive/2026-10-10/okr-tracker.md#exec-001
     today_focus: KR2+KR3 追赶：把 aier/industry 下 Gartner/信通院研报落笔记（2 篇叶子）
   - id: exec-002
     title: 经营战略与组织路线
@@ -101,7 +102,7 @@ okr_trackers:
     coverage: 2
     total: 4
     status: at_risk
-    anchor: curator/daily/004-今日焦点-OKR追蹤卡-2026-10-10.md#exec-002
+    anchor: curator/daily/archive/2026-10-10/okr-tracker.md#exec-002
     today_focus: OKR-004 组织规划完备度 + 决策三角（原则/方法/反模式）输出
   - id: exec-003
     title: 经营学习与阅读
@@ -111,7 +112,7 @@ okr_trackers:
     coverage: 2
     total: 3
     status: active
-    anchor: curator/daily/004-今日焦点-OKR追蹤卡-2026-10-10.md#exec-003
+    anchor: curator/daily/archive/2026-10-10/okr-tracker.md#exec-003
     today_focus: 阅读清单 v3.2 与首页今日焦点 6 文件打通（即本目录）
   - id: lead-001
     title: 技术评审闭环
@@ -121,7 +122,7 @@ okr_trackers:
     coverage: 1
     total: 2
     status: active
-    anchor: curator/daily/004-今日焦点-OKR追蹤卡-2026-10-10.md#lead-001
+    anchor: curator/daily/archive/2026-10-10/okr-tracker.md#lead-001
     today_focus: kbExtractOkrRef 对 exec-NNN-NN 三段式 18 条用例 + 实现补丁
   - id: lead-002
     title: 测试安全网
@@ -131,13 +132,13 @@ okr_trackers:
     coverage: 0
     total: 2
     status: at_risk
-    anchor: curator/daily/004-今日焦点-OKR追蹤卡-2026-10-10.md#lead-002
+    anchor: curator/daily/archive/2026-10-10/okr-tracker.md#lead-002
     today_focus: Vitest + Playwright e2e 冒烟脚手架搭建（5 条断言）
 ```
 
 ## 四、角色化今日行动项
 
-> 六大核心角色 × 今日 1 件最优先事。每条 5W1H 详情见：`./005-今日焦点-角色行动项详情-2026-10-10.md`。
+> 六大核心角色 × 今日 1 件最优先事。每条 5W1H 详情见：`./archive/2026-10-10/role-actions.md`。
 > 优先级规则：p0 必须 EOD 关闭；p1 必须 EOD 进入 in_review；p2 允许跨日但需 15:00 前产快照。
 
 ```yaml
@@ -146,37 +147,37 @@ actions:
     priority: p0
     title: OKR exec-002 at_risk 判定 → 输出决策三角（原则/方法/反模式）+ 最终处置
     why: 组织规划完备度是 Q3 进入 Q4 衔接窗口的先决条件，拖后则预算与招聘都漂移
-    anchor: curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md#executive-ceo--p0--todo
+    anchor: curator/daily/archive/2026-10-10/role-actions.md#executive-ceo--p0--todo
     status: todo
   - role: Tech Lead
     priority: p0
     title: kbExtractOkrRef 对 exec-NNN-NN 模式补 18 条测试用例 & 提交修复（≥ 96% 通过率）
     why: 阅读清单仪表盘 okr=0 统计异常若不根治，OKR 追踪全链路会系统性失真
-    anchor: curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md#tech-lead--p0--in_progress
+    anchor: curator/daily/archive/2026-10-10/role-actions.md#tech-lead--p0--in_progress
     status: in_progress
   - role: Engineer
     priority: p1
     title: YiVad 首页 Today's Focus 8 段式改造：+ digest（3-2-1）+ focus_links，全部锚点走预览弹框
     why: 纯 issue 列表只能给「现象快照」，战略面板才能让全团队每天对齐同一套优先级
-    anchor: curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md#engineer--p1--in_progress
+    anchor: curator/daily/archive/2026-10-10/role-actions.md#engineer--p1--in_progress
     status: in_progress
   - role: SRE
     priority: p1
     title: YiPot 体积切片 + YiVad LCP p95 采集脚本，输出到 sre/QUICKREF 性能段（≥ 10 次测量）
     why: 18MB / 2.0s 两条红线若无持续基线就无法触发 L1-L5 回滚
-    anchor: curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md#sre--p1--todo
+    anchor: curator/daily/archive/2026-10-10/role-actions.md#sre--p1--todo
     status: todo
   - role: Curator
     priority: p1
-    title: 把 curator/daily/001 加入 governance 审查清单，EOD 22:00 前四字段强制更新
+    title: 把 curator/daily 加入 governance 审查清单，EOD 22:00 前四字段强制更新
     why: 今日焦点文件若过期 48h，首页 hero 与 SRE 状态就会误导决策
-    anchor: curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md#curator--p1--todo
+    anchor: curator/daily/archive/2026-10-10/role-actions.md#curator--p1--todo
     status: todo
   - role: AI Eng (aier)
     priority: p2
     title: 嵌入节流 3000ms 后 RAG Recall@5 回归测试 — 用 yiAi smoke runbook 跑 20 条 query
     why: 节流过猛会牺牲召回，必须每日用 smoke 数据对召回率打一次勾
-    anchor: curator/daily/005-今日焦点-角色行动项详情-2026-10-10.md#ai-eng-aier--p2--todo
+    anchor: curator/daily/archive/2026-10-10/role-actions.md#ai-eng-aier--p2--todo
     status: todo
 ```
 
@@ -206,11 +207,11 @@ quick_anchors:
 
 ## 六、每日决策 3-2-1 摘要（新增）
 
-> 3 signals / 2 decisions / 1 redline 的压缩简报；完整 60 秒版本见：`./002-今日焦点-决策简报-2026-10-10.md`
+> 3 signals / 2 decisions / 1 redline 的压缩简报；完整 60 秒版本见：`./archive/2026-10-10/decision-brief.md`
 
 ```yaml
 daily_digest:
-  summary_file: curator/daily/002-今日焦点-决策简报-2026-10-10.md
+  summary_file: curator/daily/archive/2026-10-10/decision-brief.md
   signals:
     - id: S1
       level: warn
@@ -253,11 +254,11 @@ daily_digest:
 focus_links:
   - group: 深入阅读
     title: 每日决策简报（3 信号 / 2 决策 / 1 红线）
-    anchor: curator/daily/002-今日焦点-决策简报-2026-10-10.md
+    anchor: curator/daily/archive/2026-10-10/decision-brief.md
     role: Executive
   - group: 深入阅读
     title: 学习与风险摘要（3 复盘收获 / 3 持续风险）
-    anchor: curator/daily/006-今日焦点-学习与风险摘要-2026-10-10.md
+    anchor: curator/daily/archive/2026-10-10/learning-risk.md
     role: All
   - group: 推进锚点
     title: 技术选型 - Vitest 引入决策记录
@@ -285,7 +286,7 @@ focus_links:
 | B2 | action + focus_link 锚点点击可达率 ≥ 90%（三关：linkFactory→HEAD→看门狗2s） | linkFactory + KnowledgePreviewDialog | 每日 EOD | 低于 90% → Curator 24h 内修复死链 |
 | B3 | SRE 级别字段与真实告警一致（由 sre/QUICKREF 对照） | YiAi /health 路由 | 每 30min 轮询 | 偏差 ≥ 1 级 → 触发 SRE Runbook L2 |
 | B4 | OKR coverage 字段与 goal.md 中 KR 完成数一致 | 5 个 goal 文件正则解析 | 每 6h | ≥ 2 个 coverage 不符 → 锁定首页看板 |
-| B5 | daily_digest 严格 3 signals / 2 decisions / 1 redline（缺一则降级） | curator/daily/002 决策简报 | 每次读取 | 数量不符 → 首页 digest 段灰显 + 提示 |
+| B5 | daily_digest 严格 3 signals / 2 decisions / 1 redline（缺一则降级） | archive/2026-10-10/decision-brief.md | 每次读取 | 数量不符 → 首页 digest 段灰显 + 提示 |
 | B6 | focus_links ≥ 4 条，且每条 KnowledgePreviewDialog 可打开正文 | YiAi knowledge-read 接口 | 每次读取 | 打开失败 ≥ 1 条 → 在对应条目加红色角标 |
 
 > 以上 6 条基线是本文件的「可证伪性护栏」。任何一条被触发，首页会自动降级相关区段，并在 hero 位置用红色提示「焦点数据未通过 B# 校验，未通过段已自动回退」。

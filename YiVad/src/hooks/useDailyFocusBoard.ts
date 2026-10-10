@@ -1,8 +1,8 @@
 /**
  * Daily Focus Board composable.
  *
- * Reads YiKnowledge/curator/daily/001-今日焦点-焦点总控.md via YiAi
- * knowledge-read endpoint and parses 8 structured sections:
+ * Reads YiKnowledge/curator/daily/focus-board.md (SSOT, path permanently stable)
+ * via YiAi knowledge-read endpoint and parses 8 structured sections:
  *   1. Hero banner (hero / must_do_one / narrative)
  *   2. SRE status matrix (level + items)
  *   3. OKR trackers (id / title / progress / coverage / status / anchor)
@@ -20,7 +20,16 @@
 import { ref, onMounted, onUnmounted, type Ref } from "vue";
 import { readKnowledgeFile } from "@/api/modules/knowledgeService";
 
-export const FOCUS_FILE_PATH = "curator/daily/001-今日焦点-焦点总控.md";
+export const FOCUS_FILE_PATH = "curator/daily/focus-board.md";
+
+/** Daily sub-content slug → stable filename map (per curator/daily/README.md 三级回退策略 §路径解析策略) */
+export const DAILY_SLUG_TO_FILE: Readonly<Record<string, string>> = {
+  sreDetail: "sre-runbook",
+  okrTracker: "okr-tracker",
+  roleActions: "role-actions",
+  digest: "decision-brief",
+  learnRisk: "learning-risk",
+};
 
 export type DigestLevel = "critical" | "major" | "warn" | "clear" | string;
 
