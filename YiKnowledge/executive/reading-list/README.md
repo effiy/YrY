@@ -223,6 +223,9 @@ stateDiagram-v2
 | 9 | 当前状态 | Reading → Noted → Actionized → Distilled → Reviewed | 对齐 §2 状态机 |
 | 10 | Shipped 证据 | `[010 §5.1 决策 7 字段铁三角模板](./010-阅读-读书笔记-卓有成效的管理者.md#L182-L220)` | `sed -n '182,220p' 010-*` 非空 |
 
+**实时看板（YiVad 9 面板 v3.2）**：默认 KB SSOT 模式 30 条目实时渲染 + 6 张高管专业面板（SLO / 红绿灯 / 跨书洞察 / OKR×KR / 蒸馏 7 步流 / Future Queue）+ 3 张基础面板（维度 / 分布 / RICE 漏斗）
+→ 访问：[**YiVad ReadingList Dashboard**](http://localhost:8848/#/knowledge/executive/readingList)
+
 ---
 
 ## 6. 蒸馏六步走（升级为 7 步 + 状态机红线）

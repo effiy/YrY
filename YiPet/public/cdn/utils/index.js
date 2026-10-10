@@ -339,6 +339,12 @@ if (typeof window !== 'undefined') {
  * Importable as ES module:  import { createApiClient } from '../cdn/api-client';
  * CDN global:              const client = YiPetApi.createClient({ baseUrl: '...' });
  */ // ── Types ──────────────────────────────────────────────────────────────
+// ── URL helper (reusable by the extension layer too) ───────────────────
+/** Join a base URL and a path, normalising leading/trailing slashes. */ function resolveUrl(baseUrl, path) {
+    const base = baseUrl.replace(/\/+$/, '');
+    const p = path.startsWith('/') ? path : '/' + path;
+    return base + p;
+}
 // ── Factory ────────────────────────────────────────────────────────────
 function createApiClient(config) {
     const { baseUrl, timeout = 30000, headers = {}, retry, logger } = config;
@@ -347,13 +353,9 @@ function createApiClient(config) {
         Accept: 'application/json',
         ...headers
     };
-    function resolveUrl(path) {
-        const base = baseUrl.replace(/\/+$/, '');
-        const p = path.startsWith('/') ? path : '/' + path;
-        return base + p;
-    }
+    const resolve = (path)=>resolveUrl(baseUrl, path);
     async function request(method, path, body, signal, attempt = 0) {
-        const url = resolveUrl(path);
+        const url = resolve(path);
         const controller = new AbortController();
         const timeoutId = setTimeout(()=>controller.abort(), timeout);
         const onAbort = ()=>controller.abort();
@@ -417,7 +419,7 @@ function createApiClient(config) {
         post: (path, body, signal)=>request('POST', path, body, signal),
         put: (path, body, signal)=>request('PUT', path, body, signal),
         delete: (path, signal)=>request('DELETE', path, undefined, signal),
-        url: resolveUrl
+        url: resolve
     };
 }
 /* ── Global attachment (for CDN/IIFE build) ────────────────────────── */ const YiPetApi = (/* unused pure expression or super */ null && ({

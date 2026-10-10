@@ -13,8 +13,8 @@ const _MOCK_PROJECTS: Project[] = (() => {
   if (import.meta.env.RSBUILD_ENV_USE_MOCK !== "true") return [];
   const now = Date.now();
   const d = (daysAgo: number) => new Date(now - daysAgo * 864e5).toISOString();
-  const member = (user_id: string, name: string, role: "owner" | "admin" | "member" = "member"): ProjectMember => ({
-    user_id, name, role, joined_at: d(60),
+  const member = (user_id: string, username: string, role: "owner" | "admin" | "member" = "member"): ProjectMember => ({
+    user_id, username, role,
   });
   return [
     {

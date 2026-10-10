@@ -6,17 +6,102 @@
         t("rss.manager.seeds.resultCount", { filtered: filteredSeeds.length, total: feedsCount })
       }}</span>
       <span class="rss-role__toolbar-right">
-        <el-button :icon="Upload" @click="onImportOpml">{{ t("rss.scheduler.importOpml") }}</el-button>
-        <el-button :icon="Download" @click="onExportOpml">{{ t("rss.scheduler.exportOpml") }}</el-button>
-        <el-button type="primary" :icon="Plus" @click="openSeedDialog()">{{ t("rss.manager.seeds.addSource") }}</el-button>
-        <el-button :icon="Refresh" @click="onParseAll" :loading="parseAllLoading">{{
+        <el-button :icon="Timer" size="small" type="success" plain @click="retryVisible = true">
+          {{ t("rss.manager.retry.drawerTitle") }}
+          <el-badge :value="retryQueue.length" :hidden="retryQueue.length === 0" class="ml-2" />
+        </el-button>
+        <el-button :icon="Upload" size="small" @click="onImportOpml">{{ t("rss.scheduler.importOpml") }}</el-button>
+        <el-button :icon="Download" size="small" @click="onExportOpml">{{ t("rss.scheduler.exportOpml") }}</el-button>
+        <el-button type="primary" size="small" :icon="Plus" @click="openSeedDialog()">{{ t("rss.manager.seeds.addSource") }}</el-button>
+        <el-button size="small" :icon="Refresh" @click="onParseAll" :loading="parseAllLoading">{{
           t("rss.manager.seeds.parseAllBtn")
         }}</el-button>
-        <el-button :icon="Link" @click="quickParseVisible = true">{{ t("rss.manager.seeds.quickParseBtn") }}</el-button>
+        <el-button size="small" :icon="Link" @click="quickParseVisible = true">{{ t("rss.manager.seeds.quickParseBtn") }}</el-button>
       </span>
     </div>
 
     <div class="rss-role__section-body">
+      <!-- P0 #1: Health Dashboard KPI cards -->
+      <div class="rss-kpi-row">
+        <div class="rss-kpi-card" :title="t('rss.manager.kpi.totalFeeds.title')">
+          <div class="rss-kpi-card__label">
+            <span class="rss-kpi-card__icon">📡</span>
+            {{ t("rss.manager.kpi.totalFeeds.label") }}
+          </div>
+          <div class="rss-kpi-card__value">
+            {{ totalFeedsKpi }}
+            <span class="rss-kpi-card__unit">{{ t("rss.manager.kpi.totalFeeds.unit") }}</span>
+          </div>
+          <div class="rss-kpi-card__spark">
+            <ECharts :option="sparkOption(totalSparkline, '#409EFF')" height="32" />
+          </div>
+        </div>
+        <div class="rss-kpi-card" :title="t('rss.manager.kpi.healthyToday.title')">
+          <div class="rss-kpi-card__label">
+            <span class="rss-kpi-card__icon">🟢</span>
+            {{ t("rss.manager.kpi.healthyToday.label") }}
+          </div>
+          <div class="rss-kpi-card__value">
+            {{ healthyTodayKpi }}
+            <span class="rss-kpi-card__unit">/ {{ totalFeedsKpi }}</span>
+            <span
+              class="rss-kpi-card__pill"
+              :class="healthyTodayKpi === totalFeedsKpi ? 'pill-green' : 'pill-yellow'"
+              style="margin-left:auto"
+            >
+              {{ totalFeedsKpi ? Math.round(100 * healthyTodayKpi / totalFeedsKpi) : 0 }}%
+            </span>
+          </div>
+          <div class="rss-kpi-card__spark">
+            <ECharts :option="sparkOption(healthySparkline, '#67c23a')" height="32" />
+          </div>
+        </div>
+        <div class="rss-kpi-card" :title="t('rss.manager.kpi.staleLast7d.title')">
+          <div class="rss-kpi-card__label">
+            <span class="rss-kpi-card__icon">🟥</span>
+            {{ t("rss.manager.kpi.staleLast7d.label") }}
+          </div>
+          <div class="rss-kpi-card__value">
+            {{ staleLast7dKpi }}
+            <span class="rss-kpi-card__unit">{{ t("rss.manager.kpi.staleLast7d.unit") }}</span>
+            <span
+              class="rss-kpi-card__pill"
+              :class="staleLast7dKpi === 0 ? 'pill-green' : staleLast7dKpi < 4 ? 'pill-orange' : 'pill-red'"
+              style="margin-left:auto"
+            >
+              {{ staleLast7dKpi === 0 ? t("rss.manager.kpi.ok") : t("rss.manager.kpi.attention") }}
+            </span>
+          </div>
+          <div class="rss-kpi-card__spark">
+            <ECharts :option="sparkOption(staleSparkline, '#f56c6c', true)" height="32" />
+          </div>
+        </div>
+        <div class="rss-kpi-card" :title="t('rss.manager.kpi.avgFetchLatency.title')">
+          <div class="rss-kpi-card__label">
+            <span class="rss-kpi-card__icon">⏱</span>
+            {{ t("rss.manager.kpi.avgFetchLatency.label") }}
+          </div>
+          <div class="rss-kpi-card__value">
+            {{ avgFetchLatencyKpi }}
+            <span class="rss-kpi-card__unit">ms</span>
+            <span
+              class="rss-kpi-card__pill"
+              :class="avgFetchLatencyKpi === 0 ? 'pill-gray' : avgFetchLatencyKpi < 400 ? 'pill-green' : avgFetchLatencyKpi < 800 ? 'pill-yellow' : 'pill-red'"
+              style="margin-left:auto"
+            >
+              {{ avgFetchLatencyKpi < 200 ? "L" : avgFetchLatencyKpi < 400 ? "ML" : avgFetchLatencyKpi < 800 ? "MH" : avgFetchLatencyKpi < 1600 ? "H" : "VH" }}
+            </span>
+          </div>
+          <div class="rss-kpi-card__spark">
+            <ECharts
+              :option="sparkOption(latencySparkline, avgFetchLatencyColor)"
+              height="32"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- P0 #4: Enhanced Filter Toolbar -->
       <div class="rss-role__toolbar">
         <el-input
           v-model="seedSearch"
@@ -25,6 +110,118 @@
           :prefix-icon="Search"
           style="width: 220px"
         />
+        <el-select
+          v-model="fetchStatusFilter"
+          :placeholder="t('rss.manager.filters.fetchStatus.all')"
+          clearable
+          style="width: 150px"
+        >
+          <el-option :label="t('rss.manager.filters.fetchStatus.all')" value="" />
+          <el-option :label="t('rss.manager.filters.fetchStatus.ok')" value="ok" />
+          <el-option :label="t('rss.manager.filters.fetchStatus.failing')" value="failing" />
+          <el-option :label="t('rss.manager.filters.fetchStatus.timeout')" value="timeout" />
+          <el-option :label="t('rss.manager.filters.fetchStatus.stale')" value="stale" />
+        </el-select>
+        <el-date-picker
+          v-model="monthRange"
+          type="month"
+          :placeholder="t('rss.manager.filters.month.placeholder')"
+          format="YYYY-MM"
+          value-format="YYYY-MM"
+          style="width: 160px"
+          @change="() => currentMonthOnly = true"
+        />
+        <el-checkbox v-model="currentMonthOnly">
+          {{ t("rss.manager.filters.month.currentOnly") }}
+        </el-checkbox>
+        <el-button size="small" text @click="onRefreshAll">
+          <el-icon class="mr-1"><Refresh /></el-icon>
+          {{ t("rss.manager.items.refresh") }}
+        </el-button>
+      </div>
+
+      <!-- P0 #3: Monthly Prune Compliance Board -->
+      <div v-if="pruneSnapshot" class="rss-prune-board rss-prune-board--section" v-loading="pruneLoading">
+        <div class="rss-prune-board__head">
+          <div>
+            <div class="rss-prune-board__title">
+              🪓 {{ t("rss.manager.prune.boardTitle") }}
+            </div>
+            <div class="rss-prune-board__subtitle">
+              {{ t("rss.manager.prune.rule") }}
+            </div>
+          </div>
+          <el-tag
+            size="large"
+            effect="dark"
+            :type="pruneTagType"
+          >
+            {{ t("rss.manager.prune.currentMonthRate", { pct: pruneSnapshot.currentRate, target: pruneSnapshot.targetRate }) }}
+          </el-tag>
+        </div>
+        <div class="rss-prune-board__gauge">
+          <div class="rss-prune-board__gauge-chart">
+            <ECharts :option="pruneGaugeOption" height="160" />
+          </div>
+          <div class="rss-prune-board__gauge-meta">
+            <div>
+              <span class="big" :style="{ color: pruneColor }">{{ pruneSnapshot.currentRate }}%</span>
+              {{ t("rss.manager.prune.gauge.current") }}
+            </div>
+            <div :class="pruneMetaClass">
+              🎯 {{ t("rss.manager.prune.gauge.target") }}：{{ pruneSnapshot.targetRate }}%
+              · {{ pruneReachDescription }}
+            </div>
+            <div>
+              🔁 {{ t("rss.manager.prune.gauge.byRoleBest") }}：
+              <span class="target">
+                {{ bestRoleName }} ({{ bestRoleRate }}%)
+              </span>
+              · {{ t("rss.manager.prune.gauge.byRoleWorst") }}：
+              <span :class="worstRoleRate >= 80 ? 'target' : 'warn'">
+                {{ worstRoleName }} ({{ worstRoleRate }}%)
+              </span>
+            </div>
+            <div style="color: var(--el-text-color-secondary); font-size: 11px;">
+              ✅ {{ t("rss.manager.prune.gauge.updateAgo") }}：{{ formatAgo(pruneSnapshot.updatedAt) }}
+            </div>
+          </div>
+        </div>
+        <div class="rss-prune-board__body">
+          <div class="rss-prune-board__panel">
+            <div class="rss-prune-board__panel-title">
+              {{ t("rss.manager.prune.panels.monthly.title") }}
+            </div>
+            <ECharts :option="pruneBarOption" height="220" />
+          </div>
+          <div class="rss-prune-board__panel">
+            <div class="rss-prune-board__panel-title">
+              {{ t("rss.manager.prune.panels.heat.title") }}
+            </div>
+            <table class="rss-heat-table" v-if="heatMonths.length && heatRoles.length">
+              <thead>
+                <tr>
+                  <th>{{ t("rss.manager.prune.panels.heat.role") }}</th>
+                  <th v-for="m in heatMonths" :key="m">{{ m }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="r in heatRoles" :key="r">
+                  <td class="role-cell">{{ roleDisplayName(r) }}</td>
+                  <td
+                    v-for="m in heatMonths"
+                    :key="`${r}-${m}`"
+                    class="rss-heat-cell"
+                    :style="heatCellStyle(heatRate(r, m))"
+                    :title="`${roleDisplayName(r)} · ${m} · ${heatRate(r, m)}%`"
+                  >
+                    {{ heatRate(r, m) }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- 0 seeds → 引导用户添加推荐种子 -->
@@ -55,10 +252,7 @@
             >
               <div class="rss-briefing__suggest-card-top">
                 <span class="rss-briefing__suggest-card-cat">
-                  <span
-                    class="rss-role__cat-dot"
-                    :style="{ background: roleColor(seed.category) }"
-                  ></span>
+                  <span class="rss-role__cat-dot" :style="{ background: roleColor(seed.category) }"></span>
                   {{ subCategory(seed.category) }}
                 </span>
                 <span v-if="suggest.suggestedAdded.has(seed.key)" class="rss-briefing__suggest-card-added">✓</span>
@@ -93,12 +287,26 @@
         v-loading="seedsLoading"
         stripe
         border
-        style="width: 100%"
+        style="width: 100%; margin-top: 16px;"
         row-key="url"
         :empty-text="seedsLoading ? '' : t('rss.manager.seeds.table.noData')"
       >
-        <el-table-column prop="name" :label="t('rss.manager.seeds.table.name')" min-width="140" show-overflow-tooltip />
-        <el-table-column :label="t('rss.manager.seeds.table.feedUrl')" min-width="240">
+        <el-table-column prop="name" :label="t('rss.manager.seeds.table.name')" min-width="160" show-overflow-tooltip>
+          <template #default="{ row }">
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span
+                v-if="healthAggregate[(row as RssSeedDocument).url ?? '']?.stale"
+                class="rss-fetch-pill status-stale"
+                :title="t('rss.manager.seeds.table.stale7d')"
+              >
+                <span class="rss-fetch-pill__dot"></span>
+                {{ t("rss.manager.seeds.table.stale") }}
+              </span>
+              {{ (row as RssSeedDocument).name ?? "-" }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('rss.manager.seeds.table.feedUrl')" min-width="260">
           <template #default="{ row }">
             <a
               :href="(row as RssSeedDocument).url"
@@ -112,7 +320,7 @@
             </a>
           </template>
         </el-table-column>
-        <el-table-column :label="t('rss.manager.seeds.table.category')" width="150" show-overflow-tooltip>
+        <el-table-column :label="t('rss.manager.seeds.table.category')" width="140" show-overflow-tooltip>
           <template #default="{ row }">
             <span v-if="subCategory((row as RssSeedDocument).category)" class="rss-role__cat-chip">
               <span class="rss-role__cat-dot" :style="{ background: roleColor((row as RssSeedDocument).category) }"></span
@@ -127,6 +335,26 @@
               {{ formatInterval(seedIntervals[(row as RssSeedDocument).url]) }}
             </span>
             <span v-else class="rss-role__text-muted">{{ t("rss.manager.seeds.table.globalInterval") }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('rss.manager.seeds.table.latency')" width="100" align="center">
+          <template #default="{ row }">
+            <span
+              v-if="healthAggregate[(row as RssSeedDocument).url ?? '']?.avgLatency10"
+              style="font-weight:700; font-family: DIN,monospace;"
+              :style="{ color: latencyTierColorFn(healthAggregate[(row as RssSeedDocument).url ?? ''].avgLatency10) }"
+            >
+              {{ Math.round(healthAggregate[(row as RssSeedDocument).url ?? ''].avgLatency10) }}ms
+            </span>
+            <span v-else class="rss-role__text-muted">—</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="t('rss.manager.seeds.table.testResult')" width="190">
+          <template #default="{ row }">
+            <render-fetch-pill
+              :status="testFetchStatus[(row as RssSeedDocument).url ?? '']"
+              :loading="!!testFetchLoading[(row as RssSeedDocument).url ?? '']"
+            />
           </template>
         </el-table-column>
         <el-table-column :label="t('rss.manager.seeds.table.active')" width="70" align="center">
@@ -161,8 +389,17 @@
             <span v-else class="rss-role__text-muted">{{ t("rss.manager.seeds.table.neverParsed") }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="t('rss.manager.seeds.table.actions')" width="190" fixed="right">
+        <el-table-column :label="t('rss.manager.seeds.table.actions')" width="250" fixed="right">
           <template #default="{ row }">
+            <el-button
+              size="small"
+              text
+              type="success"
+              :loading="!!testFetchLoading[(row as RssSeedDocument).url ?? '']"
+              @click.stop="testFetch(row as RssSeedDocument)"
+            >
+              {{ t("rss.manager.seeds.table.test") }}
+            </el-button>
             <el-button
               size="small"
               text
@@ -187,10 +424,20 @@
           </template>
         </el-table-column>
       </el-table>
-      <div v-else-if="seedsLoading || filteredSeeds.length" class="rss-role__items-grid">
+
+      <div v-else-if="seedsLoading || filteredSeeds.length" class="rss-role__items-grid" style="margin-top: 16px;">
         <el-card v-for="seed in filteredSeeds" :key="seed.url" class="rss-role__seed-card" shadow="hover">
           <div class="rss-role__seed-card-head">
-            <span class="rss-role__seed-card-name">{{ seed.name }}</span>
+            <div style="display:flex; align-items:center; gap:6px; min-width:0;">
+              <span
+                v-if="healthAggregate[seed.url ?? '']?.stale"
+                class="rss-fetch-pill status-stale"
+              >
+                <span class="rss-fetch-pill__dot"></span>
+                {{ t("rss.manager.seeds.table.stale") }}
+              </span>
+              <span class="rss-role__seed-card-name">{{ seed.name }}</span>
+            </div>
             <el-switch
               :model-value="seed.enabled !== false"
               :loading="seedToggling === seed.key"
@@ -207,13 +454,33 @@
             </span>
             <span v-if="seedIntervals[seed.url]">{{ formatInterval(seedIntervals[seed.url]) }}</span>
             <span v-else>{{ t("rss.manager.seeds.card.globalInterval") }}</span>
+            <span
+              v-if="healthAggregate[seed.url ?? '']?.avgLatency10"
+              style="font-weight:700; font-family: DIN,monospace;"
+              :style="{ color: latencyTierColorFn(healthAggregate[seed.url ?? ''].avgLatency10) }"
+            >
+              {{ Math.round(healthAggregate[seed.url ?? ''].avgLatency10) }}ms
+            </span>
             <span v-if="seedArticleCounts[seed.url] !== undefined">{{
               t("rss.manager.seeds.card.articles", { n: seedArticleCounts[seed.url] })
             }}</span>
             <span v-if="parseTimes[seed.url]">{{ formatTimeAgo(parseTimes[seed.url]) }}</span>
             <span v-else>{{ t("rss.manager.seeds.card.neverParsed") }}</span>
           </div>
+          <div style="margin:2px 0 -4px;">
+            <render-fetch-pill
+              :status="testFetchStatus[seed.url ?? '']"
+              :loading="!!testFetchLoading[seed.url ?? '']"
+            />
+          </div>
           <div class="rss-role__seed-card-actions">
+            <el-button
+              size="small"
+              text
+              type="success"
+              :loading="!!testFetchLoading[seed.url ?? '']"
+              @click.stop="testFetch(seed)"
+            >{{ t("rss.manager.seeds.table.test") }}</el-button>
             <el-button
               size="small"
               text
@@ -237,7 +504,7 @@
       </div>
     </div>
 
-    <!-- Seed Dialog -->
+    <!-- Seed Dialog (extended) -->
     <SeedDialog
       :visible="seedDialogVisible"
       :editing-seed="editingSeed"
@@ -256,20 +523,104 @@
       @update:visible="quickParseVisible = $event"
       @parse="onQuickParse"
     />
+
+    <!-- Retry Queue Drawer -->
+    <el-drawer
+      v-model="retryVisible"
+      :title="t('rss.manager.retry.drawerTitleWithCount', { n: retryQueue.length })"
+      direction="rtl"
+      size="520px"
+      destroy-on-close
+    >
+      <div style="display:flex; flex-direction:column; gap:12px; padding-right:4px;">
+        <div style="display:flex; gap:8px; align-items:center;">
+          <el-tag effect="light" type="warning">
+            {{ t("rss.manager.retry.queuedEntries", { n: retryQueue.length }) }}
+          </el-tag>
+          <el-button
+            size="small"
+            type="primary"
+            plain
+            :disabled="!retryQueue.length"
+            @click="retryAll"
+          >
+            {{ t("rss.manager.retry.retryAll") }}
+          </el-button>
+          <el-button
+            size="small"
+            text
+            type="danger"
+            :disabled="!retryQueue.length"
+            @click="abandonAll"
+          >
+            {{ t("rss.manager.retry.abandonAll") }}
+          </el-button>
+        </div>
+        <el-table :data="retryQueue" stripe border empty-text="—">
+          <el-table-column :label="t('rss.manager.retry.table.feed')" min-width="180" show-overflow-tooltip>
+            <template #default="{ row }">
+              <div>
+                <div style="font-weight:700;">{{ row.feedName || t("rss.manager.retry.table.unnamed") }}</div>
+                <div style="font-size:11px; color:var(--el-text-color-secondary);" :title="row.feedUrl">
+                  {{ row.feedUrl }}
+                </div>
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('rss.manager.retry.table.lastError')" min-width="160" show-overflow-tooltip>
+            <template #default="{ row }">
+              <el-tooltip :content="row.lastError" placement="top" :show-after="400">
+                <span style="color:var(--el-color-danger); font-size:12px;">
+                  {{ row.lastError?.slice(0, 72) }}{{ (row.lastError?.length ?? 0) > 72 ? "…" : "" }}
+                </span>
+              </el-tooltip>
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('rss.manager.retry.table.retries')" width="80" align="center">
+            <template #default="{ row }">
+              <el-tag size="small" :type="row.retryCount >= 5 ? 'danger' : row.retryCount >= 3 ? 'warning' : 'info'">
+                {{ row.retryCount }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('rss.manager.retry.table.nextRetry')" width="150" align="center">
+            <template #default="{ row }">
+              {{ formatRelativeRetry(row.nextRetryAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column :label="t('rss.manager.retry.table.actions')" width="150" fixed="right" align="center">
+            <template #default="{ row }">
+              <el-button size="small" text type="primary" @click="retryOne(row)">
+                {{ t("rss.manager.retry.table.retryNow") }}
+              </el-button>
+              <el-button size="small" text type="danger" @click="abandonRetry(row)">
+                {{ t("rss.manager.retry.table.abandon") }}
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
+    </el-drawer>
   </section>
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, toRef } from "vue";
-import { Search, Plus, Refresh, Link, Delete, Upload, Download } from "@element-plus/icons-vue";
+import { h, onMounted, watch, toRef, computed, defineComponent } from "vue";
+import { Search, Plus, Refresh, Link, Delete, Upload, Download, Timer } from "@element-plus/icons-vue";
 import type { RssSeedDocument } from "@/api/modules/rssService";
 import { useI18n } from "vue-i18n";
 import { ElMessage } from "element-plus";
-import { roleColor as roleColorFn } from "@/views/knowledge/executive/okrData";
-import { useFeeds } from "./useFeeds";
+import { roleColor as roleColorFn, rolesData } from "@/views/knowledge/executive/okrData";
+import {
+  useFeeds,
+  type FetchStatusPill,
+  type RetryQueueEntry
+} from "./useFeeds";
 import { useSeedSuggest } from "./useSeedSuggest";
 import SeedDialog from "./SeedDialog.vue";
 import QuickParseDialog from "./QuickParseDialog.vue";
+import ECharts from "@/components/ECharts/index.vue";
+import { ECOption } from "@/components/ECharts/config";
 
 const props = defineProps<{
   selectedRoles: string[];
@@ -287,6 +638,63 @@ const roleColor = (cat?: string) => {
   const rid = cat?.split("/")[0] || "";
   return roleColorFn(rid);
 };
+
+function latencyTierColorFn(v: number): string {
+  if (v <= 0) return "#909399";
+  if (v < 200) return "#67c23a";
+  if (v < 400) return "#85ce61";
+  if (v < 800) return "#e6a23c";
+  if (v < 1600) return "#f56c6c";
+  return "#c45656";
+}
+
+// Inline sub-component for fetch pill (to avoid creating a new file per hard constraints)
+const RenderFetchPill = defineComponent({
+  name: "RenderFetchPill",
+  props: {
+    status: { type: Object as () => FetchStatusPill | undefined, default: undefined },
+    loading: { type: Boolean, default: false }
+  },
+  setup(props) {
+    const { t } = useI18n();
+    return () => {
+      if (props.loading) {
+        return h("span", { class: "rss-fetch-pill status-unknown" }, [
+          h("el-icon", { style: "animation:spin 0.9s linear infinite;" }, () => "⟳"),
+          " ",
+          t?.("rss.manager.seeds.test.loading") ?? "Testing…"
+        ]);
+      }
+      const s = props.status;
+      if (!s || !s.kind) {
+        return h("span", {
+          class: "rss-fetch-pill status-unknown",
+          title: t?.("rss.manager.seeds.test.untested") ?? "Not tested"
+        }, "— " + (t?.("rss.manager.seeds.test.untestedShort") ?? "Untested"));
+      }
+      const textMap: Record<string, string> = {
+        ok: `${t?.("rss.manager.seeds.test.okPrefix") ?? "OK"} · ${s.count ?? 0} items · ${s.latencyMs ?? 0}ms`,
+        timeout: `${t?.("rss.manager.seeds.test.timeout") ?? "Timeout"} · 15s`,
+        rate: t?.("rss.manager.seeds.test.ratelimit") ?? "Rate Limited (429)",
+        fail: `${t?.("rss.manager.seeds.test.fail") ?? "Failed"}`,
+        stale: t?.("rss.manager.seeds.test.stale") ?? "Stale"
+      };
+      const classKind = `status-${s.kind}`;
+      const tip = s.error || textMap[s.kind];
+      return h(
+        "span",
+        {
+          class: ["rss-fetch-pill", classKind],
+          title: tip
+        },
+        [
+          h("span", { class: "rss-fetch-pill__dot" }),
+          textMap[s.kind]
+        ]
+      );
+    };
+  }
+});
 
 // Pass selectedRoles as a reactive ref to the composable
 const rolesRef = toRef(props, "selectedRoles");
@@ -323,8 +731,295 @@ const {
   formatTime,
   formatTimeAgo,
   formatInterval,
-  subCategory
+  subCategory,
+  // New health data
+  totalFeedsKpi,
+  healthyTodayKpi,
+  staleLast7dKpi,
+  avgFetchLatencyKpi,
+  avgFetchLatencyColor,
+  totalSparkline,
+  healthySparkline,
+  staleSparkline,
+  latencySparkline,
+  healthAggregate,
+  fetchStatusFilter,
+  currentMonthOnly,
+  monthRange,
+  testFetchStatus,
+  testFetchLoading,
+  testFetch,
+  retryVisible,
+  retryQueue,
+  retryOne,
+  abandonRetry,
+  pruneSnapshot,
+  pruneLoading
 } = useFeeds(rolesRef);
+
+// ── ECharts helpers ──
+function sparkOption(data: number[], color: string, inverse = false): ECOption {
+  const values = inverse ? data.slice().map(v => Math.max(...data) - v) : data;
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const areaColor = {
+    type: "linear" as const,
+    x: 0, y: 0, x2: 0, y2: 1,
+    colorStops: [
+      { offset: 0, color: color + "AA" },
+      { offset: 1, color: color + "00" }
+    ]
+  };
+  return {
+    animation: false,
+    grid: { left: 0, right: 0, top: 4, bottom: 0 },
+    xAxis: { type: "category", show: false, data: data.map((_, i) => String(i)) },
+    yAxis: { type: "value", show: false, min: Math.max(0, min - 1), max: max + 1 },
+    series: [{
+      type: "line",
+      smooth: true,
+      data: values,
+      showSymbol: false,
+      lineStyle: { width: 1.5, color },
+      areaStyle: { color: areaColor }
+    }]
+  };
+}
+
+const pruneGaugeOption = computed<ECOption>(() => {
+  const rate = pruneSnapshot.value?.currentRate ?? 0;
+  const target = pruneSnapshot.value?.targetRate ?? 80;
+  const color =
+    rate >= target ? "#67c23a" : rate >= 60 ? "#e6a23c" : "#f56c6c";
+  return {
+    series: [
+      {
+        type: "gauge",
+        startAngle: 210,
+        endAngle: -30,
+        radius: "92%",
+        center: ["50%", "62%"],
+        progress: { show: true, width: 16, roundCap: true, itemStyle: { color } },
+        axisLine: {
+          lineStyle: {
+            width: 16,
+            color: [[1, "var(--el-fill-color-light)"]]
+          }
+        },
+        splitLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        pointer: { show: false },
+        detail: {
+          valueAnimation: true,
+          offsetCenter: [0, "18%"],
+          fontSize: 26,
+          fontWeight: 800,
+          fontFamily: "DIN,monospace",
+          color,
+          formatter: "{value}%"
+        },
+        title: {
+          offsetCenter: [0, "60%"],
+          fontSize: 11,
+          color: "var(--el-text-color-secondary)"
+        },
+        data: [{ value: rate, name: `${t("rss.manager.prune.gauge.target")} ${target}%` }]
+      },
+      // target mark ring
+      {
+        type: "gauge",
+        startAngle: 210,
+        endAngle: -30,
+        radius: "82%",
+        center: ["50%", "62%"],
+        progress: { show: false },
+        axisLine: { lineStyle: { width: 0, color: [[1, "transparent"]] } },
+        pointer: { length: "78%", width: 2, icon: "triangle", itemStyle: { color: "#303133" }, offsetCenter: [0, 0] },
+        splitLine: { show: false },
+        axisTick: { show: false },
+        axisLabel: { show: false },
+        detail: { show: false },
+        data: [{ value: target }]
+      }
+    ]
+  };
+});
+
+const pruneBarOption = computed<ECOption>(() => {
+  const snap = pruneSnapshot.value;
+  const months = snap?.months ?? [];
+  return {
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "cross" }
+    },
+    grid: { left: 36, right: 20, top: 30, bottom: 28 },
+    legend: {
+      top: 0, right: 0,
+      itemWidth: 10, itemHeight: 10,
+      textStyle: { fontSize: 11, color: "var(--el-text-color-secondary)" }
+    },
+    xAxis: {
+      type: "category",
+      data: months.map(m => m.label),
+      axisLabel: { fontSize: 11, color: "var(--el-text-color-secondary)" }
+    },
+    yAxis: {
+      type: "value",
+      axisLabel: { fontSize: 11, color: "var(--el-text-color-secondary)" },
+      splitLine: { lineStyle: { color: "var(--el-border-color-lighter)", type: "dashed" } }
+    },
+    series: [
+      {
+        name: t("rss.manager.prune.panels.monthly.expected"),
+        type: "bar",
+        data: months.map(m => m.expected),
+        barWidth: 16,
+        itemStyle: {
+          color: { type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1, colorStops: [
+            { offset: 0, color: "#909399CC" }, { offset: 1, color: "#C0C4CC66" }
+          ] },
+          borderRadius: [4, 4, 0, 0]
+        }
+      },
+      {
+        name: t("rss.manager.prune.panels.monthly.actual"),
+        type: "bar",
+        data: months.map(m => ({
+          value: m.actual,
+          itemStyle: {
+            color: m.rate >= 80 ? "#67c23a" : m.rate >= 60 ? "#e6a23c" : "#f56c6c",
+            borderRadius: [4, 4, 0, 0]
+          }
+        })),
+        barWidth: 16
+      },
+      {
+        name: t("rss.manager.prune.panels.monthly.rate"),
+        type: "line",
+        yAxisIndex: 0,
+        smooth: true,
+        symbol: "circle",
+        symbolSize: 6,
+        lineStyle: { width: 2, color: "#409EFF" },
+        itemStyle: { color: "#409EFF", borderColor: "#fff", borderWidth: 1 },
+        data: months.map(m => m.expected === 0 ? 0 : Math.round(m.actual * 100 / m.expected)),
+        label: {
+          show: true,
+          position: "top",
+          formatter: "{c}%",
+          fontSize: 10,
+          color: "#409EFF"
+        }
+      }
+    ]
+  } as any;
+});
+
+const pruneColor = computed(() => {
+  const r = pruneSnapshot.value?.currentRate ?? 0;
+  return r >= 80 ? "#67c23a" : r >= 60 ? "#e6a23c" : "#f56c6c";
+});
+const pruneTagType = computed<"info" | "success" | "warning" | "danger">(() => {
+  const r = pruneSnapshot.value?.currentRate ?? 0;
+  return r >= 80 ? "success" : r >= 60 ? "warning" : "danger";
+});
+const pruneMetaClass = computed(() => {
+  const r = pruneSnapshot.value?.currentRate ?? 0;
+  return r >= 80 ? "target" : r >= 60 ? "warn" : "bad";
+});
+const pruneReachDescription = computed(() => {
+  const r = pruneSnapshot.value?.currentRate ?? 0;
+  const target = pruneSnapshot.value?.targetRate ?? 80;
+  if (r >= target) return t("rss.manager.prune.gauge.reached");
+  const gap = (target - r).toFixed(1);
+  return t("rss.manager.prune.gauge.gap", { gap });
+});
+
+// Heat map helpers
+const heatMonths = computed(() => Array.from(new Set((pruneSnapshot.value?.heat ?? []).map(x => x.month))));
+const heatRoles = computed(() => Array.from(new Set((pruneSnapshot.value?.heat ?? []).map(x => x.role))));
+function heatRate(role: string, month: string): number {
+  const cell = pruneSnapshot.value?.heat.find(x => x.role === role && x.month === month);
+  return cell?.rate ?? 0;
+}
+function heatCellStyle(rate: number) {
+  const r = Math.max(0, Math.min(100, rate));
+  if (r === 0) {
+    return { background: "var(--el-fill-color-lighter)", color: "var(--el-text-color-placeholder)" };
+  }
+  // Gradient from danger(red) → warning(yellow) → success(green)
+  const ratio = r / 100;
+  let color = `rgba(245,108,108, ${0.25 + ratio * 0.7})`;
+  if (r >= 80) {
+    color = `linear-gradient(135deg, rgba(103,194,58, ${0.35 + (r - 80) / 20 * 0.55}), rgba(133,206,97, 0.9))`;
+  } else if (r >= 60) {
+    color = `linear-gradient(135deg, rgba(230,162,60, 0.55), rgba(240,199,138, 0.92))`;
+  } else if (r >= 40) {
+    color = `linear-gradient(135deg, rgba(243,123,29,0.6), rgba(255,179,102,0.92))`;
+  } else {
+    color = `linear-gradient(135deg, rgba(245,108,108,0.75), rgba(255,160,160,0.95))`;
+  }
+  return { background: color };
+}
+function roleDisplayName(role: string): string {
+  const v = (rolesData as any)[role];
+  if (v?.name) return v.name;
+  return role;
+}
+const bestRoleEntry = computed(() => {
+  const byRole = pruneSnapshot.value?.byRole ?? {};
+  let best = { name: "-", rate: 0 };
+  for (const [role, rate] of Object.entries(byRole)) {
+    if (rate > best.rate) best = { name: role, rate: Math.round(rate * 10) / 10 };
+  }
+  return best;
+});
+const worstRoleEntry = computed(() => {
+  const byRole = pruneSnapshot.value?.byRole ?? {};
+  let worst: { name: string; rate: number } = { name: "-", rate: 100 };
+  const keys = Object.keys(byRole);
+  if (!keys.length) return worst;
+  worst = { name: keys[0], rate: Math.round((byRole[keys[0]] ?? 0) * 10) / 10 };
+  for (const [role, rate] of Object.entries(byRole)) {
+    const rr = Math.round(rate * 10) / 10;
+    if (rr < worst.rate) worst = { name: role, rate: rr };
+  }
+  return worst;
+});
+const bestRoleName = computed(() => roleDisplayName(bestRoleEntry.value.name));
+const bestRoleRate = computed(() => bestRoleEntry.value.rate);
+const worstRoleName = computed(() => roleDisplayName(worstRoleEntry.value.name));
+const worstRoleRate = computed(() => worstRoleEntry.value.rate);
+
+function formatAgo(ts: number): string {
+  const diff = Math.max(0, Date.now() - (ts ?? 0));
+  const min = 60_000;
+  const hour = 60 * min;
+  if (diff < min) return "刚刚";
+  if (diff < hour) return Math.floor(diff / min) + t("rss.manager.prune.time.minutesAgo");
+  if (diff < 24 * hour) return Math.floor(diff / hour) + t("rss.manager.prune.time.hoursAgo");
+  return Math.floor(diff / (24 * hour)) + t("rss.manager.prune.time.daysAgo");
+}
+
+function formatRelativeRetry(ts: number): string {
+  const diff = ts - Date.now();
+  const absMin = Math.round(Math.abs(diff) / 60_000);
+  if (diff <= 0) return t("rss.manager.retry.time.now");
+  if (absMin < 60) return `${absMin}${t("rss.manager.retry.time.min")}`;
+  const hours = Math.round(absMin / 60);
+  if (hours < 24) return `${hours}${t("rss.manager.retry.time.hour")}`;
+  return `${Math.round(hours / 24)}${t("rss.manager.retry.time.day")}`;
+}
+
+async function retryAll() {
+  const all = [...retryQueue.value];
+  for (const e of all) await retryOne(e);
+}
+function abandonAll() {
+  retryQueue.value = [];
+}
 
 async function onParseOne(row: RssSeedDocument) {
   const ok = await parseOneFeed(row);
@@ -339,6 +1034,11 @@ async function onParseAll() {
 async function onQuickParse() {
   const ok = await doQuickParse();
   if (ok) emit("feedsChanged");
+}
+
+async function onRefreshAll() {
+  await loadSeeds();
+  loadSeedArticleCounts();
 }
 
 onMounted(() => {
@@ -357,7 +1057,7 @@ watch(
   { deep: true }
 );
 
-// ── OPML buttons (stub for now) ──
+// OPML buttons (stub for now)
 function onImportOpml() {
   ElMessage.info(`${t("rss.scheduler.importOpml")} (stub)`);
 }
@@ -365,7 +1065,6 @@ function onExportOpml() {
   ElMessage.info(`${t("rss.scheduler.exportOpml")} (stub)`);
 }
 
-// ── Suggested seeds (0-seed 引导) ──
 const tFn: (key: string, args?: Record<string, unknown>) => string = (k, args) =>
   (t as unknown as (k: string, a?: Record<string, unknown>) => string)(k, args ?? {});
 
@@ -402,335 +1101,14 @@ defineExpose({
 </script>
 
 <style scoped lang="scss">
-.rss-role__section {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-  animation: rss-section-in 0.25s ease;
-}
-@keyframes rss-section-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.rss-role__section-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--el-border-color-lighter);
-}
-.rss-role__section-title {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-}
-.rss-role__section-body {
-  padding: 16px 20px;
-}
-.rss-role__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-  margin-bottom: 8px;
-}
-.rss-role__toolbar-right {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-left: auto;
-}
-.rss-role__result-count {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-.rss-role__text-muted {
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.rss-role__cat-dot {
-  display: inline-block;
-  flex-shrink: 0;
-  width: 8px;
-  height: 8px;
-  margin-right: 4px;
-  vertical-align: middle;
-  border-radius: 50%;
-}
-.rss-role__cat-chip {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  padding: 1px 8px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-  white-space: nowrap;
-  background: var(--el-fill-color-light);
-  border-radius: 4px;
-}
-.rss-role__schedule-badge {
-  padding: 1px 7px;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-color-primary);
-  background: var(--el-color-primary-light-9);
-  border-radius: 4px;
-}
-.rss-role__article-count {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
-}
-.rss-role__seed-url {
-  display: inline-flex;
-  gap: 2px;
-  align-items: center;
-  max-width: 100%;
-}
-.rss-role__seed-url-link {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  max-width: 100%;
-  color: var(--el-text-color-secondary);
-  text-decoration: none;
-  &:hover {
-    color: var(--el-color-primary);
-    text-decoration: underline;
-  }
-}
-.rss-role__seed-url-glyph {
-  flex-shrink: 0;
-  font-size: 12px;
-  line-height: 1;
-  opacity: 0.7;
-}
-.rss-role__seed-url-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  white-space: nowrap;
-}
-.rss-role__date {
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
+@use "@/views/knowledge/executive/styles/rssManager.scss" as *;
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
-// Cards grid (shared with items)
-.rss-role__items-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 12px;
-}
-
-// Seed card
-.rss-role__seed-card {
-  cursor: default;
-  border-radius: 10px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  &:hover {
-    transform: translateY(-2px);
-  }
-  :deep(.el-card__body) {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 14px;
-  }
-}
-.rss-role__seed-card-head {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-}
-.rss-role__seed-card-name {
-  font-size: 14px;
-  font-weight: 600;
-}
-.rss-role__seed-card-url {
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  color: var(--el-text-color-secondary);
-  white-space: nowrap;
-}
-.rss-role__seed-card-meta {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  font-size: 12px;
-  color: var(--el-text-color-placeholder);
-}
-.rss-role__seed-card-actions {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-}
-
-// Form hint
-.rss-role__form-hint {
-  display: block;
-  margin-top: 4px;
-  font-size: 11px;
-  line-height: 1.4;
-  color: var(--el-text-color-placeholder);
-}
-
-// Table hover
-:deep(.el-table__body tr) {
-  transition: background-color 0.15s ease;
-}
-:deep(.el-table__body tr:hover > td) {
-  background-color: var(--el-color-primary-light-9) !important;
-}
-
-// ── Actions: appear on row hover ──
-:deep(.el-table__body tr .el-button) {
-  transition: opacity 150ms ease, transform 150ms ease;
-}
-:deep(.el-table__body tr:not(:hover) .el-button.el-button--text:not(.is-loading)) {
-  opacity: 0;
-}
-:deep(.el-table__body tr:hover .el-button) {
-  opacity: 1;
-}
-
-// ── 0-seed suggest wrap (镜像 BriefingSection.scss 同名类，避免 scoped 穿透失效) ──
 .rss-role__suggest-wrap {
-  margin-bottom: 12px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest) {
-  margin-top: 8px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-head) {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-title) {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--el-text-color-primary);
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-sub) {
-  margin-top: 2px;
-  font-size: 11px;
-  color: var(--el-text-color-secondary);
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-grid) {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 12px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card) {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color-lighter);
-  border-radius: 12px;
-  transition: transform 0.18s cubic-bezier(0.2, 0.9, 0.3, 1.15),
-              box-shadow 0.22s ease,
-              border-color 0.22s ease,
-              background 0.22s ease,
-              opacity 0.22s ease;
-  &:hover {
-    border-color: color-mix(in srgb, var(--el-color-primary) 35%, var(--el-border-color-lighter));
-    box-shadow: 0 10px 26px -18px color-mix(in srgb, var(--el-color-primary) 70%, transparent);
-    transform: translateY(-2px);
-  }
-  &.is-added {
-    opacity: 0.6;
-    border-style: dashed;
-    &::after {
-      content: "✓";
-      position: absolute;
-      top: 10px;
-      right: 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--el-color-success);
-      background: var(--el-color-success-light-9);
-      border-radius: 999px;
-    }
-  }
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-top) {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-cat) {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  max-width: 62%;
-  padding: 2px 8px;
-  overflow: hidden;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--el-text-color-regular);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  background: var(--el-fill-color-lighter);
-  border-radius: 999px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-name) {
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--el-text-color-primary);
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__suggest-card-url) {
-  overflow: hidden;
-  font-size: 11px;
-  color: var(--el-text-color-placeholder);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__chart-empty) {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-  justify-content: center;
-  min-height: 140px;
-  padding: 20px;
-  background:
-    linear-gradient(90deg, var(--el-fill-color-lighter) 50%, transparent 50%) 0 0 / 16px 1px repeat-x,
-    linear-gradient(90deg, var(--el-fill-color-lighter) 50%, transparent 50%) 0 100% / 16px 1px repeat-x,
-    linear-gradient(0deg, var(--el-fill-color-lighter) 50%, transparent 50%) 0 0 / 1px 16px repeat-y,
-    linear-gradient(0deg, var(--el-fill-color-lighter) 50%, transparent 50%) 100% 0 / 1px 16px repeat-y;
-  color: var(--el-text-color-secondary);
-  border-radius: 12px;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__chart-empty-glyph) {
-  font-size: 42px;
-  line-height: 1;
-}
-.rss-role__suggest-wrap :deep(.rss-briefing__chart-empty-title) {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--el-text-color-primary);
+  margin-top: 12px;
 }
 </style>

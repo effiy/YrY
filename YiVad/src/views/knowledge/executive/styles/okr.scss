@@ -5,6 +5,7 @@
   height: calc(100vh - 95px);
   min-height: 0;
   overflow: auto;
+
   // padding + background come from global .page class
 }
 .okr__breadcrumb {
@@ -261,3 +262,387 @@
 }
 
 // Subtasks 弹出层内容（el-popover 默认 teleport 到 body，scoped 样式无法命中，需全局样式）
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：SLO 告警条 */
+
+/* ════════════════════════════════════════════════ */
+.okr__section {
+  padding: 0 24px;
+  margin-bottom: 16px;
+  &:first-of-type { margin-top: 12px; }
+}
+.okr__section-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  h2 {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+.okr__section-hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.okr__slo-alert {
+  :deep(.el-alert__content) {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：KPI 卡片行（6 张/行 响应式） */
+
+/* ════════════════════════════════════════════════ */
+.okr__kpi-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+
+  @media (width <= 1400px) { grid-template-columns: repeat(3, 1fr); }
+
+  @media (width <= 800px)  { grid-template-columns: repeat(2, 1fr); }
+}
+.okr-kpi-card {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 14px 12px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  &:hover {
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 7%);
+    transform: translateY(-2px);
+  }
+}
+.okr-kpi-card__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 20px;
+  background: var(--el-fill-color-light);
+  border-radius: 10px;
+}
+.okr-kpi-card__body {
+  flex: 1;
+  min-width: 0;
+}
+.okr-kpi-card__title {
+  margin-bottom: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr-kpi-card__value {
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--el-text-color-primary);
+}
+.okr-kpi-card__suffix {
+  margin-left: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr-kpi-card__mom {
+  display: inline-flex;
+  flex-shrink: 0;
+  flex-direction: column;
+  gap: 1px;
+  align-items: flex-end;
+  padding-left: 6px;
+  margin-left: auto;
+  font-size: 11px;
+}
+.okr-kpi-card__arrow.is-up   { color: var(--el-color-success); }
+.okr-kpi-card__arrow.is-down { color: var(--el-color-danger); }
+.okr-kpi-card__mom-val       {
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+
+/* 不同 KPI 卡片 icon 背景色（accent） */
+.okr-kpi-card--totalGoals     .okr-kpi-card__icon { background: #eef2ff; }
+.okr-kpi-card--activeGoals    .okr-kpi-card__icon { background: #dcfce7; }
+.okr-kpi-card--avgKRProgress  .okr-kpi-card__icon { background: #fef3c7; }
+.okr-kpi-card--atRiskKRs      .okr-kpi-card__icon { background: #fee2e2; }
+.okr-kpi-card--completedKRs   .okr-kpi-card__icon { background: #d1fae5; }
+.okr-kpi-card--overdueActions .okr-kpi-card__icon { background: #ffe4e6; }
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：北极星卡 */
+
+/* ════════════════════════════════════════════════ */
+.okr__north-star { border-radius: 14px; }
+.okr-north {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  min-height: 170px;
+}
+.okr-north__left {
+  display: flex;
+  flex: 1 1 50%;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.okr-north__label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--el-color-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.okr-north__icon { font-size: 16px; }
+.okr-north__title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--el-text-color-primary);
+}
+.okr-north__desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+}
+.okr-north__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.okr-north__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.okr-north__pill { margin: 0; }
+.okr-north__pill--done { background: var(--el-color-success-light-9); }
+.okr-north__right {
+  display: flex;
+  flex: 1 1 50%;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.okr-north__gauge-center {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+}
+.okr-north__gauge-num {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+.okr-north__gauge-unit {
+  margin-left: 2px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：目标树 */
+
+/* ════════════════════════════════════════════════ */
+.okr-goal-tree {
+  :deep(.el-collapse-item__header) {
+    padding: 10px 16px;
+    font-weight: 600;
+    &:hover { background: #f5f7fa; }
+  }
+  :deep(.el-collapse-item__content) { padding: 6px 16px 14px; }
+}
+.okr-goal-tree__row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 4px 0;
+}
+.okr-goal-tree__icon {
+  flex-shrink: 0;
+  font-size: 18px;
+}
+.okr-goal-tree__col-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.okr-goal-tree__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+.okr-goal-tree__meta {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+.okr-goal-tree__col-progress {
+  display: flex;
+  flex-shrink: 0; gap: 8px; align-items: center;
+  width: 180px;
+  :deep(.el-progress) { flex: 1; }
+}
+.okr-goal-tree__progress-num {
+  flex-shrink: 0;
+  min-width: 40px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+  text-align: right;
+}
+.okr-goal-tree__col-status { flex-shrink: 0; }
+.okr-goal-tree__kr-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px 10px 28px;
+  margin: 4px 0;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+  &:hover { background: #f5f7fa; }
+}
+.okr-goal-tree__kr-index {
+  flex-shrink: 0;
+  width: 38px;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--el-color-primary);
+  text-align: center;
+}
+.okr-goal-tree__kr-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--el-text-color-regular);
+}
+.okr-goal-tree__kr-gates {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+.okr-goal-tree__gate-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--el-text-color-secondary);
+  background: var(--el-fill-color-light);
+  border-radius: 8px;
+  &.is-done {
+    color: #ffffff;
+    background: var(--el-color-success);
+  }
+}
+.okr-goal-tree__kr-progress {
+  display: flex;
+  flex-shrink: 0; gap: 6px; align-items: center;
+  width: 120px;
+  :deep(.el-progress) { flex: 1; }
+}
+.okr-goal-tree__kr-progress-num {
+  flex-shrink: 0;
+  min-width: 34px;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: var(--el-text-color-secondary);
+  text-align: right;
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：OKR→PRD→Dev→Test 追溯面板 */
+
+/* ════════════════════════════════════════════════ */
+.okr__trace {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  .okr__trace-mermaid {
+    min-height: 180px;
+    padding: 16px;
+    background: var(--el-bg-color);
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 10px;
+    svg {
+      width: 100%;
+      height: auto;
+    }
+  }
+  .okr__trace-table { width: 100%; }
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：热力图 & 通用 ECharts 容器 */
+
+/* ════════════════════════════════════════════════ */
+.okr__chart-box {
+  box-sizing: border-box;
+  width: 100%;
+  height: 420px;
+  max-height: 420px;
+  padding: 10px;
+  overflow: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr__heatmap-box {
+  box-sizing: border-box;
+  width: 100%;
+  height: 420px;
+  max-height: 420px;
+  padding: 10px;
+  overflow: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：Action Items 区 / 新行动按钮 */
+
+/* ════════════════════════════════════════════════ */
+.okr__action-items {
+  margin-top: 4px;
+}
+.okr__new-action { margin-left: auto; }

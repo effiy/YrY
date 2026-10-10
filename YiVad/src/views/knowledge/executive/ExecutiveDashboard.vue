@@ -1,5 +1,5 @@
 <template>
-  <StandardRoleDashboard role-id="executive" :poll-interval-ms="120000">
+  <StandardRoleDashboard ref="dashboardRef" role-id="executive" :poll-interval-ms="120000">
     <!-- Decision-making banner -->
     <template #prepend>
       <div class="exec-page__ribbon">
@@ -135,15 +135,17 @@
 <script setup lang="ts" name="ExecutiveDashboard">
 import { computed, ref } from "vue";
 import { Trophy } from "@element-plus/icons-vue";
+import { ElMessage } from "element-plus";
 import StandardRoleDashboard from "../components/StandardRoleDashboard.vue";
-import KnowledgePreviewDialog from "@/components/KnowledgePreviewDialog/KnowledgePreviewDialog.vue";
 import { useRoleDashboard } from "../composables/useRoleDashboard";
 
 const {
   subdirs, fileCounts, stats, resolveFile
 } = useRoleDashboard("executive", { pollIntervalMs: 120_000 });
 
-const previewDlg = ref<InstanceType<typeof KnowledgePreviewDialog> | null>(null);
+/** Reuse the single preview dialog exposed by StandardRoleDashboard
+ *  (keeps only one <KnowledgePreviewDialog> mounted — SSOT). */
+const dashboardRef = ref<InstanceType<typeof StandardRoleDashboard> | null>(null);
 
 /* ── Decision Iron Triangle ──────────────────────────────── */
 interface Triangle {
@@ -151,6 +153,7 @@ interface Triangle {
   name: string;
   quote: string;
   color: string;
+  /** Relative file ref under `executive/`, matched against real YiKnowledge files. */
   note: string;
 }
 const triangle: Triangle[] = [
@@ -159,33 +162,37 @@ const triangle: Triangle[] = [
     name: "Peter Drucker",
     quote: "Culture eats strategy for breakfast.",
     color: "#1677ff",
-    note: "reading-list/010-卓有成效的管理者.md"
+    note: "reading-list/010-阅读-读书笔记-卓有成效的管理者.md"
   },
   {
     layer: "方法层 · Execution",
     name: "Andy Grove",
     quote: "Only the paranoid survive — OKR 驱动产出.",
     color: "#10b981",
-    note: "reading-list/008-格鲁夫给经理人的第一课.md"
+    note: "reading-list/002-阅读-读书笔记-高产出管理.md"
   },
   {
     layer: "反模式 · AntiPattern",
     name: "Ben Horowitz",
     quote: "There are no silver bullets, only lead bullets.",
     color: "#ef4444",
-    note: "reading-list/009-创业维艰.md"
+    note: "reading-list/005-阅读-读书笔记-创业维艰.md"
   },
   {
     layer: "认知层 · Cognition",
     name: "Herbert Simon",
     quote: "满意解 vs 最优解 · Bounded Rationality.",
     color: "#f59e0b",
-    note: "reading-list/012-管理行为.md"
+    note: "reading-list/012-阅读-读书笔记-优雅的难题.md"
   }
 ];
 function openNote(notePath: string) {
   const f = resolveFile(notePath);
-  if (f) previewDlg.value?.open(f.path);
+  if (!f) {
+    ElMessage.warning(`尚未索引: executive/${notePath}`);
+    return;
+  }
+  dashboardRef.value?.openFile(f);
 }
 
 /* ── OKR Progress mock ──────────────────────────────────── */

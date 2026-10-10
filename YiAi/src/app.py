@@ -36,6 +36,7 @@ from server.routes import (
     about, auth, files, execution, wework, maintenance, state, health,
     users, system, knowledge, rag, search, mcp, notification,
     openai_compat, backup, metrics, bridge, dashboard, debug, analytics,
+    reading_list,
 )
 from shared.response import ORJSONResponse
 
@@ -86,7 +87,7 @@ def create_app(
         (search.router, "Search"), (mcp.router, "MCP"), (notification.router, "Notification"),
         (openai_compat.router, "OpenAI Compat"), (backup.router, "Backup"),
         (metrics.router, "Metrics"), (bridge.router, "Bridge"), (debug.router, "Debug"),
-        (analytics.router, "Analytics"),
+        (analytics.router, "Analytics"), (reading_list.router, "ReadingList"),
     ]
     for router, tag in routers:
         app.include_router(router, tags=[tag])

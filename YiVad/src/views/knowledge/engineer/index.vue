@@ -90,7 +90,7 @@
         <!-- Quick Reference -->
         <div class="eng-page__block">
           <div class="block-head">
-            <h2 class="block-head__title"><span class="block-head__icon">⚡</span>Gold Copy · 速查入口</h2>
+            <h2 class="block-head__title"><span class="block-head__icon">⚡</span>速查入口</h2>
             <span class="block-head__count">{{ role.quickRefs.length }} canonical docs</span>
           </div>
           <div class="quickref-list">

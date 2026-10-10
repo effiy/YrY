@@ -446,16 +446,16 @@ export default {
       },
       categories: {
         groups: {
-          executiver: "Executiver",
-          aier: "AI Engineer",
-          engineer: "Engineer",
-          sre: "SRE",
-          producter: "Product Manager",
-          curator: "Curator",
-          leader: "Leader"
+          executive: "高管视角 (Executive)",
+          aier: "AI 工程师",
+          engineer: "工程师",
+          sre: "站点可靠性 (SRE)",
+          product: "产品经理",
+          curator: "策展人",
+          leader: "技术主管 (Tech Lead)"
         },
         options: {
-          executiver: {
+          executive: {
             industry: "行业 · 市场趋势、竞品、研报",
             strategy: "战略 · 框架、合规、定位",
             roadmap: "路线图 · 规划、OKR、预算",
@@ -471,10 +471,10 @@ export default {
             learnWins: "经验 · 成功案例",
             learnFailures: "经验 · 失败案例"
           },
-          srer: {
+          sre: {
             release: "发布 · 部署、基础设施"
           },
-          producter: {
+          product: {
             frameworks: "框架 · 产品战略、增长"
           },
           curator: {

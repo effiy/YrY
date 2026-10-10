@@ -498,3 +498,275 @@
   width: auto;
   margin: 0 24px;
 }
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：共用 section/头提示 （同 okr.scss 风格） */
+
+/* ════════════════════════════════════════════════ */
+.okr__section-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  h2 {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+.okr__section-hint {
+  margin-left: 0;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+.okr__slo-alert {
+  :deep(.el-alert__content) {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：KPI 卡片行（同 okr.scss） */
+
+/* ════════════════════════════════════════════════ */
+.okr__kpi-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+
+  @media (width <= 1400px) { grid-template-columns: repeat(3, 1fr); }
+
+  @media (width <= 800px)  { grid-template-columns: repeat(2, 1fr); }
+}
+.okr-kpi-card {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 14px 12px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+  &:hover {
+    border-color: var(--el-color-primary-light-5);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 7%);
+    transform: translateY(-2px);
+  }
+}
+.okr-kpi-card__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px; height: 40px;
+  font-size: 20px;
+  background: var(--el-fill-color-light);
+  border-radius: 10px;
+}
+.okr-kpi-card__body {
+  flex: 1;
+  min-width: 0;
+}
+.okr-kpi-card__title { margin-bottom: 4px;
+  font-size: 12px; font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr-kpi-card__value {
+  font-size: 24px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1.1;
+  color: var(--el-text-color-primary);
+}
+.okr-kpi-card__suffix { margin-left: 2px;
+  font-size: 14px; font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr-kpi-card__mom {
+  display: inline-flex;
+  flex-shrink: 0; flex-direction: column; gap: 1px;
+  align-items: flex-end; padding-left: 6px;
+  margin-left: auto; font-size: 11px;
+}
+.okr-kpi-card__arrow.is-up   { color: var(--el-color-success); }
+.okr-kpi-card__arrow.is-down { color: var(--el-color-danger); }
+.okr-kpi-card__mom-val       {
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+}
+.okr-kpi-card--totalGoals     .okr-kpi-card__icon { background: #eef2ff; }
+.okr-kpi-card--activeGoals    .okr-kpi-card__icon { background: #dcfce7; }
+.okr-kpi-card--avgKRProgress  .okr-kpi-card__icon { background: #fef3c7; }
+.okr-kpi-card--atRiskKRs      .okr-kpi-card__icon { background: #fee2e2; }
+.okr-kpi-card--completedKRs   .okr-kpi-card__icon { background: #d1fae5; }
+.okr-kpi-card--overdueActions .okr-kpi-card__icon { background: #ffe4e6; }
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：北极星卡 （同 okr.scss） */
+
+/* ════════════════════════════════════════════════ */
+.okr__north-star { border-radius: 14px; }
+.okr-north {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  min-height: 170px;
+}
+.okr-north__left {
+  display: flex;
+  flex: 1 1 50%;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.okr-north__label {
+  display: inline-flex; gap: 6px; align-items: center;
+  font-size: 12px; font-weight: 700;
+  color: var(--el-color-primary); text-transform: uppercase; letter-spacing: 0.5px;
+}
+.okr-north__icon { font-size: 16px; }
+.okr-north__title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--el-text-color-primary);
+}
+.okr-north__desc  {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--el-text-color-secondary);
+}
+.okr-north__meta  {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.okr-north__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.okr-north__pill { margin: 0; }
+.okr-north__pill--done { background: var(--el-color-success-light-9); }
+.okr-north__right {
+  display: flex;
+  flex: 1 1 50%;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+.okr-north__gauge-center {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+}
+.okr-north__gauge-num {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+}
+.okr-north__gauge-unit {
+  margin-left: 2px;
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：ECharts 折线 / 漏斗图容器 */
+
+/* ════════════════════════════════════════════════ */
+.okr__chart-box {
+  box-sizing: border-box;
+  width: 100%;
+  height: 420px;
+  max-height: 420px;
+  padding: 10px;
+  overflow: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr-role__chart-box {
+  box-sizing: border-box;
+  width: 100%;
+  height: 420px;
+  max-height: 420px;
+  padding: 10px;
+  overflow: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr__chart-box--funnel {
+  height: 380px;
+  max-height: 380px;
+}
+.okr-role__funnel-row {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+
+  @media (width <= 1100px) { grid-template-columns: 1fr; }
+}
+.okr-role__funnel-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 380px;
+  padding: 14px;
+  overflow: auto;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 10px;
+}
+.okr-role__funnel-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--el-fill-color-lighter);
+  border-radius: 8px;
+}
+.okr-role__funnel-item-icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  font-size: 16px;
+  background: #ffffff; border-radius: 8px;
+}
+.okr-role__funnel-item-body {
+  flex: 1;
+  min-width: 0;
+}
+.okr-role__funnel-item-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+}
+.okr-role__funnel-item-count {
+  font-size: 11px;
+  color: var(--el-text-color-secondary);
+}
+
+/* ════════════════════════════════════════════════ */
+
+/* 新增：周报沉淀按钮（sticky right） */
+
+/* ════════════════════════════════════════════════ */
+.okr-role__weekly-button {
+  position: sticky;
+  bottom: 16px;
+  z-index: 5;
+  align-self: flex-end;
+  margin-top: 12px;
+}

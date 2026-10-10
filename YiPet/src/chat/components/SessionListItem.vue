@@ -10,6 +10,7 @@ const props = defineProps<{
   isActive: boolean;
   batchMode?: boolean;
   isSelected?: boolean;
+  pinned?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -95,7 +96,7 @@ function onDelete(id: string) {
     popper-class="session-preview-pop"
   >
     <template #reference>
-      <div class="yipet-session-item" :class="{ 'is-active': isActive, 'is-selected': batchMode && isSelected }" @click="batchMode ? emit('select', session.id) : emit('select', session.id)">
+      <div class="yipet-session-item" :class="{ 'is-active': isActive, 'is-pinned': pinned, 'is-selected': batchMode && isSelected }" @click="batchMode ? emit('select', session.id) : emit('select', session.id)">
         <div class="yipet-session-row">
           <button class="yipet-star" :class="{ 'is-fav': isFavorite }" @click.stop="emit('toggleFavorite', session.id)"><el-icon :size="13"><component :is="isFavorite ? StarFilled : Star" /></el-icon></button>
           <span v-if="sourceDomainLabel" class="yipet-session-src" :style="{ color: SOURCE_COLORS[sourceDomainLabel] || 'var(--primary-light)', borderColor: 'currentColor' }">{{ sourceDomainLabel }}</span>
@@ -141,9 +142,14 @@ function onDelete(id: string) {
 <style lang="scss" scoped>
 .yipet-session-item {
   display: flex; flex-direction: column; gap: 3px; padding: 10px 12px;
-  cursor: pointer; border-left: 3px solid transparent; transition: background 0.15s, border-color 0.15s;
+  cursor: pointer; border-left: 3px solid transparent; transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
   &:hover { background: var(--el-fill-color-lighter); }
   &.is-active { background: var(--el-color-primary-light-9); border-left-color: var(--el-color-primary); }
+  &.is-pinned {
+    background: linear-gradient(135deg, var(--el-color-primary-light-9) 0%, rgba(var(--primary-rgb, 99, 102, 241), 0.05) 100%);
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb, 99, 102, 241), 0.2);
+    margin-bottom: 2px;
+  }
 }
 .yipet-session-row { display: flex; gap: 6px; align-items: center; min-width: 0; }
 .yipet-star { display: inline-flex; flex-shrink: 0; align-items: center; padding: 0; color: var(--el-text-color-placeholder); cursor: pointer; background: none; border: none; transition: color 0.15s;

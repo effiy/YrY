@@ -1030,3 +1030,782 @@
     border-radius: 4px;
   }
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 🎨 v3 ENHANCEMENTS: SRE SLOLight · 分组模式 · 角色域 · RICE · 面包屑 · 策略卡
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── Group Mode Switcher (分组方式) ──────────────────────────────────────────
+.search-page__group-mode {
+  display: inline-flex;
+  gap: 1px;
+  padding: 3px;
+  background: var(--el-fill-color);
+  border-radius: 8px;
+
+  + * {
+    margin-left: 2px;
+  }
+}
+.search-page__group-mode-btn {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+
+  &:hover:not(.is-active) {
+    color: var(--el-text-color-secondary);
+  }
+  &.is-active {
+    color: var(--el-text-color-primary);
+    background: var(--el-bg-color);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  }
+}
+
+// ── SRE SLOLight Status Bar (3 灯: 可达率 / P95 / 三闸门通过率) ──────────────
+.search-page__sre-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  align-items: center;
+  padding: 10px 14px;
+  margin-bottom: 4px;
+  background: linear-gradient(135deg, rgb(255 255 255 / 70%), var(--el-fill-color-light));
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 12px;
+  backdrop-filter: blur(8px);
+}
+.search-page__slo-light {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 500;
+  border-radius: 20px;
+  border: 1px solid;
+  transition: all 0.25s ease;
+
+  &--green {
+    color: #065f46;
+    background: #d1fae5;
+    border-color: #6ee7b7;
+    .search-page__slo-dot { background: #10b981; box-shadow: 0 0 0 3px #6ee7b755; }
+  }
+  &--yellow {
+    color: #92400e;
+    background: #fef3c7;
+    border-color: #fcd34d;
+    .search-page__slo-dot { background: #f59e0b; box-shadow: 0 0 0 3px #fcd34d55; animation: sloPulse 1.8s ease-in-out infinite; }
+  }
+  &--red {
+    color: #991b1b;
+    background: #fee2e2;
+    border-color: #fca5a5;
+    .search-page__slo-dot { background: #ef4444; box-shadow: 0 0 0 3px #fca5a555; animation: sloPulse 0.9s ease-in-out infinite; }
+  }
+}
+@keyframes sloPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.55; transform: scale(0.85); }
+}
+.search-page__slo-dot {
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+.search-page__slo-label {
+  color: inherit;
+  opacity: 0.75;
+}
+.search-page__slo-value {
+  font-weight: 700;
+  font-family: ui-monospace, "SF Mono", monospace;
+}
+.search-page__slo-target {
+  font-size: 10.5px;
+  opacity: 0.6;
+}
+.search-page__sre-meta {
+  display: inline-flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.search-page__sre-chip {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  border-radius: 6px;
+}
+
+// ── Summary Bar ENHANCED ────────────────────────────────────────────────────
+.search-page__summary-rice-tag {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #92400e;
+  background: #fef3c7;
+  border-radius: 10px;
+}
+.search-page__summary-auto-filter {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-left: 14px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #92400e;
+  cursor: pointer;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 8px;
+  transition: all 0.2s;
+
+  &:hover { background: #fef3c7; border-color: #f59e0b; }
+  .is-open { transform: rotate(90deg); transition: transform 0.2s; }
+}
+.search-page__summary-filter-detail {
+  position: absolute;
+  z-index: 100;
+  width: 320px;
+  padding: 12px 14px;
+  margin-top: 8px;
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--el-text-color-secondary);
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-light);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 12%);
+}
+.search-page__summary-filter-actions {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--el-border-color-lighter);
+}
+
+// ── Distribution Bar ENHANCED (分段内文字 + 状态高亮) ────────────────────────
+.search-page__distro {
+  display: flex;
+  gap: 3px;
+  align-items: stretch;
+  height: 30px;
+  padding: 4px;
+  background: var(--el-fill-color-light);
+  border-radius: 9px;
+
+  .search-page__distro-seg {
+    position: relative;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    padding: 0 8px;
+    overflow: hidden;
+    color: #fff;
+    text-shadow: 0 1px 1px rgb(0 0 0 / 18%);
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    opacity: 0.86;
+    transition: all 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgb(0 0 0 / 10%);
+    }
+    &.is-active {
+      opacity: 1;
+      outline: 2px solid var(--el-bg-color);
+      outline-offset: -3px;
+      box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+    }
+  }
+}
+.search-page__distro-label {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.search-page__distro-count {
+  font-size: 10.5px;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+// ── Filter Active ENHANCED (清除全部过滤) ───────────────────────────────────
+.search-page__filter-clear-all {
+  margin-left: auto;
+  padding: 2px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--el-color-danger);
+  cursor: pointer;
+  background: var(--el-color-danger-light-9);
+  border: none;
+  border-radius: 4px;
+  transition: all 0.15s;
+
+  &:hover { background: var(--el-color-danger); color: #fff; }
+}
+
+// ── No Results + YiKnowledge 6 步检索策略卡 ────────────────────────────────
+.search-page__no-results-actions {
+  margin-bottom: 22px;
+}
+.search-page__kb-strategy-card {
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #ecfdf5, #eff6ff);
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+}
+.search-page__kb-strategy-title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #065f46;
+}
+.search-page__kb-strategy-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 7px;
+}
+.search-page__kb-strategy-step {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 11px;
+  color: var(--el-text-color-secondary);
+  text-decoration: none;
+  background: #ffffffcc;
+  border-radius: 8px;
+  transition: all 0.2s;
+
+  &:hover {
+    transform: translateX(2px);
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(37 99 235 / 8%);
+  }
+}
+.search-page__kb-strategy-idx {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #10b981, #3b82f6);
+  border-radius: 6px;
+}
+.search-page__kb-strategy-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.35;
+}
+.search-page__kb-strategy-title-s {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--el-text-color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-page__kb-strategy-desc {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// ── Group Head ENHANCED (OKR Support Row · 描述 · 角色域专属配色) ─────────
+.search-page__group {
+  border-left: 3px solid transparent;
+  border-radius: 8px;
+  transition: border-color 0.25s;
+
+  &::before {
+    border-left-color: var(--group-color, var(--el-border-color));
+  }
+}
+.search-page__group--role {
+  border-left-color: var(--group-color, transparent);
+}
+.search-page__group-head {
+  border-left: 3px solid var(--group-color, transparent);
+  border-radius: 4px;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+  transition: background 0.2s;
+
+  &:hover { background: var(--el-fill-color-light); }
+}
+.search-page__group-desc {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--el-text-color-placeholder);
+  font-style: italic;
+}
+.search-page__group-meta {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.search-page__okr-tag {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 9px;
+  font-size: 10.5px;
+  font-weight: 600;
+  border-radius: 10px;
+  font-family: ui-monospace, monospace;
+
+  &.search-page__okr--excellent { color: #065f46; background: #d1fae5; }
+  &.search-page__okr--good      { color: #1e40af; background: #dbeafe; }
+  &.search-page__okr--medium    { color: #92400e; background: #fef3c7; }
+  &.search-page__okr--low       { color: #991b1b; background: #fee2e2; }
+}
+
+// ── Item ENHANCED: 4 行布局（标题 + 面包屑 + 元数据 + badges + 详情） ───────
+.search-page__item {
+  padding: 13px 16px 13px 18px;
+  border-left: 4px solid transparent;
+
+  // Ghost: Gate A 失败（半透明 +  strikethrough 覆盖）
+  &--ghost {
+    opacity: 0.55;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--el-fill-color-light),
+      var(--el-fill-color-light) 6px,
+      var(--el-bg-color) 6px,
+      var(--el-bg-color) 12px
+    );
+    border-color: var(--el-border-color) !important;
+    border-left-color: #9ca3af !important;
+
+    &::before { /* 斜纹灰卡标识背景已做 */ }
+  }
+  // Archived: 非 active 状态
+  &--archived {
+    opacity: 0.7;
+    .search-page__strikethrough {
+      text-decoration: line-through;
+      text-decoration-color: var(--el-text-color-placeholder);
+      text-decoration-thickness: 1.5px;
+    }
+    border-left-color: #9ca3af !important;
+  }
+}
+.search-page__strikethrough { }
+
+// Title row 4 列：标题 + key + RICE 徽章 + gateBadge + score
+.search-page__item-title-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.search-page__item-extra-score {
+  flex-shrink: 0;
+  align-self: center;
+}
+.search-page__item-title {
+  flex: 1;
+}
+.search-page__item-gate-badge {
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 1px;
+}
+
+// RICE Badge (四色级别)
+.search-page__rice-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  font-size: 10.5px;
+  font-weight: 700;
+  font-family: ui-monospace, monospace;
+  border-radius: 999px;
+  cursor: help;
+  border: 1px solid transparent;
+  transition: transform 0.15s;
+
+  &:hover { transform: translateY(-1px) scale(1.02); }
+  &.search-page__rice--excellent { color: #052e16; background: #86efac; border-color: #22c55e; }
+  &.search-page__rice--good      { color: #1e3a8a; background: #93c5fd; border-color: #3b82f6; }
+  &.search-page__rice--medium    { color: #713f12; background: #fcd34d; border-color: #f59e0b; }
+  &.search-page__rice--low       { color: #450a0a; background: #fca5a5; border-color: #ef4444; }
+}
+
+// Breadcrumbs (面包屑路径)
+.search-page__item-breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  align-items: center;
+  margin-top: 3px;
+}
+.search-page__breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  color: var(--el-text-color-placeholder);
+}
+.search-page__breadcrumb-sep {
+  margin: 0 3px;
+  color: var(--el-border-color);
+}
+
+// Meta 行: code · 分隔点 · subtitle · 验证徽章
+.search-page__item-meta {
+  gap: 6px 9px;
+  flex-wrap: wrap;
+}
+.search-page__meta-sep {
+  color: var(--el-border-color-darker);
+  font-weight: 700;
+}
+.search-page__code {
+  @extend .search-page__item-meta code; // 继承已有样式
+}
+.search-page__verified-tag {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  padding: 1px 6px 1px 5px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #15803d;
+  background: #dcfce7;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.search-page__status--warn {
+  color: #b45309 !important;
+  background: #fef3c7;
+  padding: 1px 6px;
+  border-radius: 5px;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+}
+.search-page__roles-tag {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+  padding: 1px 6px 1px 5px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #4338ca;
+  background: #e0e7ff;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+// OKR coveragePct Badge (独立样式 + 可点击指针)
+.search-page__okr-coverage {
+  cursor: pointer !important;
+  transition: transform 0.15s, filter 0.2s;
+  font-size: 10.5px !important;
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.01em;
+  padding: 2px 8px !important;
+
+  &:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 3px 8px rgb(0 0 0 / 10%);
+  }
+  &.search-page__okr--excellent { --el-tag-bg-color: #10b981 !important; background: #10b981 !important; }
+  &.search-page__okr--good      { --el-tag-bg-color: #3b82f6 !important; background: #3b82f6 !important; }
+  &.search-page__okr--medium    { --el-tag-bg-color: #f59e0b !important; background: #f59e0b !important; color: #111 !important; }
+  &.search-page__okr--low       { --el-tag-bg-color: #ef4444 !important; background: #ef4444 !important; }
+}
+
+// ── Empty State v3 OVERHAUL (6 步策略网格 · 7 角色域示例 · 快捷键图例) ─────
+.search-page__empty-header {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+.search-page__empty-meta {
+  text-align: left;
+}
+.search-page__sub-scope {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: var(--el-text-color-placeholder);
+}
+.search-page__kb-link {
+  font-weight: 600;
+  color: var(--el-color-primary);
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.search-page__empty-strategies,
+.search-page__empty-examples {
+  width: 100%;
+  max-width: 1000px;
+}
+.search-page__section-title {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--el-text-color-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px dashed var(--el-border-color-lighter);
+}
+
+// Strategy Grid (6 张检索路径卡片)
+.search-page__strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.search-page__strategy-card {
+  position: relative;
+  display: flex;
+  gap: 11px;
+  align-items: center;
+  padding: 12px 14px;
+  color: var(--el-text-color-secondary);
+  text-decoration: none;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  border-radius: 11px;
+  transition: all 0.25s ease;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: var(--el-color-primary-light-5);
+    background: linear-gradient(135deg, var(--el-bg-color), var(--el-color-primary-light-9));
+    box-shadow: 0 8px 24px rgb(59 130 246 / 12%);
+
+    .search-page__strategy-arrow { transform: translateX(3px); opacity: 1; }
+    .search-page__strategy-num   { transform: scale(1.06); }
+  }
+}
+.search-page__strategy-num {
+  position: absolute;
+  top: 4px;
+  right: 7px;
+  font-size: 22px;
+  font-weight: 800;
+  font-family: ui-monospace, monospace;
+  line-height: 1;
+  color: var(--el-border-color-lighter);
+  transition: transform 0.2s;
+}
+.search-page__strategy-icon-wrap {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+.search-page__strategy-content {
+  flex: 1;
+  min-width: 0;
+}
+.search-page__strategy-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--el-text-color-primary);
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+.search-page__strategy-desc {
+  font-size: 11px;
+  color: var(--el-text-color-placeholder);
+  line-height: 1.45;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.search-page__strategy-arrow {
+  flex-shrink: 0;
+  color: var(--el-text-color-placeholder);
+  opacity: 0.35;
+  transition: all 0.25s;
+}
+
+// 7 角色域 Example Searches Blocks
+.search-page__role-examples {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.search-page__role-block {
+  --role-color: #4b5563;
+
+  padding: 11px 14px;
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color-lighter);
+  border-left: 4px solid var(--role-color);
+  border-radius: 10px;
+  transition: all 0.25s ease;
+
+  &:hover {
+    border-color: var(--role-color);
+    box-shadow: 0 6px 16px rgb(0 0 0 / 6%);
+    transform: translateY(-1px);
+  }
+}
+.search-page__role-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 9px;
+}
+.search-page__role-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--role-color);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--role-color) 20%, transparent);
+}
+.search-page__role-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--role-color);
+}
+.search-page__role-question {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--el-text-color-placeholder);
+}
+.search-page__role-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+// Shortcut Legend (快捷键提示条)
+.search-page__shortcut-legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 18px;
+  padding: 11px 18px;
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: var(--el-text-color-placeholder);
+  background: var(--el-fill-color-light);
+  border: 1px dashed var(--el-border-color);
+  border-radius: 10px;
+}
+.search-page__shortcut-item {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+.search-page__kbd-small {
+  display: inline-block;
+  padding: 1.5px 6px;
+  min-width: 20px;
+  text-align: center;
+  font-family: ui-monospace, "SF Mono", monospace;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--el-text-color-secondary);
+  background: var(--el-bg-color);
+  border: 1px solid var(--el-border-color);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  line-height: 1.4;
+}
+.search-page__shortcut-label {
+  font-weight: 500;
+}
+
+// ── No Results Links layout responsive ────────────────────────────────────
+@media (max-width: 900px) {
+  .search-page__strategy-grid { grid-template-columns: repeat(2, 1fr); }
+  .search-page__role-examples { grid-template-columns: 1fr; }
+  .search-page__kb-strategy-list { grid-template-columns: 1fr; }
+  .search-page__quick-grid { grid-template-columns: repeat(2, 1fr); }
+  .search-page__empty-header {
+    flex-direction: column;
+    padding: 0;
+    text-align: center;
+  }
+  .search-page__empty-meta { text-align: center; }
+}
+@media (max-width: 640px) {
+  .search-page__strategy-grid { grid-template-columns: 1fr; }
+  .search-page__toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-page__toolbar-right {
+    flex-wrap: wrap;
+  }
+  .search-page__sre-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-page__sre-meta {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+  .search-page__distro {
+    height: auto;
+    flex-direction: column;
+  }
+  .search-page__distro-seg {
+    width: 100% !important;
+    min-height: 28px;
+  }
+  .search-page__shortcut-legend {
+    padding: 10px 12px;
+    gap: 8px 14px;
+    justify-content: flex-start;
+  }
+}

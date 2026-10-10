@@ -271,7 +271,7 @@ export function useRoleDashboard(
       const msg = e instanceof Error ? e.message : "Failed to load knowledge";
       if (allFiles.value.length === 0) error.value = msg;
       // otherwise keep last known data, error goes to console only
-      // eslint-disable-next-line no-console
+       
       console.warn("[useRoleDashboard]", msg);
     } finally {
       if (!silent) loading.value = false;

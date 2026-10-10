@@ -67,7 +67,7 @@ function showDateSep(idx: number): string | null {
   return curr.isSame(prev, "day") ? null : dateLabel(messages.value[idx].timestamp);
 }
 
-const welcomeCollapsed = ref(true);
+const welcomeCollapsed = ref(false);
 
 function toggleWelcome() {
   welcomeCollapsed.value = !welcomeCollapsed.value;

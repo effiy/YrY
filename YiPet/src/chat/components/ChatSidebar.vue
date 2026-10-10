@@ -12,8 +12,31 @@ import SessionListItem from './SessionListItem.vue';
 const store = useChatStore();
 const s = store.state;
 
+const activeSession = computed(() => {
+  if (!s.currentSessionId) return null;
+  const ses = s.sessions.find((x) => x.id === s.currentSessionId);
+  if (!ses) return null;
+  // Also respect search / project filters for the pinned active session
+  if (s.searchQuery) {
+    const q = s.searchQuery.toLowerCase();
+    const match =
+      ses.title.toLowerCase().includes(q) ||
+      ses.id.toLowerCase().includes(q) ||
+      (ses.tags || []).some((t) => String(t).toLowerCase().includes(q));
+    if (!match) return null;
+  }
+  if (s.sessionProjectFilter && !ses.url.includes(s.sessionProjectFilter)) {
+    return null;
+  }
+  return ses;
+});
+
 const filteredSessions = computed(() => {
   let list = s.sessions;
+  // Exclude the currently active session — it is rendered as a pinned card on top
+  if (s.currentSessionId) {
+    list = list.filter((ses) => ses.id !== s.currentSessionId);
+  }
   if (s.searchQuery) {
     const q = s.searchQuery.toLowerCase();
     list = list.filter((ses) =>
@@ -124,8 +147,29 @@ onMounted(() => {
         <el-button size="small" type="primary" @click="store.createEmptySession()">New session</el-button>
       </div>
 
-      <!-- Session list (grouped by time) -->
+      <!-- Session list: pinned active session on top + grouped rest -->
       <template v-else>
+        <!-- Pinned active session card -->
+        <template v-if="activeSession">
+          <div class="yipet-session-group-header yipet-pinned-header">
+            <span class="yipet-pinned-dot" />
+            {{ t('sidebarCurrentSession', 'Current Session') }}
+          </div>
+          <SessionListItem
+            :key="activeSession.id"
+            :session="activeSession"
+            :is-active="true"
+            :pinned="true"
+            :batch-mode="s.batchMode"
+            :is-selected="s.selectedSessionIds.includes(activeSession.id)"
+            @select="onSelectSession"
+            @delete="onDeleteSession"
+            @toggle-favorite="store.toggleFavorite($event)"
+            @rename="onRenameSession"
+          />
+        </template>
+
+        <!-- Grouped remaining sessions -->
         <template v-for="g in groupedSessions" :key="g.group">
           <div class="yipet-session-group-header">{{ g.group }} · {{ g.items.length }}</div>
           <SessionListItem
@@ -261,6 +305,30 @@ onMounted(() => {
   letter-spacing: 0.5px;
   border-top: 1px solid rgba(var(--primary-rgb, 99, 102, 241), 0.12);
   &:first-child { border-top: none; }
+}
+
+.yipet-pinned-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--primary-light, var(--el-color-primary));
+  border-top: none;
+  margin-top: 2px;
+}
+
+.yipet-pinned-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--primary-light, var(--el-color-primary));
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 99, 102, 241), 0.18);
+  animation: pinnedPulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pinnedPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(var(--primary-rgb, 99, 102, 241), 0.18); }
+  50% { box-shadow: 0 0 0 5px rgba(var(--primary-rgb, 99, 102, 241), 0.3); }
 }
 
 // Batch bar

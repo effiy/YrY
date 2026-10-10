@@ -93,7 +93,14 @@
           <span class="block-head__count">{{ role.redLines.length }} immutable KPIs</span>
         </div>
         <div class="redline-grid">
-          <el-card v-for="(r, i) in role.redLines" :key="i" class="redline" shadow="hover">
+          <el-card
+            v-for="(r, i) in role.redLines"
+            :key="i"
+            class="redline"
+            :class="{ 'is-clickable': hasResolvableRef(r) }"
+            shadow="hover"
+            @click="openRedline(r)"
+          >
             <div class="redline__bar" :style="{ background: redlineAccent(r.direction) }" />
             <div class="redline__body">
               <div class="redline__row1">
@@ -120,7 +127,7 @@
         <div :class="`${rootCls}__block`">
           <div class="block-head">
             <h2 class="block-head__title">
-              <span class="block-head__icon">⚡</span>Gold Copy · 速查入口
+              <span class="block-head__icon">⚡</span>速查入口
             </h2>
             <span class="block-head__count">{{ role.quickRefs.length }} canonical docs</span>
           </div>
@@ -273,6 +280,7 @@ import RoleCardView from "./RoleCardView.vue";
 import RoleListView from "./RoleListView.vue";
 import RoleTableView from "./RoleTableView.vue";
 import { useRoleDashboard } from "../composables/useRoleDashboard";
+import type { RedLineDef } from "../roleConfig";
 
 interface Props {
   roleId: string;
@@ -336,6 +344,32 @@ function dayColor(d: number): string {
   return map[d] ?? "#64748b";
 }
 
+/**
+ * Parse a redline `ref` string like
+ *   "executive/reading-list/001-阅读-阅读清单.md §跨书洞察矩阵"
+ *   or "projects/INDEX.md §质量门禁 Q-08"
+ * into a resolvable YiKnowledge markdown path (without the § section suffix).
+ * Returns null when the ref is empty, points to a non-markdown source file,
+ * or cannot be reasonably mapped to the knowledge base.
+ */
+function parseRedlineRef(r: RedLineDef): { path: string } | null {
+  if (!r.ref) return null;
+  // Split off section tag ("§" or " — " or " § "). Keep everything before first §.
+  const raw = r.ref.replace(/\s*§.*$/, "").trim();
+  if (!raw) return null;
+  // Accept only paths that explicitly end in .md (treat .ts / code paths as non-previewable).
+  if (!raw.endsWith(".md")) return null;
+  return { path: raw };
+}
+function hasResolvableRef(r: RedLineDef): boolean {
+  return parseRedlineRef(r) !== null;
+}
+function openRedline(r: RedLineDef) {
+  const parsed = parseRedlineRef(r);
+  if (!parsed) return;
+  previewDlg.value?.open(parsed.path);
+}
+
 /* ── actions ─────────────────────────────────────────────── */
 function openFile(file: { path: string }) {
   previewDlg.value?.open(file.path);
@@ -366,4 +400,12 @@ defineExpose({
 
 <style lang="scss" scoped>
 @use "../styles/roleDashboard.scss";
+
+.redline.is-clickable {
+  cursor: pointer;
+  transition: transform 0.18s, box-shadow 0.18s;
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
 </style>

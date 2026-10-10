@@ -20,17 +20,6 @@ function onClick(b: QuickButton) {
     store.sendMessage?.(b.content || '');
   } catch { /* swallow */ }
 }
-
-function runCommand(cmd: string) {
-  if (s.isProcessing) return;
-  store.sendMessage?.(cmd);
-}
-
-const COMMANDS = [
-  { cmd: '/stats', label: 'Stats', icon: '📊' },
-  { cmd: '/sessions', label: 'Sessions', icon: '💬' },
-  { cmd: '/help', label: 'Help', icon: '❓' },
-];
 </script>
 
 <template>
@@ -45,14 +34,6 @@ const COMMANDS = [
       <span class="qb-chip-icon">{{ chipIcons[b.value] || '✨' }}</span>
       <span class="qb-chip-label">{{ b.label }}</span>
       <span class="qb-chip-badge">template</span>
-    </button>
-  </div>
-  <div v-if="s.messages.length === 0" class="qb-row qb-row--commands" role="toolbar" aria-label="Command shortcuts">
-    <button v-for="c in COMMANDS" :key="c.cmd" type="button" class="qb-chip qb-chip--cmd"
-      :disabled="s.isProcessing" :title="c.cmd" @click="runCommand(c.cmd)">
-      <span class="qb-chip-icon">{{ c.icon }}</span>
-      <span class="qb-chip-label">{{ c.cmd }}</span>
-      <span class="qb-chip-sub">{{ c.label }}</span>
     </button>
   </div>
 </template>
@@ -74,7 +55,6 @@ const COMMANDS = [
   }
   &::-webkit-scrollbar-track { background: transparent; }
 }
-.qb-row--commands { padding-top: 0; }
 .qb-chip {
   display: inline-flex;
   flex-shrink: 0;
@@ -103,11 +83,6 @@ const COMMANDS = [
   background: linear-gradient(135deg, var(--el-color-warning-light-9), var(--el-color-warning-light-8));
   border-color: var(--el-color-warning-light-5);
   border-style: solid;
-}
-.qb-chip--cmd {
-  background: var(--el-fill-color-lighter);
-  border: 1px dashed var(--el-border-color-light);
-  &:hover:not(:disabled) { border-style: solid; border-color: var(--el-color-primary); }
 }
 .qb-chip-icon { font-size: 14px; line-height: 1; }
 .qb-chip-label { white-space: nowrap; }

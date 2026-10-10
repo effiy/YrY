@@ -223,13 +223,14 @@ export interface KnowledgeWriteResponse {
 export function writeKnowledgeFile(
   targetFile: string,
   content: string,
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
 ): Promise<KnowledgeWriteResponse> {
-  return postJson<KnowledgeWriteResponse>("/knowledge-write", {
-    target_file: targetFile,
-    content,
-    metadata
-  });
+  return postJson<KnowledgeWriteResponse>(
+    "/knowledge-write",
+    { target_file: targetFile, content, metadata },
+    { timeoutMs: 15_000, ...opts }
+  );
 }
 
 export interface KnowledgeDeleteResponse {
@@ -238,8 +239,15 @@ export interface KnowledgeDeleteResponse {
 
 /** Delete a knowledge markdown file from disk. Returns { deleted: true } if the
  *  file existed and was removed, { deleted: false } if it didn't exist. */
-export function deleteKnowledgeFile(targetFile: string): Promise<KnowledgeDeleteResponse> {
-  return postJson<KnowledgeDeleteResponse>("/knowledge-delete", { target_file: targetFile });
+export function deleteKnowledgeFile(
+  targetFile: string,
+  opts: { timeoutMs?: number; signal?: AbortSignal } = {}
+): Promise<KnowledgeDeleteResponse> {
+  return postJson<KnowledgeDeleteResponse>(
+    "/knowledge-delete",
+    { target_file: targetFile },
+    { timeoutMs: 10_000, ...opts }
+  );
 }
 
 /** Export a knowledge directory as a zip archive and trigger browser download. */

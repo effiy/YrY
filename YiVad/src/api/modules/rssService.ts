@@ -202,54 +202,88 @@ export async function getSeedByUrl(url: string): Promise<RssSeedDocument | null>
 }
 
 export async function createSeed(
-  seed: Omit<RssSeedDocument, "createdAt" | "updatedAt"> & { key: string }
+  seed: Omit<RssSeedDocument, "createdAt" | "updatedAt"> & { key: string },
+  opts: QueryDocumentsOpts = {}
 ): Promise<YiAiEnvelope> {
   const now = Date.now();
-  return createDocument(SEEDS_COLLECTION, { ...seed, createdAt: now, updatedAt: now });
+  return createDocument(SEEDS_COLLECTION, { ...seed, createdAt: now, updatedAt: now }, opts);
 }
 
-export async function updateSeed(key: string, patch: Partial<RssSeedDocument>): Promise<YiAiEnvelope> {
-  return updateDocument(SEEDS_COLLECTION, key, { ...patch, updatedAt: Date.now() });
+export async function updateSeed(
+  key: string,
+  patch: Partial<RssSeedDocument>,
+  opts: QueryDocumentsOpts = {}
+): Promise<YiAiEnvelope> {
+  return updateDocument(SEEDS_COLLECTION, key, { ...patch, updatedAt: Date.now() }, opts);
 }
 
-export async function deleteSeed(key: string): Promise<YiAiEnvelope> {
-  return deleteDocument(SEEDS_COLLECTION, key);
+export async function deleteSeed(key: string, opts: QueryDocumentsOpts = {}): Promise<YiAiEnvelope> {
+  return deleteDocument(SEEDS_COLLECTION, key, opts);
 }
 
 // ── Item mutations ──
 
-export async function deleteRssItem(key: string): Promise<YiAiEnvelope> {
-  return deleteDocument(RSS_COLLECTION, key);
+export async function deleteRssItem(key: string, opts: QueryDocumentsOpts = {}): Promise<YiAiEnvelope> {
+  return deleteDocument(RSS_COLLECTION, key, opts);
 }
 
-export async function updateRssItem(key: string, patch: Partial<RssItemDocument>): Promise<YiAiEnvelope> {
-  return updateDocument(RSS_COLLECTION, key, { ...patch, updatedTime: new Date().toISOString() });
+export async function updateRssItem(
+  key: string,
+  patch: Partial<RssItemDocument>,
+  opts: QueryDocumentsOpts = {}
+): Promise<YiAiEnvelope> {
+  return updateDocument(RSS_COLLECTION, key, { ...patch, updatedTime: new Date().toISOString() }, opts);
 }
 
 // ── Scheduler + parse ops (RPC envelope) ──
 
-export function parseFeed(url: string, name?: string): Promise<YiAiEnvelope<RssParseResult>> {
-  return callService<RssParseResult>(RSS_FEED_SERVICE, "parse_feed", { url, name });
+export function parseFeed(
+  url: string,
+  name?: string,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+): Promise<YiAiEnvelope<RssParseResult>> {
+  return callService<RssParseResult>(RSS_FEED_SERVICE, "parse_feed", { url, name }, opts);
 }
 
-export function parseAllEnabledFeeds(): Promise<YiAiEnvelope<RssParseResult>> {
-  return callService<RssParseResult>(RSS_SCHEDULER_SERVICE, "parse_all_enabled_rss_sources", {});
+export function parseAllEnabledFeeds(
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+): Promise<YiAiEnvelope<RssParseResult>> {
+  return callService<RssParseResult>(
+    RSS_SCHEDULER_SERVICE,
+    "parse_all_enabled_rss_sources",
+    {},
+    opts
+  );
 }
 
-export function startRssScheduler(): Promise<YiAiEnvelope> {
-  return callService(RSS_SCHEDULER_SERVICE, "start_rss_scheduler", {});
+export function startRssScheduler(
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+): Promise<YiAiEnvelope> {
+  return callService(RSS_SCHEDULER_SERVICE, "start_rss_scheduler", {}, opts);
 }
 
-export function stopRssScheduler(): Promise<YiAiEnvelope> {
-  return callService(RSS_SCHEDULER_SERVICE, "stop_rss_scheduler", {});
+export function stopRssScheduler(
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+): Promise<YiAiEnvelope> {
+  return callService(RSS_SCHEDULER_SERVICE, "stop_rss_scheduler", {}, opts);
 }
 
-export function setRssSchedulerConfig(config: Record<string, any>): Promise<YiAiEnvelope> {
-  return callService(RSS_SCHEDULER_SERVICE, "set_scheduler_config", { config });
+export function setRssSchedulerConfig(
+  config: Record<string, any>,
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+): Promise<YiAiEnvelope> {
+  return callService(RSS_SCHEDULER_SERVICE, "set_scheduler_config", { config }, opts);
 }
 
-export function getRssSchedulerStatus(): Promise<YiAiEnvelope<RssSchedulerStatus>> {
-  return callService<RssSchedulerStatus>(RSS_SCHEDULER_SERVICE, "get_scheduler_status_info", {});
+export function getRssSchedulerStatus(
+  opts: { timeout?: number; signal?: AbortSignal } = {}
+): Promise<YiAiEnvelope<RssSchedulerStatus>> {
+  return callService<RssSchedulerStatus>(
+    RSS_SCHEDULER_SERVICE,
+    "get_scheduler_status_info",
+    {},
+    opts
+  );
 }
 
 // ── Shared prompt constants ──

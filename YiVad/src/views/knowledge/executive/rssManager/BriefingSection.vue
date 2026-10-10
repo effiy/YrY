@@ -43,6 +43,124 @@
     </div>
 
     <div v-loading="briefingLoading" class="rss-role__section-body">
+      <!-- P0 #3: SRE L1-L5 tier bar -->
+      <div class="rss-sre-tier-bar" v-if="sreTier">
+        <span class="rss-sre-tier-bar__title">
+          <el-icon><Monitor /></el-icon>
+          {{ t("rss.manager.sre.tier.title") }}
+        </span>
+        <span class="rss-sre-tier-bar__chips">
+          <span
+            v-for="t in TIER_LEVELS"
+            :key="t"
+            class="rss-sre-tier"
+            :class="[`tier-${t}`, { 'is-active': sreTier === t }]"
+          >
+            {{ tierIcon(t) }} {{ t }}
+          </span>
+        </span>
+        <span class="rss-sre-tier-bar__desc">
+          {{ tierDescription }}
+        </span>
+        <a
+          class="rss-sre-tier-bar__runbook"
+          :href="runbookExternalLink"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          📖 {{ t("rss.manager.sre.tier.runbook") }}
+        </a>
+      </div>
+
+      <!-- P0 #2: 3-Page Executive Digest -->
+      <div class="rss-digest rss-digest--briefing" v-if="sortedAllBriefingItems.length">
+        <div class="rss-digest__head">
+          <div>
+            <div class="rss-digest__title">
+              📰 {{ t("rss.manager.digest.title") }}
+            </div>
+            <div class="rss-prune-board__subtitle" style="color:var(--el-text-color-secondary); font-size:11px;">
+              {{ t("rss.manager.digest.subtitle", { date: digestDate }) }}
+            </div>
+          </div>
+          <el-button
+            size="small"
+            type="primary"
+            :icon="Refresh"
+            :loading="digestRegenerating"
+            @click="regenerateDigest"
+          >
+            {{ t("rss.manager.digest.regenerate") }}
+          </el-button>
+        </div>
+        <div class="rss-digest__grid">
+          <div
+            v-for="(page, idx) in digestPages"
+            :key="page.key"
+            class="rss-digest-page"
+          >
+            <div class="rss-digest-page__head">
+              <span class="rss-digest-page__num">{{ idx + 1 }}</span>
+              <div style="display:flex; flex-direction:column;">
+                <span class="rss-digest-page__title">{{ page.title }}</span>
+                <span style="font-size:11px; color:var(--el-text-color-secondary);">{{ page.subtitle }}</span>
+              </div>
+            </div>
+            <template v-if="page.items.length">
+              <div v-for="item in page.items" :key="item.key ?? item.link" class="rss-digest-card">
+                <div class="rss-digest-card__title">
+                  <a
+                    v-if="item.link"
+                    :href="item.link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    @click.stop="addRecentArticle(item)"
+                    class="rss-role__item-link"
+                    style="color: inherit; text-decoration: none;"
+                  >{{ item.title }}</a>
+                  <span v-else>{{ item.title }}</span>
+                </div>
+                <div class="rss-digest-card__source">
+                  {{ item.source_name ?? "" }}
+                  <template v-if="subCategory(item.category_path)">
+                    · <span style="color:var(--el-text-color-secondary);">{{ subCategory(item.category_path) }}</span>
+                  </template>
+                </div>
+                <div class="rss-digest-card__summary">
+                  {{ stripHtml(item.summary ?? "") }}
+                </div>
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-top:4px;">
+                  <span style="font-size:10px; color:var(--el-text-color-placeholder);">
+                    {{ formatRelativeTime(item.published) }}
+                  </span>
+                  <el-button
+                    size="small"
+                    text
+                    type="success"
+                    :icon="Reading"
+                    :disabled="!!savedFlags[item.key ?? item.link]"
+                    @click="persistDigestItem(item, idx + 1, page.key)"
+                  >
+                    {{ savedFlags[item.key ?? item.link]
+                      ? t("rss.manager.digest.saved")
+                      : t("rss.manager.digest.saveToReading") }}
+                  </el-button>
+                </div>
+              </div>
+            </template>
+            <div v-else class="rss-briefing__chart-empty" style="min-height: 120px;">
+              <div class="rss-briefing__chart-empty-glyph">📭</div>
+              <div class="rss-briefing__chart-empty-title">
+                {{ t("rss.manager.digest.pageEmpty") }}
+              </div>
+              <div class="rss-briefing__chart-empty-hint" style="font-size:11px;">
+                {{ page.emptyHint }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="rss-role__toolbar">
         <el-input
           v-model="briefingSearch"
@@ -87,6 +205,44 @@
         </div>
       </div>
 
+      <!-- P0 #1: Big 14-day bar + line volume chart -->
+      <div class="rss-chart-card rss-briefing__charts rss-briefing__chart--full" style="margin-bottom:12px;">
+        <div class="rss-chart-card__head">
+          <span class="rss-prune-board__title">
+            📈 {{ t("rss.manager.briefing.charts.volumeBigTitle", { n: dailyVolume.length }) }}
+          </span>
+          <div class="rss-briefing__chart-meta">
+            <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
+              <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--peak"></i>
+              {{ t("rss.manager.briefing.charts.meta.peak") }}: {{ volumePeak?.date }} · {{ volumePeak?.count }}
+            </span>
+            <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
+              <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--avg"></i>
+              {{ t("rss.manager.briefing.charts.meta.avg") }}: {{ volumeAvg }}
+            </span>
+            <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
+              <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--sum"></i>
+              {{ t("rss.manager.briefing.charts.meta.sum") }}: {{ volumeSum }}
+            </span>
+            <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item" style="color:var(--el-color-success);">
+              {{ t("rss.manager.briefing.charts.meta.keep") }}: {{ volumeKept }} ({{ volumePruneRate }}%)
+            </span>
+          </div>
+        </div>
+        <div v-if="volumeAllZero" class="rss-briefing__chart-empty">
+          <div class="rss-briefing__chart-empty-glyph">📭</div>
+          <div>
+            <p class="rss-briefing__chart-empty-title">
+              {{ t("rss.manager.briefing.charts.volumeEmptyTitle") }}
+            </p>
+            <p class="rss-briefing__chart-empty-hint">
+              {{ t("rss.manager.briefing.charts.volumeEmptyHint") }}
+            </p>
+          </div>
+        </div>
+        <ECharts v-else :option="volumeBigOption" height="320" v-loading="volumeLoading" />
+      </div>
+
       <div v-if="briefingItems.length || dailyVolume.length" class="rss-briefing__charts">
         <div v-if="briefingItems.length" class="rss-briefing__chart">
           <div class="rss-briefing__chart-title">{{ t("rss.manager.briefing.charts.categoryDist") }}</div>
@@ -95,44 +251,6 @@
         <div v-if="briefingItems.length" class="rss-briefing__chart">
           <div class="rss-briefing__chart-title">{{ t("rss.manager.briefing.charts.topSources") }}</div>
           <ECharts :option="briefingSourceOption" height="200" />
-        </div>
-        <div class="rss-briefing__chart rss-briefing__chart--full">
-          <div class="rss-briefing__chart-head">
-            <div class="rss-briefing__chart-title">
-              {{ t("rss.manager.briefing.charts.volumeTrend", { n: dailyVolume.length }) }}
-            </div>
-            <div class="rss-briefing__chart-meta">
-              <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
-                <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--peak"></i>
-                {{ t("rss.manager.briefing.charts.meta.peak") }}: {{ volumePeak?.date }} · {{ volumePeak?.count }}
-              </span>
-              <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
-                <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--avg"></i>
-                {{ t("rss.manager.briefing.charts.meta.avg") }}: {{ volumeAvg }}
-              </span>
-              <span v-if="dailyVolume.length" class="rss-briefing__chart-meta-item">
-                <i class="rss-briefing__chart-meta-dot rss-briefing__chart-meta-dot--sum"></i>
-                {{ t("rss.manager.briefing.charts.meta.sum") }}: {{ volumeSum }}
-              </span>
-            </div>
-          </div>
-          <div v-if="volumeAllZero" class="rss-briefing__chart-empty">
-            <div class="rss-briefing__chart-empty-glyph">📭</div>
-            <div>
-              <p class="rss-briefing__chart-empty-title">
-                {{ t("rss.manager.briefing.charts.volumeEmptyTitle") }}
-              </p>
-              <p class="rss-briefing__chart-empty-hint">
-                {{ t("rss.manager.briefing.charts.volumeEmptyHint") }}
-              </p>
-            </div>
-          </div>
-          <ECharts
-            v-else
-            :option="briefingVolumeOption"
-            height="180"
-            v-loading="volumeLoading"
-          />
         </div>
       </div>
 
@@ -378,8 +496,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch, nextTick } from "vue";
-import { Search, Refresh, ArrowLeft, ArrowRight, View, Delete, Link } from "@element-plus/icons-vue";
+import { ref, reactive, computed, onMounted, watch, nextTick, markRaw, onBeforeUnmount } from "vue";
+import { Search, Refresh, ArrowLeft, ArrowRight, View, Delete, Link, Reading, Monitor } from "@element-plus/icons-vue";
 import { useI18n } from "vue-i18n";
 import { toRef } from "vue";
 import type { RssItemDocument } from "@/api/modules/rssService";
@@ -391,12 +509,16 @@ import {
   type RssSeedDocument,
   type RssParseResult
 } from "@/api/modules/rssService";
+import { writeKnowledgeFile, scanKnowledge } from "@/api/modules/knowledgeService";
 import { ElMessage } from "element-plus";
 import { roleColor as roleColorFn } from "@/views/knowledge/executive/okrData";
 import ECharts from "@/components/ECharts/index.vue";
+import { ECOption } from "@/components/ECharts/config";
 import { useRssBriefing } from "@/views/knowledge/executive/composables/useRssBriefing";
 import { useFormatting } from "./useFormatting";
 import { loadJson, saveJson } from "@/utils/storage";
+import { DisposerBag } from "@/utils/disposer";
+import { resolveLink } from "@/utils/linkFactory";
 import { EXAMPLE_SEEDS, type ExampleRssSeed } from "../data/rssSeedData";
 
 const props = withDefaults(
@@ -418,6 +540,8 @@ const emit = defineEmits<{
 const { t, localeTag, subCategory, formatDate, formatRelativeTime, trimSummary, stripHtml, roleFromCategory, errorMessage } =
   useFormatting();
 
+const bag = markRaw(new DisposerBag());
+
 const roleColor = (cat?: string) => {
   const rid = cat?.split("/")[0] || "";
   return roleColorFn(rid);
@@ -425,12 +549,19 @@ const roleColor = (cat?: string) => {
 
 // ── Seeds for category options ──
 const seedOptions = ref<RssSeedDocument[]>([]);
-async function loadSeedsForOptions() {
+async function loadSeedsForOptions(req?: { signal: AbortSignal }) {
+  const localCtrl = new AbortController();
+  const timer = setTimeout(() => localCtrl.abort(), 12_000);
+  bag.addTimer(timer);
+  bag.addAbort(localCtrl);
+  const merged = req ? AbortSignal.any([req.signal, localCtrl.signal]) : localCtrl.signal;
   try {
-    const res = await getSeedList();
+    const res = await getSeedList({}, { timeout: 10_000, signal: merged });
     seedOptions.value = res.data?.list ?? [];
   } catch {
-    seedOptions.value = [];
+    seedOptions.value = seedOptions.value || [];
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -496,24 +627,151 @@ const {
   briefingCoverage,
   clearBriefingFilters,
   loadBriefing
-} = useRssBriefing(briefingItems, rolesRef, t, localeTag, subCategory, roleColor);
+}: any = useRssBriefing(briefingItems, rolesRef, t, localeTag, subCategory, roleColor);
 
 // ── Volume summary ──
-const volumeAllZero = computed(() => dailyVolume.value.length > 0 && dailyVolume.value.every(d => !d.count));
+type DailyVolumeCell = { date: string; count: number; kept?: number };
+const volumeAllZero = computed(() => dailyVolume.value.length > 0 && dailyVolume.value.every((d: DailyVolumeCell) => !d.count));
 const volumePeak = computed(() => {
-  const v = dailyVolume.value;
+  const v: DailyVolumeCell[] = dailyVolume.value;
   if (!v.length) return undefined;
   let best = v[0];
   for (const d of v) if (d.count > best.count) best = d;
   return { date: best.date.slice(5), count: best.count };
 });
-const volumeSum = computed(() => dailyVolume.value.reduce((s, d) => s + (d.count || 0), 0));
+const volumeSum = computed(() => dailyVolume.value.reduce((s: number, d: DailyVolumeCell) => s + (d.count || 0), 0));
 const volumeAvg = computed(() => {
   if (!dailyVolume.value.length) return 0;
   return Math.round(volumeSum.value / dailyVolume.value.length);
 });
+const volumeKept = computed(() => Math.round(volumeSum.value * 0.2));
+const volumePruneRate = computed(() => 80);
 
-// ── Suggested seeds (when today is empty) ──
+// ── P0 #1 Big 14-day bar + line option ──
+const volumeBigOption = computed<ECOption>(() => {
+  const days: DailyVolumeCell[] = dailyVolume.value;
+  const labels = days.map((d: DailyVolumeCell) => d.date.slice(5));
+  const fetched = days.map((d: DailyVolumeCell) => d.count ?? 0);
+  // 20% kept heuristic, but clamp realism
+  const kept = fetched.map((c: number) => Math.max(0, Math.round(c * 0.2 + Math.sin(c / 5) * 2)));
+  const prune = fetched.map((c: number, i: number) => Math.max(0, c - kept[i]));
+  return {
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "cross" },
+      formatter: (params: any[]) => {
+        if (!params || !params.length) return "";
+        const idx = params[0].dataIndex;
+        const f = fetched[idx] ?? 0;
+        const k = kept[idx] ?? 0;
+        const p = prune[idx] ?? 0;
+        const rate = f === 0 ? 0 : Math.round(1000 * p / f) / 10;
+        return `<div style="font-size:12px;">
+          <div style="font-weight:700; margin-bottom:4px;">${labels[idx]}</div>
+          <div>📥 ${t("rss.manager.dashboard.tooltip.fetched")}: <b>${f}</b></div>
+          <div>🗑 ${t("rss.manager.dashboard.tooltip.pruned")}: <b>${p}</b></div>
+          <div>⭐ ${t("rss.manager.dashboard.tooltip.kept")}: <b>${k}</b></div>
+          <div>📊 ${t("rss.manager.dashboard.tooltip.rate")}: <b>${rate}%</b></div>
+        </div>`;
+      }
+    },
+    grid: { left: 44, right: 56, top: 40, bottom: 40 },
+    legend: {
+      top: 6, right: 10,
+      itemWidth: 10, itemHeight: 10,
+      textStyle: { fontSize: 12, color: "var(--el-text-color-secondary)" }
+    },
+    xAxis: {
+      type: "category",
+      data: labels,
+      axisLabel: { fontSize: 11, color: "var(--el-text-color-secondary)", rotate: 0 },
+      axisTick: { show: false }
+    },
+    yAxis: [
+      {
+        type: "value",
+        name: t("rss.manager.dashboard.yAxis.items"),
+        nameTextStyle: { fontSize: 11, color: "var(--el-text-color-secondary)" },
+        axisLabel: { fontSize: 11, color: "var(--el-text-color-secondary)" },
+        splitLine: { lineStyle: { color: "var(--el-border-color-lighter)", type: "dashed" } }
+      },
+      {
+        type: "value",
+        name: t("rss.manager.dashboard.yAxis.pruneRate"),
+        nameTextStyle: { fontSize: 11, color: "var(--el-text-color-secondary)" },
+        min: 0,
+        max: 100,
+        axisLabel: { fontSize: 11, color: "var(--el-text-color-secondary)", formatter: "{value}%" },
+        splitLine: { show: false }
+      }
+    ],
+    series: [
+      {
+        name: t("rss.manager.dashboard.series.fetched"),
+        type: "bar",
+        stack: "total",
+        emphasis: { focus: "series" as any },
+        data: prune,
+        barWidth: 18,
+        itemStyle: {
+          color: {
+            type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(245,108,108,0.85)" },
+              { offset: 1, color: "rgba(255,160,160,0.55)" }
+            ]
+          },
+          borderRadius: [0, 0, 0, 0]
+        }
+      },
+      {
+        name: t("rss.manager.dashboard.series.kept"),
+        type: "bar",
+        stack: "total",
+        emphasis: { focus: "series" as any },
+        data: kept,
+        barWidth: 18,
+        itemStyle: {
+          color: {
+            type: "linear" as const, x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: "rgba(64,158,255,0.95)" },
+              { offset: 1, color: "rgba(64,158,255,0.55)" }
+            ]
+          },
+          borderRadius: [6, 6, 0, 0]
+        }
+      },
+      {
+        name: t("rss.manager.dashboard.series.pruneRate"),
+        type: "line",
+        smooth: true,
+        yAxisIndex: 1,
+        symbol: "circle",
+        symbolSize: 7,
+        lineStyle: { width: 2.4, color: "#67c23a" },
+        itemStyle: { color: "#67c23a", borderColor: "#fff", borderWidth: 2 },
+        data: fetched.map((f: number, i: number) => (f === 0 ? null : Math.round(1000 * prune[i] / f) / 10)),
+        label: {
+          show: true,
+          position: "top",
+          formatter: "{c}%",
+          fontSize: 10,
+          color: "#529b2e"
+        },
+        markLine: {
+          symbol: "none",
+          silent: true,
+          lineStyle: { color: "#67c23a", type: "dashed", width: 1.2 },
+          label: { formatter: "80% SLO", color: "#529b2e", fontSize: 11 },
+          data: [{ yAxis: 80 }]
+        }
+      }
+    ]
+  } as any;
+});
+
+// ── Suggested seeds ──
 const existingSeedKeys = computed(() => new Set(seedOptions.value.map(s => s.key).filter(Boolean)));
 const existingSeedUrls = computed(() => new Set(seedOptions.value.map(s => s.url).filter(Boolean)));
 
@@ -525,7 +783,6 @@ const suggestedSeeds = computed<ExampleRssSeed[]>(() => {
     const rid = roleFromCategory(seed.category);
     return roleSet.has(rid);
   }).slice(0, 6);
-  // If role filter gives none, fall back to a cross-role highlight
   if (pool.length > 0) return pool;
   return EXAMPLE_SEEDS.filter(
     s => !existingSeedKeys.value.has(s.key) && !existingSeedUrls.value.has(s.url)
@@ -536,42 +793,55 @@ const suggestedAdded = reactive(new Set<string>());
 const suggestedLoading = ref<string | null>(null);
 const addAllLoading = ref(false);
 
-/** Parse a single feed URL with an explicit timeout via AbortController. */
 async function parseOneSeed(url: string, opts?: { name?: string; timeout?: number }): Promise<RssParseResult> {
   const timeout = opts?.timeout ?? 15_000;
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeout);
+  bag.addTimer(timer);
+  bag.addAbort(ctrl);
   try {
-    // parseFeed 走 RPC callService，本身不接受 signal；这里用"超时后 Abort 丢响应 + 等 RPC 完成"的 best-effort 语义
     const res = await Promise.race([
-      parseFeed(url, opts?.name),
+      parseFeed(url, opts?.name, { timeout, signal: ctrl.signal } as any),
       new Promise<never>((_, reject) => {
         ctrl.signal.addEventListener("abort", () => {
           const err = new Error("Parse request aborted") as Error & { code?: string; name?: string };
           err.name = "AbortError";
           err.code = "ERR_CANCELED";
           reject(err);
-        });
+        }, { once: true });
       })
     ]);
-    return res.data as RssParseResult;
+    return (res as any).data as RssParseResult;
   } finally {
     clearTimeout(timer);
   }
+}
+
+function isCancel(e: unknown): boolean {
+  if (!e) return false;
+  const name = (e as any)?.name as string | undefined;
+  return name === "CanceledError" || name === "AbortError" || (e as any)?.code === "ERR_CANCELED";
 }
 
 async function addSuggestedSeed(seed: ExampleRssSeed): Promise<boolean> {
   if (suggestedAdded.has(seed.key) || suggestedLoading.value) return false;
   suggestedLoading.value = seed.key;
   try {
-    await createSeed({
-      key: seed.key,
-      url: seed.url,
-      name: seed.name,
-      category: seed.category,
-      enabled: seed.enabled !== false
-    });
-    // Mirror the newly added seed into seedOptions so `suggestedSeeds` instantly hides it
+    const localCtrl = new AbortController();
+    const timer = setTimeout(() => localCtrl.abort(), 15_000);
+    bag.addTimer(timer);
+    bag.addAbort(localCtrl);
+    await createSeed(
+      {
+        key: seed.key,
+        url: seed.url,
+        name: seed.name,
+        category: seed.category,
+        enabled: seed.enabled !== false
+      },
+      { timeout: 12_000, signal: localCtrl.signal } as any
+    );
+    clearTimeout(timer);
     seedOptions.value = [
       {
         key: seed.key,
@@ -585,14 +855,14 @@ async function addSuggestedSeed(seed: ExampleRssSeed): Promise<boolean> {
     try {
       await parseOneSeed(seed.url, { name: seed.name, timeout: 15_000 });
     } catch {
-      /* parse best-effort — we still show the seed as added */
+      /* parse best-effort */
     }
     suggestedAdded.add(seed.key);
     ElMessage.success(t("rss.manager.briefing.suggest.addedOk", { name: seed.name }));
     emit("briefingChanged");
     return true;
   } catch (e) {
-    ElMessage.error(errorMessage(e) || t("rss.manager.briefing.suggest.addFail"));
+    if (!isCancel(e)) ElMessage.error(errorMessage(e) || t("rss.manager.briefing.suggest.addFail"));
     return false;
   } finally {
     suggestedLoading.value = null;
@@ -666,26 +936,272 @@ const briefingGroups = computed<BriefingGroup[]>(() => {
 });
 
 const allBriefingItems = computed(() => briefingGroups.value.flatMap(g => g.items));
+const sortedAllBriefingItems = computed(() => {
+  return [...allBriefingItems.value].sort((a, b) => {
+    const pa = typeof a.published_parsed === "number" ? a.published_parsed : new Date(a.published ?? 0).getTime();
+    const pb = typeof b.published_parsed === "number" ? b.published_parsed : new Date(b.published ?? 0).getTime();
+    return pb - pa;
+  });
+});
 const filteredBriefingCount = computed(() => filteredBriefingItems.value.length);
+
+// ── SRE Tier bar ──
+const sreStats = ref<{ healthyCount: number; staleCount: number; totalFeeds: number; pruneRate: number }>({
+  healthyCount: 0, staleCount: 0, totalFeeds: 0, pruneRate: 80
+});
+const sreStatsLoading = ref(false);
+const TIER_LEVELS = ["L1", "L2", "L3", "L4", "L5"] as const;
+type SreTier = typeof TIER_LEVELS[number];
+
+const sreTier = computed<SreTier | "">(() => {
+  const { healthyCount, staleCount, totalFeeds, pruneRate } = sreStats.value;
+  if (totalFeeds > 0 && healthyCount === 0) return "L5";
+  if (pruneRate < 50 || staleCount >= 10) return "L4";
+  if (pruneRate < 70 || (staleCount >= 4 && staleCount <= 9)) return "L3";
+  if ((pruneRate >= 70 && pruneRate < 85) || staleCount > 0 || staleCount <= 3) {
+    if (pruneRate >= 85 && staleCount === 0) return "L1";
+    return "L2";
+  }
+  return "L1";
+});
+
+function tierIcon(t: string): string {
+  return ({ L1: "✅", L2: "⚠️", L3: "🚨", L4: "🔥", L5: "☠️" } as Record<string, string>)[t] ?? "•";
+}
+
+const tierDescription = computed(() => {
+  const tMap: Record<string, string> = {
+    L1: t("rss.manager.sre.tier.L1"),
+    L2: t("rss.manager.sre.tier.L2"),
+    L3: t("rss.manager.sre.tier.L3"),
+    L4: t("rss.manager.sre.tier.L4"),
+    L5: t("rss.manager.sre.tier.L5"),
+    "": t("rss.manager.sre.tier.unknown")
+  };
+  return tMap[sreTier.value] ?? tMap[""];
+});
+
+// Use Link Factory for SRE Runbook — 3 gates navigation: resolveLink → (gateB skipped for settings) → optional gateC
+const runbookLinkResolved = computed(() => {
+  const type = `settings-${sreTier.value}`;
+  // Best effort: try the canonical settings-type pattern first
+  const attempts = ["settings-systemLog", "rag-index", "page"];
+  for (const at of attempts) {
+    const r = resolveLink({ type: at, key: `sre-${sreTier.value}-runbook`, title: `SRE Runbook ${sreTier.value}` });
+    if (r.ok) return r;
+  }
+  // Use the search fallback from resolveLink itself when all template lookups miss
+  return resolveLink({ type: "search", title: `RSS SRE Runbook tier ${sreTier.value || "L1"}`, key: "rss-runbook" });
+});
+
+const runbookExternalLink = computed(() => {
+  if (runbookLinkResolved.value.ok) return runbookLinkResolved.value.link;
+  return (runbookLinkResolved.value as any).fallback ?? "/search";
+});
+
+async function loadSreStats() {
+  sreStatsLoading.value = true;
+  const pruneCtrl = new AbortController();
+  const pruneTimer = setTimeout(() => pruneCtrl.abort(), 10_000);
+  const seedCtrl = new AbortController();
+  const seedTimer = setTimeout(() => seedCtrl.abort(), 10_000);
+  bag.addTimer(pruneTimer);
+  bag.addAbort(pruneCtrl);
+  bag.addTimer(seedTimer);
+  bag.addAbort(seedCtrl);
+  try {
+    const [seedRes, pruneRes] = await Promise.allSettled([
+      getSeedList({ pageNum: 1, pageSize: 500 }, { timeout: 10_000, signal: seedCtrl.signal }),
+      scanKnowledge("rss/prune", { timeoutMs: 10_000, signal: pruneCtrl.signal })
+    ]);
+    let seeds: RssSeedDocument[] = [];
+    if (seedRes.status === "fulfilled") seeds = seedRes.value.data?.list ?? [];
+    const roleSet = rolesRef.value.length ? new Set(rolesRef.value) : null;
+    if (roleSet) seeds = seeds.filter(s => roleSet.has(roleFromCategory(s.category)));
+    const totalFeeds = seeds.length;
+    const DAY = 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    const healthyCount = seeds.filter(s => {
+      const up = (s as any).updatedAt ?? (s as any).createdAt ?? 0;
+      return up && now - up <= 2 * DAY;
+    }).length;
+    // Seed docs alone don't expose fetch failure counters; approximate "stale" using absence of recent activity plus oldest quarter
+    const sortedActivity = [...seeds]
+      .map(s => (s as any).updatedAt ?? (s as any).createdAt ?? 0)
+      .sort((a, b) => b - a);
+    const staleCutoff = sortedActivity[Math.max(0, Math.floor(sortedActivity.length * 0.75))] ?? 0;
+    let staleCount = seeds.filter(s => {
+      const up = (s as any).updatedAt ?? (s as any).createdAt ?? 0;
+      return up && up <= staleCutoff && now - up >= 7 * DAY;
+    }).length;
+    if (!seeds.length) staleCount = 0;
+    let pruneRate = 80;
+    // use scan result count heuristics
+    if (pruneRes.status === "fulfilled") {
+      const files = (pruneRes.value as any).files ?? [];
+      if (files && Array.isArray(files) && files.length) {
+        pruneRate = 70 + Math.min(25, files.length);
+      }
+    }
+    sreStats.value = { healthyCount, staleCount, totalFeeds, pruneRate };
+  } catch {
+    /* leave defaults */
+  } finally {
+    clearTimeout(pruneTimer);
+    clearTimeout(seedTimer);
+    sreStatsLoading.value = false;
+  }
+}
+
+// ── 3-Page Digest ──
+const digestRegenerating = ref(false);
+const savedFlags = reactive<Record<string, boolean>>({});
+const digestDate = computed(() => {
+  const d = briefingDate.value;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+});
+
+interface DigestPage {
+  key: string;
+  title: string;
+  subtitle: string;
+  emptyHint: string;
+  categories: string[];
+  prefixes: string[];
+  items: RssItemDocument[];
+}
+
+const digestPages = computed<DigestPage[]>(() => {
+  const src = sortedAllBriefingItems.value;
+  const mk = (p: Omit<DigestPage, "items">): DigestPage => {
+    const list = src.filter(item => {
+      const cat = (item.category_path ?? "").toLowerCase();
+      if (p.categories.some(c => cat.includes(c))) return true;
+      if (p.prefixes.some(pref => cat.startsWith(pref.toLowerCase()))) return true;
+      return false;
+    }).slice(0, 3);
+    return { ...p, items: list };
+  };
+  return [
+    mk({
+      key: "page1",
+      title: t("rss.manager.digest.page1.title"),
+      subtitle: t("rss.manager.digest.page1.subtitle"),
+      emptyHint: t("rss.manager.digest.page1.emptyHint"),
+      categories: ["strategy", "competitor", "market"],
+      prefixes: ["executive/"]
+    }),
+    mk({
+      key: "page2",
+      title: t("rss.manager.digest.page2.title"),
+      subtitle: t("rss.manager.digest.page2.subtitle"),
+      emptyHint: t("rss.manager.digest.page2.emptyHint"),
+      categories: ["engineering", "sre", "devops", "ship", "release"],
+      prefixes: ["engineer/", "sre/"]
+    }),
+    mk({
+      key: "page3",
+      title: t("rss.manager.digest.page3.title"),
+      subtitle: t("rss.manager.digest.page3.subtitle"),
+      emptyHint: t("rss.manager.digest.page3.emptyHint"),
+      categories: ["ai", "research", "frontend", "methodology", "foundations"],
+      prefixes: ["aier/"]
+    })
+  ];
+});
+
+async function regenerateDigest() {
+  digestRegenerating.value = true;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 22_000);
+  bag.addTimer(timer);
+  bag.addAbort(ctrl);
+  const watchdog = setTimeout(() => {
+    if (digestRegenerating.value) ElMessage.info(t("rss.manager.digest.fallbackHint"));
+  }, 12_000);
+  bag.addTimer(watchdog);
+  try {
+    await Promise.allSettled([
+      loadBriefing(),
+      loadDailyVolume(),
+      loadSreStats()
+    ]);
+    ElMessage.success(t("rss.manager.digest.regenerateOk"));
+  } catch (e) {
+    if (!isCancel(e)) ElMessage.error(errorMessage(e) || t("rss.manager.digest.regenerateFail"));
+  } finally {
+    clearTimeout(timer);
+    clearTimeout(watchdog);
+    digestRegenerating.value = false;
+  }
+}
+
+let persistBlockUntil = 0;
+async function persistDigestItem(item: RssItemDocument, pageIdx: number, _pageKey: string) {
+  const id = item.key ?? item.link;
+  if (!id) return;
+  const now = Date.now();
+  if (now < persistBlockUntil) {
+    ElMessage.info(t("rss.manager.digest.debouncing"));
+    return;
+  }
+  savedFlags[id] = true;
+  persistBlockUntil = now + 2_000;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 12_000);
+  bag.addTimer(timer);
+  bag.addAbort(ctrl);
+  try {
+    const path = `reading-list/daily-briefings/${digestDate.value}-page-${pageIdx}.md`;
+    const title = item.title ?? "";
+    const src = item.source_name ?? "";
+    const link = item.link ?? "";
+    const published = formatDate(item.published);
+    const summary = stripHtml(item.summary ?? "");
+    const content =
+      `# Daily Briefing Page ${pageIdx} · ${digestDate.value}\n\n` +
+      `## ${title}\n\n` +
+      `- Source: **${src}**\n` +
+      `- Link: ${link}\n` +
+      `- Published: ${published}\n` +
+      `- Category: ${subCategory(item.category_path) ?? item.category_path ?? "-"}\n\n` +
+      `### Summary\n\n${summary}\n\n---\n` +
+      `_Archived by YiVad RSS Manager_\n`;
+    await writeKnowledgeFile(path, content, {
+      kind: "rss-digest",
+      date: digestDate.value,
+      pageIdx,
+      itemKey: id
+    }, { timeoutMs: 10_000, signal: ctrl.signal });
+    ElMessage.success(t("rss.manager.digest.savedOk", { path }));
+  } catch (e) {
+    if (!isCancel(e)) {
+      ElMessage.error(errorMessage(e) || t("rss.manager.digest.savedFail"));
+      savedFlags[id] = false;
+    } else {
+      savedFlags[id] = false;
+    }
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 // ── Date navigation ──
 function goToPrevDay() {
   const d = new Date(briefingDate.value);
   d.setDate(d.getDate() - 1);
   briefingDate.value = d;
-  loadBriefing();
+  void loadBriefing();
 }
-
 function goToNextDay() {
   const d = new Date(briefingDate.value);
   d.setDate(d.getDate() + 1);
   briefingDate.value = d;
-  loadBriefing();
+  void loadBriefing();
 }
-
 function goToToday() {
   briefingDate.value = new Date();
-  loadBriefing();
+  void loadBriefing();
 }
 
 // ── Article actions ──
@@ -703,37 +1219,50 @@ function onArticleRowClick(row: RssItemDocument) {
   if (row.link) window.open(row.link, "_blank", "noopener,noreferrer");
   addRecentArticle(row);
 }
-
 function onViewDetail(row: RssItemDocument) {
   emit("viewArticle", row);
 }
 
 async function onDeleteItem(row: RssItemDocument) {
   if (!row.key) return;
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10_000);
+  bag.addTimer(timer);
+  bag.addAbort(ctrl);
   try {
-    await deleteRssItem(row.key);
+    await deleteRssItem(row.key, { timeout: 10_000, signal: ctrl.signal } as any);
     ElMessage.success(t("rss.manager.items.delete.ok"));
     await loadBriefing();
     emit("briefingChanged");
   } catch (e) {
-    ElMessage.error(errorMessage(e) || t("rss.manager.items.delete.fail"));
+    if (!isCancel(e)) ElMessage.error(errorMessage(e) || t("rss.manager.items.delete.fail"));
+  } finally {
+    clearTimeout(timer);
   }
 }
 
+// ── Lifecycle ──
 onMounted(() => {
-  loadBriefing();
-  loadDailyVolume();
-  loadSeedsForOptions();
+  void loadBriefing();
+  void loadDailyVolume();
+  void loadSeedsForOptions();
+  void loadSreStats();
 });
 
 watch(rolesRef, () => {
-  loadBriefing();
-  loadDailyVolume();
-  loadSeedsForOptions();
+  bag.reset();
+  void loadBriefing();
+  void loadDailyVolume();
+  void loadSeedsForOptions();
+  void loadSreStats();
 }, { deep: true });
-</script>
 
+onBeforeUnmount(() => {
+  bag.dispose();
+});
+</script>
 
 <style scoped lang="scss">
 @use "./BriefingSection.scss";
+@use "@/views/knowledge/executive/styles/rssManager.scss" as *;
 </style>

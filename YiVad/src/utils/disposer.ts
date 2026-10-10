@@ -112,3 +112,31 @@ export class DisposerBag {
     }
   }
 }
+
+/**
+ * 创建一个带超时的 AbortSignal，并可选地将 controller 与 timer 托管到 DisposerBag。
+ *
+ * @param timeoutMs 超时毫秒数；非正数会被设为 1ms（立即超时）
+ * @param bag       若提供，则 addAbort + addTimer 注册到 bag，dispose 时一键清理
+ * @returns `{ signal, ctrl }`：signal 用于 fetch/XHR 的 AbortSignal 形参；
+ *          ctrl 用于外部需要提前终止的场景（ctrl.abort()）
+ */
+export function createTimeoutSignal(
+  timeoutMs: number,
+  bag?: DisposerBag
+): { signal: AbortSignal; ctrl: AbortController } {
+  const ctrl = new AbortController();
+  const clamped = Math.max(1, timeoutMs | 0);
+  const timer = setTimeout(() => {
+    try {
+      ctrl.abort(new Error(`DisposerTimeout: ${clamped}ms`));
+    } catch {
+      /* noop */
+    }
+  }, clamped);
+  if (bag) {
+    bag.addAbort(ctrl);
+    bag.addTimer(timer);
+  }
+  return { signal: ctrl.signal, ctrl };
+}

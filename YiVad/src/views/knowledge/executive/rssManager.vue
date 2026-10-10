@@ -304,10 +304,20 @@ function getCurrentListRows(): HTMLElement[] {
       ? ".rss-role__items-list-row"
       : itemsViewMode.value === "table"
         ? ".el-table__body-wrapper .el-table__row"
-        : ""
-    : activeTab.value === "briefing" && briefingViewMode.value === "list"
-      ? ".rss-briefing__item"
-      : "";
+        : ".rss-role__item-card"
+    : activeTab.value === "briefing"
+      ? briefingViewMode.value === "list"
+        ? ".rss-briefing__item"
+        : briefingViewMode.value === "card"
+          ? ".rss-role__item-card"
+          : briefingViewMode.value === "table"
+            ? ".el-table__body-wrapper .el-table__row"
+            : ""
+      : activeTab.value === "seeds"
+        ? seedsViewMode.value === "table"
+          ? ".el-table__body-wrapper .el-table__row"
+          : ".rss-role__item-card"
+        : "";
   if (!selector) return [];
   return Array.from(content.querySelectorAll<HTMLElement>(selector));
 }
@@ -364,6 +374,25 @@ function isCancel(e: unknown): boolean {
 
 async function loadStats() {
   const req = beginRequest("stats");
+  // Hard constraint #5: 12s watchdog hint + 22s fallback to ensure loading=false
+  const wdHint = setTimeout(() => {
+    if (!req.isStale()) {
+      // eslint-disable-next-line no-empty
+      try { (req as any)._hintFired = true; } catch {}
+    }
+  }, 12_000);
+  const wdFallback = setTimeout(() => {
+    if (!req.isStale()) {
+      feedsCount.value = 0;
+      totalItems.value = 0;
+      // eslint-disable-next-line no-empty
+      try { req.signal?.addEventListener?.("abort", () => {}); } catch {}
+      // eslint-disable-next-line no-empty
+      try { inflight.get("stats")?.ctrl.abort?.(); } catch {}
+    }
+  }, 22_000);
+  bag.addTimer(wdHint);
+  bag.addTimer(wdFallback);
   try {
     const [seedRes, itemRes] = await Promise.all([
       getSeedList({ pageSize: 1 }, { timeout: 8000, signal: req.signal }),
@@ -377,6 +406,8 @@ async function loadStats() {
     feedsCount.value = 0;
     totalItems.value = 0;
   } finally {
+    clearTimeout(wdHint);
+    clearTimeout(wdFallback);
     if (!req.isStale()) endRequest("stats");
   }
   loadTodayCount();
@@ -710,24 +741,27 @@ onMounted(() => {
 
   const focusActiveTabSearch = () => {
     nextTick(() => {
-      if (activeTab.value === "briefing") {
-        const el = document.querySelector<HTMLElement>(
-          ".rss-briefing__toolbar .el-input__inner"
-        ) ?? document.querySelector<HTMLElement>(
-          ".rss-role__section:first-of-type .rss-role__toolbar .el-input__inner"
-        );
-        el?.focus?.();
-      } else if (activeTab.value === "seeds") {
-        const el = document.querySelector<HTMLElement>(
-          ".rss-role__content .rss-role__section:nth-of-type(1) .rss-role__toolbar .el-input__inner"
-        );
-        el?.focus?.();
-      } else {
-        const el = document.querySelector<HTMLElement>(
-          ".rss-role__content .rss-role__section:nth-of-type(1) .rss-role__toolbar .el-input__inner"
-        );
-        el?.focus?.();
+      // 直接通过 ref 聚焦：itemsSectionRef 暴露了 focusSearch()；其它 tab 走 visible section 的 input
+      if (activeTab.value === "items" && itemsSectionRef.value?.focusSearch) {
+        try { itemsSectionRef.value.focusSearch(); return; } catch { /* fallthrough */ }
       }
+      // 其它 tab：找到当前可见的 .rss-role__section，取其 toolbar 内的第一个可聚焦 input
+      const sections = document.querySelectorAll<HTMLElement>(".rss-role__content .rss-role__section");
+      let target: HTMLElement | null = null;
+      for (const s of sections) {
+        const style = window.getComputedStyle(s);
+        if (style.display === "none" || style.visibility === "hidden") continue;
+        target = s.querySelector<HTMLElement>(".rss-role__toolbar .el-input__inner");
+        if (target) break;
+        // Briefing 的 search 包裹在另一个 class 名下
+        target = s.querySelector<HTMLElement>(".el-input__inner");
+        if (target) break;
+      }
+      if (!target && activeTab.value === "briefing") {
+        // fallback 到 BriefingSection 的暴露 ref 搜索
+        target = document.querySelector<HTMLElement>(".rss-briefing__filters .el-input__inner, .rss-briefing__list .el-input__inner");
+      }
+      target?.focus?.();
     });
   };
 
@@ -1016,6 +1050,33 @@ watch(
   border-color: var(--el-color-warning-light-6);
   .rss-role__stat-pill-value { color: var(--el-color-warning); }
   .rss-role__stat-pill-label { color: var(--el-color-warning-dark-2); }
+}
+// P2-8：解析全部订阅源时 Today pill pulsate 呼吸光效
+@keyframes rss-role__stat-pill--pulsate {
+  0%, 100% {
+    box-shadow:
+      0 6px 18px -16px color-mix(in srgb, var(--el-color-primary) 80%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--el-color-primary) 45%, transparent);
+    transform: translateY(0);
+  }
+  50% {
+    box-shadow:
+      0 10px 26px -16px color-mix(in srgb, var(--el-color-primary) 90%, transparent),
+      0 0 0 6px color-mix(in srgb, var(--el-color-primary) 0%, transparent);
+    transform: translateY(-1px);
+  }
+}
+.rss-role__stat-pill--accent.is-parsing {
+  animation: rss-role__stat-pill--pulsate 1.4s ease-in-out infinite;
+  border-color: var(--el-color-primary);
+  background: linear-gradient(135deg, var(--el-color-primary-light-8), var(--el-color-primary-light-7));
+  .rss-role__stat-pill-icon {
+    animation: rss-role__stat-pill--pulsate-spin 1.4s linear infinite;
+  }
+}
+@keyframes rss-role__stat-pill--pulsate-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 .rss-role__stat-pill-icon {
   display: inline-flex;

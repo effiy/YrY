@@ -447,16 +447,16 @@ export default {
       },
       categories: {
         groups: {
-          executiver: "Executiver",
+          executive: "Executive",
           aier: "AI Engineer",
           engineer: "Engineer",
           sre: "SRE",
-          producter: "Product Manager",
+          product: "Product Manager",
           curator: "Curator",
-          leader: "Leader"
+          leader: "Tech Lead"
         },
         options: {
-          executiver: {
+          executive: {
             industry: "Industry · market trends, competitors, reports",
             strategy: "Strategy · frameworks, compliance, positioning",
             roadmap: "Roadmap · planning, OKR, budget",
@@ -472,10 +472,10 @@ export default {
             learnWins: "Learn · Wins",
             learnFailures: "Learn · Failures"
           },
-          srer: {
+          sre: {
             release: "Release · deployment, infrastructure"
           },
-          producter: {
+          product: {
             frameworks: "Frameworks · product strategy, growth"
           },
           curator: {

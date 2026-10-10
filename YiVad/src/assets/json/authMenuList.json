@@ -1261,6 +1261,86 @@
                 "activeMenu": "/knowledge/executive"
               },
               "children": []
+            },
+            {
+              "key": "menu_knowledgeExecutiveReadingList",
+              "path": "/knowledge/executive/readingList",
+              "name": "knowledgeExecutiveReadingList",
+              "component": "/knowledge/executive/readingList",
+              "redirect": "",
+              "parent": "/knowledge/executive",
+              "order": 3,
+              "meta": {
+                "icon": "Reading",
+                "title": "Reading List",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": true,
+                "activeMenu": "/knowledge/executive"
+              },
+              "children": []
+            },
+            {
+              "key": "menu_knowledgeExecutiveReadingDetail",
+              "path": "/knowledge/executive/page/:key",
+              "name": "knowledgeExecutiveReadingDetail",
+              "component": "/knowledge/pageDetail",
+              "redirect": "",
+              "parent": "/knowledge/executive",
+              "order": 99,
+              "meta": {
+                "icon": "Document",
+                "title": "Reading Detail",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": true,
+                "activeMenu": "/knowledge/executive"
+              },
+              "children": []
+            },
+            {
+              "key": "menu_knowledgeExecutiveOkr",
+              "path": "/knowledge/executive/okr",
+              "name": "knowledgeExecutiveOkr",
+              "component": "/knowledge/executive/okr",
+              "redirect": "",
+              "parent": "/knowledge/executive",
+              "order": 4,
+              "meta": {
+                "icon": "Aim",
+                "title": "OKR Dashboard",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": true,
+                "activeMenu": "/knowledge/executive"
+              },
+              "children": []
+            },
+            {
+              "key": "menu_knowledgeExecutiveProcessRecord",
+              "path": "/knowledge/executive/processRecord",
+              "name": "knowledgeExecutiveProcessRecord",
+              "component": "/knowledge/executive/processRecord",
+              "redirect": "",
+              "parent": "/knowledge/executive",
+              "order": 5,
+              "meta": {
+                "icon": "List",
+                "title": "Process Records",
+                "isLink": "",
+                "isHide": true,
+                "isFull": false,
+                "isAffix": false,
+                "isKeepAlive": true,
+                "activeMenu": "/knowledge/executive"
+              },
+              "children": []
             }
           ]
         },
